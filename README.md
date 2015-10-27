@@ -4,23 +4,23 @@ A powerful web based Mangement of  Google's Kubernetes
 It has the following goals
  - 1. One step to install kubernetes on multi hosts.
  - 2. Draw up a standard kubernetes's project package format(ku8package), so every one can easy deploy kubernetes based system
- - 3. Provide a tool to visualization the creation proecess of kubernetes service¡¢RC¡¢Pod and more Objects.
+ - 3. Provide a tool to visualization the creation proecess of kubernetes serviceã€RCã€Pod and more Objects.
  - 4. Visualization continued construction integration of  Docker Projects.
  - 5. Performance Monitoring of both Docker and Kubernetes
  - 6. Many useful tools
  
-K8s eyeÊÇÒ»¸ö¹È¸èKubernetesµÄWebÒ»Õ¾Ê½¹ÜÀíÏµÍ³£¬Ëü¾ßÓĞÈçÏÂµÄ·¢Ä¿±ê£º
- - 1.Í¼ĞÎ»¯Ò»¼ü°²×°²¿Êğ¶à½ÚµãµÄKuberntes¼¯Èº
- - 2.ÖÆ¶¨Ò»¸öKubernetesÓ¦ÓÃµÄ³ÌĞò·¢²¼°ü±ê×¼(ku8package)£¬Ê¹µÃ×¨ÃÅÎªKubernetesÉè¼ÆµÄÓ¦ÓÃÄÜ¹»ºÜÈİÒ×´Ó±¾µØ»·¾³ÖĞ·¢²¼µ½¹«ÓĞÔÆºÍÆäËû»·¾³ÖĞ
- - 3.Éè¼ÆÒ»¸ö¿ÉÊÓ»¯µÄ±àÅÅ¹¤¾ß£¬ÄÜ¹»¿ÉÊÓ»¯µÄ¶¨ÒåKubernetes·şÎñ£¬RC¡¢PodµÈ¶ÔÏó£¬²¢Íê³É´ò°ü²¿ÊğµÄ¹¦ÄÜ 
- - 4.ÊµÏÖDocker/KuberntegsÏîÄ¿µÄ¿ÉÊÓ»¯µÄ×Ô¶¯¹¹½¨ºÍ¼¯³É·¢²¼ÏµÍ³
- - 5.ÊµÏÖDockerÓëKuberntesµÄĞÔÄÜ¼à¿ØºÍÔËÎ¬¹ÜÀí¹¦ÄÜ
- - 6.ÆäËûÒ»Ğ©ÓĞÓÃ¹¤¾ß
+Ku8 eyeæ˜¯ä¸€ä¸ªè°·æ­ŒKubernetesçš„Webä¸€ç«™å¼ç®¡ç†ç³»ç»Ÿï¼Œå®ƒå…·æœ‰å¦‚ä¸‹çš„å‘ç›®æ ‡ï¼š
+ - 1.å›¾å½¢åŒ–ä¸€é”®å®‰è£…éƒ¨ç½²å¤šèŠ‚ç‚¹çš„Kuberntesé›†ç¾¤
+ - 2.åˆ¶å®šä¸€ä¸ªKubernetesåº”ç”¨çš„ç¨‹åºå‘å¸ƒåŒ…æ ‡å‡†(ku8package)ï¼Œä½¿å¾—ä¸“é—¨ä¸ºKubernetesè®¾è®¡çš„åº”ç”¨èƒ½å¤Ÿå¾ˆå®¹æ˜“ä»æœ¬åœ°ç¯å¢ƒä¸­å‘å¸ƒåˆ°å…¬æœ‰äº‘å’Œå…¶ä»–ç¯å¢ƒä¸­
+ - 3.è®¾è®¡ä¸€ä¸ªå¯è§†åŒ–çš„ç¼–æ’å·¥å…·ï¼Œèƒ½å¤Ÿå¯è§†åŒ–çš„å®šä¹‰KubernetesæœåŠ¡ï¼ŒRCã€Podç­‰å¯¹è±¡ï¼Œå¹¶å®Œæˆæ‰“åŒ…éƒ¨ç½²çš„åŠŸèƒ½ 
+ - 4.å®ç°Docker/Kuberntegsé¡¹ç›®çš„å¯è§†åŒ–çš„è‡ªåŠ¨æ„å»ºå’Œé›†æˆå‘å¸ƒç³»ç»Ÿ
+ - 5.å®ç°Dockerä¸Kuberntesçš„æ€§èƒ½ç›‘æ§å’Œè¿ç»´ç®¡ç†åŠŸèƒ½
+ - 6.å…¶ä»–ä¸€äº›æœ‰ç”¨å·¥å…·
 
 
-²Î¿¼×ÊÁÏ
- - 1.ÓÃjenkins£¬ansible£¬supervisor´òÔìÒ»¸öweb¹¹½¨·¢²¼ÏµÍ³ £¨http://blog.csdn.net/hengyunabc/article/details/44072065£©
- - 2.ÓÃansible¿ª·¢µÄÒ»¸öKuberntes×Ô¶¯»¯°²×°µÄ¿ªÔ´ÏîÄ¿kubernetes-ansible  (https://github.com/eparis/kubernetes-ansible)
+å‚è€ƒèµ„æ–™
+ - 1.ç”¨jenkinsï¼Œansibleï¼Œsupervisoræ‰“é€ ä¸€ä¸ªwebæ„å»ºå‘å¸ƒç³»ç»Ÿ ï¼ˆhttp://blog.csdn.net/hengyunabc/article/details/44072065ï¼‰
+ - 2.ç”¨ansibleå¼€å‘çš„ä¸€ä¸ªKuberntesè‡ªåŠ¨åŒ–å®‰è£…çš„å¼€æºé¡¹ç›®kubernetes-ansible  (https://github.com/eparis/kubernetes-ansible)
  
 
 
