@@ -2,25 +2,22 @@
 
 A powerful web based Mangement of  Google's Kubernetes
 It has the following goals
- - 1. One step to install kubernetes on multi hosts.
- - 2. Draw up a standard kubernetes's project package format(ku8package), so every one can easy deploy kubernetes based system
- - 3. Provide a tool to visualization the creation proecess of kubernetes serviceã€RCã€Pod and more Objects.
- - 4. Visualization continued construction integration of  Docker Projects.
- - 5. Performance Monitoring of both Docker and Kubernetes
- - 6. Many useful tools
+ - 1. One step to install kubernetes cluster. The fastest way to get up-and-running with Google Kubernetes cluster. complete with intelligent default settings based on your system. 
+ - 2. Multi Role & Tenant enabled Management Portal. Through a centralized interface, your operations team can easily tune configurations and resourcing; manage a wide range of user roles for cross-departmental, self-service access; and even manage multiple clusters for multi-tenant environments.
+ - 3. Draw up a standard kubernetes's project package format(ku8package). So every one can easy deploy this package with our automated wizards ,further more, we also provide a tool to visualization the creation proecess of kubernetes based project ,include Visual Design kubernetes service¡¢RC¡¢Pod and more Objects 
+ - 4. Customizable monitoring and reporting. Get complete visibility into your cluster with many built-in health checks and alerts that you can configure based on what matters most to you. Not only can you monitor all components across all clusters (including Docker and Kubernetes ), you can also easily monitor your business service's performance.  ku8 eye has a customizable dashboard, with the ability to create advanced charts for historical monitoring and custom triggers and thresholds for your environment.
+ - 5. Comprehensive troubleshooting ability. The only centralized log management aggregates logs across all cluster nodes, components ,include system logs and user program logs, and makes them searchable for simple troubleshooting, including integrated, custom alerting for the errors you care about. Historical views and metrics let you see exactly what happened when, and allow you to quickly see anomalistic behavior. 
+ - 6. Continuous integration and delivery with Docker and kubernetes project. Provide a visual tool to manager project's continuous delivery pipeline,  allows you to auto buid new Docker images, push to private Docker registry, create a new kubernetes testing environment to run test cases and finally rolling update raleted kuberntes services in product environment
  
-Ku8 eyeæ˜¯ä¸€ä¸ªè°·æ­ŒKubernetesçš„Webä¸€ç«™å¼ç®¡ç†ç³»ç»Ÿï¼Œå®ƒå…·æœ‰å¦‚ä¸‹çš„å‘ç›®æ ‡ï¼š
- - 1.å›¾å½¢åŒ–ä¸€é”®å®‰è£…éƒ¨ç½²å¤šèŠ‚ç‚¹çš„Kuberntesé›†ç¾¤
- - 2.åˆ¶å®šä¸€ä¸ªKubernetesåº”ç”¨çš„ç¨‹åºå‘å¸ƒåŒ…æ ‡å‡†(ku8package)ï¼Œä½¿å¾—ä¸“é—¨ä¸ºKubernetesè®¾è®¡çš„åº”ç”¨èƒ½å¤Ÿå¾ˆå®¹æ˜“ä»æœ¬åœ°ç¯å¢ƒä¸­å‘å¸ƒåˆ°å…¬æœ‰äº‘å’Œå…¶ä»–ç¯å¢ƒä¸­
- - 3.è®¾è®¡ä¸€ä¸ªå¯è§†åŒ–çš„ç¼–æ’å·¥å…·ï¼Œèƒ½å¤Ÿå¯è§†åŒ–çš„å®šä¹‰KubernetesæœåŠ¡ï¼ŒRCã€Podç­‰å¯¹è±¡ï¼Œå¹¶å®Œæˆæ‰“åŒ…éƒ¨ç½²çš„åŠŸèƒ½ 
- - 4.å®ç°Docker/Kuberntegsé¡¹ç›®çš„å¯è§†åŒ–çš„è‡ªåŠ¨æ„å»ºå’Œé›†æˆå‘å¸ƒç³»ç»Ÿ
- - 5.å®ç°Dockerä¸Kuberntesçš„æ€§èƒ½ç›‘æ§å’Œè¿ç»´ç®¡ç†åŠŸèƒ½
- - 6.å…¶ä»–ä¸€äº›æœ‰ç”¨å·¥å…·
+K8s eyeÊÇÒ»¸ö¹È¸èKubernetesµÄWebÒ»Õ¾Ê½¹ÜÀíÏµÍ³£¬Ëü¾ßÓĞÈçÏÂµÄÄ¿±ê£º
+ - 1.Í¼ĞÎ»¯Ò»¼ü°²×°²¿Êğ¶à½ÚµãµÄKuberntes¼¯Èº¡£ÊÇ°²×°²¿Êğ¹È¸èKubernetes¼¯ÈºµÄ×î¿ìÒÔ¼°×î¼Ñ·½Ê½£¬°²×°Á÷³Ì»á²Î¿¼µ±Ç°ÏµÍ³»·¾³£¬Ìá¹©Ä¬ÈÏÓÅ»¯µÄ¼¯Èº°²×°²ÎÊı£¬ÊµÏÖ×î¼Ñ²¿Êğ¡£
+ - 2.Ö§³Ö¶à½ÇÉ«¶à×â»§µÄPortal¹ÜÀí½çÃæ¡£Í¨¹ıÒ»¸ö¼¯ÖĞ»¯µÄPortal½çÃæ£¬ÔËÓªÍÅ¶Ó¿ÉÒÔºÜ·½±ãµÄµ÷Õû¼¯ÈºÅäÖÃÒÔ¼°¹ÜÀí¼¯Èº×ÊÔ´£¬ÊµÏÖ¿ç²¿ÃÅµÄ½ÇÉ«¼°ÓÃ»§¹ÜÀí¡¢¶à×â»§¹ÜÀí£¬Í¨¹ı×ÔÖú·şÎñ¿ÉÒÔºÜÈİÒ×Íê³ÉKuberntes¼¯ÈºµÄÔËÎ¬¹ÜÀí¹¤×÷¡£
+ - 3.ÖÆ¶¨Ò»¸öKubernetesÓ¦ÓÃµÄ³ÌĞò·¢²¼°ü±ê×¼(ku8package)²¢Ìá¹©Ò»¸öÏòµ¼¹¤¾ß£¬Ê¹µÃ×¨ÃÅÎªKubernetesÉè¼ÆµÄÓ¦ÓÃÄÜ¹»ºÜÈİÒ×´Ó±¾µØ»·¾³ÖĞ·¢²¼µ½¹«ÓĞÔÆºÍÆäËû»·¾³ÖĞ£¬¸ü½øÒ»²½µÄ£¬ÎÒÃÇ»¹Ìá¹©ÁËKubernetesÓ¦ÓÃ¿ÉÊÓ»¯µÄ¹¹½¨¹¤¾ß£¬ÊµÏÖKubernetes Service¡¢RC¡¢PodÒÔ¼°ÆäËû×ÊÔ´µÄ¿ÉÊÓ»¯¹¹½¨ºÍ¹ÜÀí¹¦ÄÜ
+ - 4.¿É¶¨ÖÆ»¯µÄ¼à¿ØºÍ¸æ¾¯ÏµÍ³¡£ÄÚ½¨ºÜ¶àÏµÍ³½¡¿µ¼ì²é¹¤¾ßÓÃÀ´¼ì²âºÍ·¢ÏÖÒì³£²¢´¥·¢¸æ¾¯ÊÂ¼ş£¬²»½ö¿ÉÒÔ¼à¿Ø¼¯ÈºÖĞµÄËùÓĞ½ÚµãºÍ×é¼ş£¨°üÀ¨DockerÓëKubernetes£©£¬»¹ÄÜ¹»ºÜÈİÒ×µÄ¼à¿ØÒµÎñÓ¦ÓÃµÄĞÔÄÜ£¬ÎÒÃÇÌá¹©ÁËÒ»¸öÇ¿´óµÄDashboard£¬¿ÉÒÔÓÃÀ´Éú³É¸÷ÖÖ¸´ÔÓµÄ¼à¿ØÍ¼±íÒÔÕ¹Ê¾ÀúÊ·ĞÅÏ¢£¬²¢ÇÒ¿ÉÒÔÓÃÀ´×Ô¶¨ÒåÏà¹Ø¼à¿ØÖ¸±êµÄ¸æ¾¯·§Öµ¡£
+ - 5.¾ß±¸µÄ×ÛºÏµÄ¡¢È«ÃæµÄ¹ÊÕÏÅÅ²éÄÜÁ¦¡£Æ½Ì¨Ìá¹©Î¨Ò»µÄ¡¢¼¯ÖĞ»¯µÄÈÕÖ¾¹ÜÀí¹¤¾ß£¬ÈÕÖ¾ÏµÍ³´Ó¼¯ÈºÖĞ¸÷¸ö½ÚµãÀ­È¡ÈÕÖ¾²¢×ö¾ÛºÏ·ÖÎö£¬À­È¡µÄÈÕÖ¾°üÀ¨ÏµÍ³ÈÕÖ¾ºÍÓÃ»§³ÌĞòÈÕÖ¾£¬²¢ÇÒÌá¹©È«ÎÄ¼ìË÷ÄÜÁ¦ÒÔ·½±ã¹ÊÕÏ·ÖÎöºÍÎÊÌâÅÅ²é£¬¼ìË÷µÄĞÅÏ¢°üÀ¨Ïà¹Ø¸æ¾¯ĞÅÏ¢£¬¶øÀúÊ·ÊÓÍ¼ºÍÏà¹ØµÄ¶ÈÁ¿Êı¾İÔò¸æËßÄã£¬Ê²Ã´Ê±ºò·¢ÉúÁËÊ²Ã´ÊÂÇé£¬ÓĞÖúÓÚ¿ìËÙÁË½âÏà¹ØÊ±¼äÄÚÏµÍ³µÄĞĞÎªÌØÕ÷¡£
+ - 6.ÊµÏÖDockersÓëkubernetesÏîÄ¿µÄ³ÖĞø¼¯³É¹¦ÄÜ¡£Ìá¹©Ò»¸ö¿ÉÊÓ»¯¹¤¾ßÇı¶¯³ÖĞø¼¯³ÉµÄÕû¸öÁ÷³Ì£¬°üÀ¨´´½¨ĞÂµÄDocker¾µÏñ¡¢Push¾µÏñµ½Ë½ÓĞ²Ö¿âÖĞ¡¢´´½¨Ò»¸öKubernetes²âÊÔ»·¾³½øĞĞ²âÊÔÒÔ¼°×îÖÕ¹ö¶¯Éı¼¶µ½Éú²ú»·¾³ÖĞµÈ¸÷¸öÖ÷Òª»·½Ú¡£ 
 
-
-å‚è€ƒèµ„æ–™
- - 1.ç”¨jenkinsï¼Œansibleï¼Œsupervisoræ‰“é€ ä¸€ä¸ªwebæ„å»ºå‘å¸ƒç³»ç»Ÿ ï¼ˆhttp://blog.csdn.net/hengyunabc/article/details/44072065ï¼‰
- - 2.ç”¨ansibleå¼€å‘çš„ä¸€ä¸ªKuberntesè‡ªåŠ¨åŒ–å®‰è£…çš„å¼€æºé¡¹ç›®kubernetes-ansible  (https://github.com/eparis/kubernetes-ansible)
- 
-
-
+²Î¿¼×ÊÁÏ
+ - 1.ÓÃjenkins£¬ansible£¬supervisor´òÔìÒ»¸öweb¹¹½¨·¢²¼ÏµÍ³ £¨http://blog.csdn.net/hengyunabc/article/details/44072065£©
+ - 2.ÓÃansible¿ª·¢µÄÒ»¸öKuberntes×Ô¶¯»¯°²×°µÄ¿ªÔ´ÏîÄ¿kubernetes-ansible  (https://github.com/eparis/kubernetes-ansible)
+ - 3.ansibleÈëÃÅÎÄµµ, (http://www.kisops.com/?p=23)
