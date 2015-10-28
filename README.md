@@ -1,4 +1,4 @@
-![image](https://raw.githubusercontent.com/bestcloud/ku8eye/master/ku8eye.png)
+![ImageLoadFailed](./res/ku8eye.png)
 
 A powerful web based Mangement of  Google's Kubernetes
 It has the following goals
