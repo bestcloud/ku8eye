@@ -1,0 +1,18 @@
+# machines list in group
+
+[etcd]
+192.168.1.201
+
+[kube-master]
+192.168.1.201
+
+
+# for docker, different docker0's IP on different node
+# and kubelet, kube-proxy
+[kube-node1]
+192.168.1.202
+
+#[kube-node2]
+#192.168.1.202
+
+# ......

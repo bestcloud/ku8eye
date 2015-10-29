@@ -1,0 +1,12 @@
+---
+- hosts: etcd
+  roles:
+    - etcd
+
+- hosts: kube-master
+  roles:
+    - kube-master
+
+- hosts: kube-node1
+  roles:
+    - kube-node1

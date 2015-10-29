@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+    - name: stop firewalld service
+      command: systemctl stop firewalld
+
+    - name: disable firewalld service
+      command: systemctl disable firewalld
+
