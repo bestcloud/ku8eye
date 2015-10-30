@@ -21,21 +21,23 @@ Kubernetes集群的安装部署有以下几种可能的场景：
  5. detail-url:说明此模板的安装详细信息，一个HTML页面来说名此集群安装出来的效果，包括拓扑图
 选择模板的界面如下所示，建议增加图标和更多信息：
 
-![ImageLoadFailed](./res/ku8-cluster-install-01.png)
+![ImageLoadFailed](../../res/ku8-cluster-install-01.png)
 
 接下来，用户给出待安装集群的名称，并录入一批待安装的目标节点地址，包括IP，root用户名，密码等信息，**数量**要符合所选模板里的最小最大个数，**下面的表格应该是根据模板里的定义来填充的，比如第一个阶段的角色默认是etcd、master、以后的是node等:**
-|         目标节点    |    IP地址    |    Root密码    |    节点角色    |
-|    ------: |    :-------:    |    :---------   |    ------    |
-|    1    |    192.168.0.1    |    123456    |  etcd、master    |
-|    2    |    192.168.0.2    |    123456   |   node |
-|    3    |    192.168.0.3    |    123456   |    node|
+
+ 节点  |IP地址          |    Root密码|    节点角色    
+ ------|----------------|------------|------------   
+ 1     |    192.168.0.1 |    123456  |  etcd、master    
+ 2     |    192.168.0.2 |    123456  |   node 
+ 3     |    192.168.0.3 |    123456  |    node
 
 输入了节点机器以后，下一步生成预安装的界面，用户可以微调安装参数：
-|         集群参数    |    关联组件 |    当前值    |     说明    |  
-|    ------: |    :-------:    |    :---------   |  
-|    service-cluster-ip-range |API Server   |    10.0.0.1/16   |    Cluster IP的地址范围    |  
-|    node-sync-period    |    Controller Manager    |    10s  |  Node节点同步的时间间隔
-|    algorithm-provider    |    Scheduler    |    Default   |   Pod调度策略|
+
+集群参数                 |    关联组件        |    当前值    |     说明      
+-------------------------|--------------------|--------------|------------------------  
+service-cluster-ip-range |API Server          |  10.0.0.1/16 |    Cluster IP的地址范围     
+ node-sync-period        | Controller Manager |    10s       |  Node节点同步的时间间隔
+ algorithm-provider      |    Scheduler       |    Default   |   Pod调度策略
 
 用户确认安装节点和安装参数以后，点击开始安装，就开始执行集群的安装过程，具体做法为调用ansible脚本来驱动安装，安装过程中，ansible的输出流需要在页面上实时展示出来。安装完成以后，数据库里记录了集群、节点列表、集群组件等实体。
 
