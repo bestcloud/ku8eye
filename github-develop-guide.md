@@ -81,10 +81,10 @@ Commit（本地提交）->push（提交到自己Fork的地址）->发起pull req
 注意到，目标地址Remoet为Origin地址，即我们自己Fork的地址。
 3. Push成功以后，显示如下内容，可以继续发起pull reqest请求，将变更提交到官方源地址(upstream)，请求合并你的变更：
 ![ImageLoadFailed](./res/18.png)
-一般是在github网站上发起pull request的，用自己的账号登录github，看到项目变动情况，发现版本是领衔官方源一个Commit，可以点击Pull request请求官方合并你的Commit
+一般是在github网站上发起pull request的，用自己的账号登录github，查看项目变动情况，可以看到自己账号的代码分支比官方源多一个Commit。点击Pull request请求官方合并你的Commit。
 ![ImageLoadFailed](./res/19.png)
 ![ImageLoadFailed](./res/20.png)
-发起Pull Request的过程中，可以看到你提交的文件数量，具体文件，以及提交时候的注释内容，有助于 官方来确定你的提交是否能被接纳。
+发起Pull Request的过程中，可以看到你提交的文件数量，具体文件，以及提交时候的注释内容，有助于官方来确定你的提交是否能被接纳。
 
 # 五：官方Merge请求
 
@@ -97,7 +97,7 @@ Commit（本地提交）->push（提交到自己Fork的地址）->发起pull req
 
 # 六：从官网源同步代码
 
-可以用pull 或者fetch两种方式从官网源（upstream）同步代码，fetch是执行了pull +merge的操作，即pull下来与本地的仓库进行merge操作，建议百度更详细的说明。
+可以用pull或者fetch两种方式从官网源（upstream）同步代码，fetch是执行了pull +merge的操作，即pull下来与本地的仓库进行merge操作，建议百度更详细的说明。
 
 1. 在自己fork的项目下，可以看到当前版本与官网源的差距，如下图所示：
 ![ImageLoadFailed](./res/23.png)

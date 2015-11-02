@@ -1,0 +1,15 @@
+---
+# for docker
+docker_registry_url: 192.168.1.201:1180
+#!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT - different IP for different node !!!!!!!!
+docker0_ip: 172.17.1.1/24
+docker_runtime_root_dir: /hadoop1/docker
+
+# for kubelet, kube-proxy
+master_url: http://192.168.1.201:1100
+#!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT - different hostname for different node !!!!!!!!
+hostname_override_name: 192.168.1.202
+pod_pause_image: 192.168.1.201:1180/google_containers/pause
+#!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT - must be in kube-apiserver --service-cluster-ip-range RANGE !!!!!!!!
+cluster_dns_ip: 20.1.0.100
+cluster_domain_name: cluster.local

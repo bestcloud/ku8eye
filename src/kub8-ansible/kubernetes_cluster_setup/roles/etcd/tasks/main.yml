@@ -1,0 +1,31 @@
+---
+- name: copy etcd to /usr/bin
+  copy: src=etcd dest=/usr/bin/etcd mode=755
+
+- name: copy etcdctl to /usr/bin
+  copy: src=etcdctl dest=/usr/bin/etcdctl mode=755
+
+- name: make dir /etc/etcd
+  file: dest=/etc/etcd mode=755 state=directory
+
+- name: copy config file etcd.conf to /etc/etcd
+  template: src=etcd.conf dest=/etc/etcd/etcd.conf
+
+- name: copy etcd.service to /usr/lib/systemd/system
+  copy: src=etcd.service dest=/usr/lib/systemd/system/etcd.service
+
+- name: make dir /var/lib/etcd/ for etcd service
+  file: dest=/var/lib/etcd mode=755 state=directory
+
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: enable etcd service
+  service: name=etcd enabled=yes
+
+- name: start etcd service
+  service: name=etcd state=restarted
+
+- name: test etcd started ok
+  command: etcdctl cluster-health
+
