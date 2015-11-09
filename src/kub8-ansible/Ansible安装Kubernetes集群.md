@@ -4,11 +4,11 @@
 
 ## ansible 安装环境准备
 
-1. 准备一台Linux服务器，并安装docker。
+**1.** 准备一台Linux服务器，并安装docker。
 
-2. 将所有ansible脚本和源文件放在安装服务器的/root/ansible/kubernetes_cluster_setup目录中。
+**2.** 将所有ansible脚本和源文件放在安装服务器的/root/ansible/kubernetes_cluster_setup目录中。
 
-3. 下载ansible的docker镜像并启动ansible：
+**3.** 下载ansible的docker镜像并启动ansible：
 ``` script
 下载 ansible 镜像：
 $ docker pull kubeguide/centos7-ansible:2.0
@@ -47,12 +47,12 @@ $ docker run -tid -v /root/ansible/kubernetes_cluster_setup:/root/ansible/kubern
 ```
 
 ## 集群安装前的准备工作
-1. 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下创建`rootpassword`文件，内容为待安装所有服务器root用户的口令，例如：
+**1.** 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下创建`rootpassword`文件，内容为待安装所有服务器root用户的口令，例如：
 ``` script
 password123
 ```
 
-2. 在pre-setup目录下创建keys.yml文件：
+**2.** 在pre-setup目录下创建keys.yml文件：
 ``` script
 # Using this module REQUIRES the sshpass package to be installed!
 #
@@ -87,12 +87,12 @@ password123
             authorized_key: user={{ ansible_ssh_user }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 ```
 
-3. 进入容器内部
+**3.** 进入容器内部
 ``` script
 $ docker exec -ti ansible2 bash
 ```
 
-4. 执行ssh到所有主机，以将所有主机的fingerprint保存在known_hosts文件中。
+**4.** 执行ssh到所有主机，以将所有主机的fingerprint保存在known_hosts文件中。
 ``` script
 $ ssh 192.168.1.201
 The authenticity of host '192.168.1.201 (192.168.1.201)' can't be established.
@@ -105,7 +105,7 @@ $ ssh 192.168.1.203
 ......
 ```
 
-5. 执行ansible-playbook命令完成复制公钥操作：
+**5.** 执行ansible-playbook命令完成复制公钥操作：
 ``` script
 $ ansible-playbook -i hosts pre-setup/keys.yml
 
@@ -131,7 +131,7 @@ PLAY RECAP *********************************************************************
 > $ **docker exec -ti ansible2 ansible-playbook -i /root/ansible/kubernetes_cluster_setup/hosts /root/ansible/kubernetes_cluster_setup/pre-setup/ping.yml**
 
 
-6. 执行ansible-playbook命令停止所有机器的防火墙服务：
+**6.** 执行ansible-playbook命令停止所有机器的防火墙服务：
 ``` script
 $ ansible-playbook -i hosts pre-setup/disablefirewalld.yml
 
@@ -159,21 +159,21 @@ PLAY RECAP *********************************************************************
 ```
 
 ## Kubernetes集群安装
-1. 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
+**1.** 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
 etcd
 kube-master
 kube-node
 
-2. 在每个role下创建4个子目录：
+**2.** 在每个role下创建4个子目录：
 defaults：存放变量的值，目录下main.yml文件将被ansible默认读取
 files：存放需安装（复制）的源文件
 tasks：ansible-playbook执行的任务脚本，目录下main.yml文件将被ansible默认读取
 templates：需修改参数的配置文件，其中参数由defaults目录中的值进行替换
 
-3. 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建group_vars子目录存放全局变量
+**3.** 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建group_vars子目录存放全局变量
 默认文件为all.yml
 
-4. 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建setup.yml文件，内容为ansible-playbook在各host安装role的配置：
+**4.** 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建setup.yml文件，内容为ansible-playbook在各host安装role的配置：
 ``` script
 ---
 - hosts: etcd
@@ -190,7 +190,7 @@ templates：需修改参数的配置文件，其中参数由defaults目录中的
 ```
 
 
-5. 对配置文件进行相应的修改
+**5.** 对配置文件进行相应的修改
 特别需要在 /root/ansible/kubernetes_cluster_setup/hosts 文件中，将各node不同的参数进行设置：
 ``` script
 [etcd]
@@ -208,7 +208,7 @@ templates：需修改参数的配置文件，其中参数由defaults目录中的
 
 
 
-6. 启动 ansible-playbook 完成集群的安装
+**6.** 启动 ansible-playbook 完成集群的安装
 ``` script
 $ ansible-playbook -i hosts setup.yml
 
@@ -503,7 +503,7 @@ PLAY RECAP *********************************************************************
 
 ```
 
-7. 登录master服务器，验证Kubernetes集群正常启动
+**7.** 登录master服务器，验证Kubernetes集群正常启动
 ``` script
 $ kubectl get nodes
 NAME            LABELS                                 STATUS
