@@ -20,4 +20,4 @@ KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{apiserver_service_cluster_i
 KUBE_ADMISSION_CONTROL="--admission_control=NamespaceAutoProvision,LimitRanger,ResourceQuota,SecurityContextDeny,ServiceAccount"
 
 # Add your own!
-KUBE_API_ARGS="--log-dir=/var/log/kubernetes --client_ca_file=/var/run/kubernetes/ca.crt --tls-private-key-file=/var/run/kubernetes/server.key --tls-cert-file=/var/run/kubernetes/server.crt "
+KUBE_API_ARGS="--client_ca_file=/var/run/kubernetes/ca.crt --tls-private-key-file=/var/run/kubernetes/server.key --tls-cert-file=/var/run/kubernetes/server.crt "

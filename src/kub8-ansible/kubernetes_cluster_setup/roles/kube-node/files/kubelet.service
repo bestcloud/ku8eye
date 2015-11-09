@@ -6,8 +6,8 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 WorkingDirectory=/var/lib/kubelet
-EnvironmentFile=-/etc/kubernetes/config
-EnvironmentFile=-/etc/kubernetes/kubelet
+EnvironmentFile=/etc/kubernetes/config
+EnvironmentFile=/etc/kubernetes/kubelet
 ExecStart=/usr/bin/kubelet \
 	    $KUBE_LOGTOSTDERR \
 	    $KUBE_LOG_LEVEL \

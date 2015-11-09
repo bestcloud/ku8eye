@@ -49,18 +49,29 @@
   command: systemctl status docker
 
 
-# start Quagga router docker container
-- name: copy Quagga image to /tmp
+# start Quagga router docker container based on condition install_quagga_router 
+- name: install_quagga_router - delete all docker containers
+  shell: docker rm $(docker ps -a -q)
+  when: install_quagga_router
+- name: install_quagga_router - delete all docker images
+  shell: docker rmi $(docker images -q)
+  when: install_quagga_router
+
+- name: install_quagga_router - copy Quagga image to /tmp
   copy: src=georce_route_quagga.tar dest=/tmp/georce_route_quagga.tar mode=600
+  when: install_quagga_router
 
-- name: load Quagga image
+- name: install_quagga_router - load Quagga image
   command: docker load -i /tmp/georce_route_quagga.tar
+  when: install_quagga_router
 
-- name: tag Quagga image
+- name: install_quagga_router - tag Quagga image
   command: docker tag f96cfe685533 index.alauda.cn/georce/router
+  when: install_quagga_router
 
-- name: start Quagga container
+- name: install_quagga_router - start Quagga container
   command: docker run -itd --name=router --privileged --net=host index.alauda.cn/georce/router
+  when: install_quagga_router
 
 
 ################################ kubelet & kube-proxy #########################
@@ -128,3 +139,4 @@
   command: systemctl status kubelet
 - name: check kube-proxy service started ok
   command: systemctl status kube-proxy
+

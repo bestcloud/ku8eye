@@ -1,0 +1,9 @@
+# kubernetes dns setup variables
+
+dns_setup: false
+
+######## IMPORTANT - dns IP must be in kube-apiserver --service-cluster-ip-range RANGE ########
+# these 2 variables will be used in kubelet config file and skydns-rc.yaml file
+cluster_domain_name: cluster.local
+cluster_dns_ip: 20.1.0.100
+
