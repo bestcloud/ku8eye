@@ -6,8 +6,8 @@
 
 ![ImageLoadFailed](../../res/resouce-topo.PNG)
 
-    ku8eye作为kubernetes的集群管理软件，需要对集群中相关资源对象进行建模设计，以及保存到数据库中，并提供维护可视化的管理功能。目前比较重要的资源对象有如下一些：
-    
+
+   ku8eye作为kubernetes的集群管理软件，需要对集群中相关资源对象进行建模设计，以及保存到数据库中，并提供维护可视化的管理功能。目前比较重要的资源对象有如下一些：
     第一：Zone（中心），一个Zone代表一个中心，通常是多个地方的机房，比如北京中心、上海中心、广州中心等，主机等资源属于某个具体中心，但也存在跨中心的一个Kubernetes集群的情况，Zone的主要属性如下：
    - Id:唯一标示
    - Name：名称
@@ -35,7 +35,7 @@
  - version:服务版本号
  - status：服务状态，比如当前OK，或者ERROR，程序需要定期检测
     
- 第四：ku8 Cluster，kubernetes集群，集群里所有的Host是独享的，即完整隔离的一套kubernetes集群，彼此互不影响，一个Cluster属于一个租户。Cluster的主要属性如下：
+    第四：ku8 Cluster，kubernetes集群，集群里所有的Host是独享的，即完整隔离的一套kubernetes集群，彼此互不影响，一个Cluster属于一个租户。Cluster的主要属性如下：
 
  - Name：集群名称
  - Id：集群唯一标示
