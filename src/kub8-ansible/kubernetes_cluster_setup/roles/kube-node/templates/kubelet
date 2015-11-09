@@ -8,10 +8,10 @@ KUBELET_ADDRESS="--address=0.0.0.0"
 KUBELET_PORT="--port=10250"
 
 # You may leave this blank to use the actual hostname
-KUBELET_HOSTNAME="--hostname_override={{hostname_override_name}}"
+KUBELET_HOSTNAME="--hostname_override={{kubelet_hostname_override}}"
 
 # location of the api-server
-KUBELET_API_SERVER="--api_servers={{master_url}}"
+KUBELET_API_SERVER="--api_servers={{kube_master_url}}"
 
 # Add your own!
-KUBELET_ARGS="--pod_infra_container_image={{pod_pause_image}} --cluster_dns={{cluster_dns_ip}} --cluster_domain={{cluster_domain_name}}"
+KUBELET_ARGS="--pod_infra_container_image={{kube_pause_image_url}} --cluster_dns={{cluster_dns_ip}} --cluster_domain={{cluster_domain_name}}"

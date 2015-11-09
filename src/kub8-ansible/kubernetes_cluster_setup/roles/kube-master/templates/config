@@ -10,7 +10,7 @@
 #   kubelet.service
 #   kube-proxy.service
 # logging to stderr means we get it in the systemd journal
-KUBE_LOGTOSTDERR="--logtostderr=false"
+KUBE_LOGTOSTDERR="--logtostderr=false --log-dir=/var/log/kubernetes"
 
 # journal message level, 0 is debug
 KUBE_LOG_LEVEL="--v=4"
@@ -19,4 +19,4 @@ KUBE_LOG_LEVEL="--v=4"
 KUBE_ALLOW_PRIV="--allow_privileged=false"
 
 # How the controller-manager, scheduler, and proxy find the apiserver
-KUBE_MASTER="--master={{master_url}}"
+KUBE_MASTER="--master={{kube_master_url}}"

@@ -6,13 +6,10 @@
 [kube-master]
 192.168.1.201
 
-
 # for docker, different docker0's IP on different node
 # and kubelet, kube-proxy
-[kube-node1]
-192.168.1.202
+[kube-node]
+192.168.1.202 docker0_ip=172.17.1.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.202 install_quagga_router=true
+#192.168.1.202 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=true
+#......
 
-#[kube-node2]
-#192.168.1.202
-
-# ......
