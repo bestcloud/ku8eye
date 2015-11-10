@@ -7,6 +7,6 @@
   roles:
     - kube-master
 
-- hosts: kube-node1
+- hosts: kube-node
   roles:
-    - kube-node1
+    - kube-node
