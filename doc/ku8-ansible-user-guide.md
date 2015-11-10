@@ -190,25 +190,115 @@ templates：需修改参数的配置文件，其中参数由defaults目录中的
 ```
 
 
-**5.** 对配置文件进行相应的修改
-特别需要在 /root/ansible/kubernetes_cluster_setup/hosts 文件中，将各node不同的参数进行设置：
-``` script
-[etcd]
-192.168.1.201
+**5.** 准备最新版本的二进制文件
 
-[kube-master]
-192.168.1.201
+所需修改的二进制文件列表：
+```
+kubernetes_cluster_setup
+│
+└─roles
+    ├─etcd
+    │  └─files
+    │         etcd                          etcd主程序
+    │         etcdctl                       etcdctl命令行工具
+    │
+    ├─kube-master
+    │  └─files
+    │         hyperkube                     Kubernetes相关文件
+    │         kube-apiserver
+    │         kube-controller-manager
+    │         kube-scheduler
+    │         kubectl
+    │
+    └─kube-node
+        └─files
+              docker                      docker主程序
+              georce_route_quagga.tar     quaggar docker 镜像文件
+              hyperkube                   Kubernetes相关文件
+              kube-proxy
+              kubectl
+              kubelet
+```
+> 说明：
+> etcd 下载地址：https://github.com/coreos/etcd/releases
+> Kubernetes下载地址：https://github.com/kubernetes/kubernetes/releases
+> docker 下载地址：https://github.com/docker/docker/releases/
 
-# for docker, different docker0's IP on different node
-# and kubelet, kube-proxy
-[kube-node]
-192.168.1.202 docker0_ip=172.17.1.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.202 install_quagga_router=false
-192.168.1.203 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=false
+**6.** 修改配置文件
+
+所需修改的参数文件列表：
+```
+kubernetes_cluster_setup
+│
+├─hosts                           主机列表、各主机个性化参数
+│
+├─group_vars
+│      all.yml                    全局参数
+│
+└─roles
+    ├─etcd
+    │  └─defaults
+    │         main.yml            etcd相关参数
+    │
+    ├─kube-master
+    │  └─defaults
+    │         main.yml            master相关参数
+    │
+    └─kube-node
+        └─defaults
+                main.yml          node相关参数
 ```
 
+**6.1 全局参数 group_vars\all.yml**
+- `cluster_domain_name: cluster.local`       kube-dns服务设置的domain名
+- `cluster_dns_ip: 20.1.0.100`                kube-dns服务IP地址（需在kube-apiserver的apiserver_service_cluster_ip_range范围内）
+
+**6.2 etcd相关参数 roles\etcd\defaults\main.yml**
+- `peer_ip: 192.168.1.201`                    etcd所在主机的IP地址（cluster配置时使用）
+- `etcd_data_dir: /var/lib/etcd/etcd_data`    etcd数据存储目录
+
+**6.3 master相关参数 roles\kube-master\defaults\main.yml**
+-- for kube-apiserver
+- `etcd_servers: http://192.168.1.201:4001`            kube-apiserver所需etcd服务的URL
+- `apiserver_insecure_port: 1100`                      kube-apiserver监听的非安全端口号
+- `apiserver_service_cluster_ip_range: 20.1.0.0/16`    Kubernetes Services可分配IP地址池
+
+-- for kube-controller-manager, kube-scheduler
+- `kube_master_url: http://192.168.1.201:1100`         kube-apiserver服务URL
+- `kube_node_sync_period: 10s`                         master与node信息同步时间间隔
+
+-- to generate ssh keys on master server
+- `ca_crt_CN: ecip.hp.com`                             master ssh key内CA证书中CN参数
+- `server_key_CN: 192.168.1.201`                       master ssh key内CN参数
+
+**6.4 node相关参数 roles\kube-node\defaults\main.yml**
+for docker
+- `docker_registry_url: 192.168.1.201:1180`           docker私库URL
+
+for kubelet, kube-proxy
+- `kube_master_url: http://192.168.1.201:1100`        kube-apiserver服务URL
+- `kube_pause_image_url: 192.168.1.201:1180/google_containers/pause`   pause镜像URL地址
+
+**5.5 各node不同的参数，在`kubernetes_cluster_setup/hosts `文件中进行设置：**
+
+- [etcd]
+`192.168.1.201`
+
+- [kube-master]
+`192.168.1.201`
+
+- [kube-node]
+`192.168.1.202 docker0_ip=172.17.1.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.202 install_quagga_router=false`
+`192.168.1.203 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=false`
+
+> 说明：
+> `docker0_ip=172.17.1.1/24`                            docker0网桥的IP地址，每个node上设置为不同的IP地址
+> `docker_runtime_root_dir=/hadoop1/docker`             docker运行根目录
+> `kubelet_hostname_override=192.168.1.202`            kubelet主机名
+> `install_quagga_router=false`                                     是否安装Quagga路由器
 
 
-**6.** 启动 ansible-playbook 完成集群的安装
+**7.** 启动 ansible-playbook 完成集群的安装
 ``` script
 $ ansible-playbook -i hosts setup.yml
 
@@ -503,7 +593,7 @@ PLAY RECAP *********************************************************************
 
 ```
 
-**7.** 登录master服务器，验证Kubernetes集群正常启动
+**8.** 登录master服务器，验证Kubernetes集群正常启动
 ``` script
 $ kubectl get nodes
 NAME            LABELS                                 STATUS
