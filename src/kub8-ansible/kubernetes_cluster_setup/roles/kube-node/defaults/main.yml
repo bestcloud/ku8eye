@@ -1,10 +1,10 @@
 ---
 # for docker
-docker_registry_url: 192.168.1.201:1180
+docker_registry_url: 192.168.1.201:5000
 
 # for kubelet, kube-proxy
-kube_master_url: http://192.168.1.201:1100
-kube_pause_image_url: 192.168.1.201:1180/google_containers/pause
+kube_master_url: http://192.168.1.201:8080
+kube_pause_image_url: 192.168.1.201:5000/google_containers/pause
 
 #!!!!!!!!! IMPORTANT - must be in kube-apiserver --service-cluster-ip-range RANGE !!!!!!!!
 #cluster_dns_ip: 20.1.0.100
