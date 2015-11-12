@@ -21,3 +21,4 @@ K8s eye是一个谷歌Kubernetes的Web一站式管理系统，它具有如下的目标：
  - 1.用jenkins，ansible，supervisor打造一个web构建发布系统 （http://blog.csdn.net/hengyunabc/article/details/44072065）
  - 2.用ansible开发的一个Kuberntes自动化安装的开源项目kubernetes-ansible  (https://github.com/eparis/kubernetes-ansible)
  - 3.ansible入门文档, (http://www.kisops.com/?p=23)
+ - 4.etc.
