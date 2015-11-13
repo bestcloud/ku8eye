@@ -23,15 +23,21 @@ $ docker run -tid -v /root/ansible/kubernetes_cluster_setup:/root/ansible/kubern
 一个Kubernetes集群由etcd服务、master服务和一组node组成。
 在无法访问Internet的环境，还需一台服务器作为docker private registry 私库，供Kubernetes使用。
 本文以4台服务器为例，第一台安装docker registry，第二台安装etcd和master的服务，最后两台安装node所需服务。
-**注：根据实际环境进行修改**
+
+**系统要求：**
+CentOS 7（RedHat 7）及以上版本，Linux 内核 3.8 及以上版本。
+Kubernetes：推荐 v1.1 及以上版本
+Docker：推荐 v1.9.0 版本
+
 | 服务器IP地址     | 作用             |
 | :------------- | :----------------|
-| 192.168.1.200  | docker-registry  |
-| 192.168.1.201  | etcd             |
-| 192.168.1.201  | kube-master      |
-| 192.168.1.202  | kube-node        |
-| 192.168.1.203  | kube-node        |
-> **注：** 请勿将运行ansible的服务器纳入Kubernetes集群内。
+| `192.168.1.200`  | **docker-registry**  |
+| `192.168.1.201`  | **etcd**             |
+| `192.168.1.201`  | **kube-master**      |
+| `192.168.1.202`  | **kube-node**        |
+| `192.168.1.203`  | **kube-node**        |
+> **注1：根据实际环境进行修改**
+> **注2：请勿将运行ansible的服务器纳入Kubernetes集群内。**
 
 
 ## 3. Ansible配置 - hosts文件
