@@ -1,12 +1,13 @@
 ---
 
 # on every node:
-# 1. install docker
-# 2. change docker0's IP address
-# 3. start docker service
-# 4. install kubelet and kube-proxy
-# 5. change kubelet parameters
-# 6. start kubelet and kube-proxy services
+# 1.  install docker
+# 2.  change docker0's IP address
+# 3.  start docker service
+# 3.1 install and start quagga router container
+# 4.  install kubelet and kube-proxy
+# 5.  change kubelet parameters
+# 6.  start kubelet and kube-proxy services
 
 
 #################################### docker ###################################
@@ -49,29 +50,49 @@
   command: systemctl status docker
 
 
-# start Quagga router docker container based on condition install_quagga_router 
-- name: install_quagga_router - delete all docker containers
-  shell: docker rm $(docker ps -a -q)
-  when: install_quagga_router
-- name: install_quagga_router - delete all docker images
-  shell: docker rmi $(docker images -q)
+# install Quagga router docker container based on condition install_quagga_router 
+
+# check if quagga_router image exists
+- name: check if quagga_router image exists
+  shell: docker images | grep {{quagga_router_image_id}}
+  ignore_errors: True
+  register: quagga_router_image_exists
   when: install_quagga_router
 
+## image not exists, install it
 - name: install_quagga_router - copy Quagga image to /tmp
   copy: src=georce_route_quagga.tar dest=/tmp/georce_route_quagga.tar mode=600
-  when: install_quagga_router
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
 
+## image not exists, install it
 - name: install_quagga_router - load Quagga image
   command: docker load -i /tmp/georce_route_quagga.tar
-  when: install_quagga_router
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
 
+## image not exists, install it
 - name: install_quagga_router - tag Quagga image
-  command: docker tag f96cfe685533 index.alauda.cn/georce/router
-  when: install_quagga_router
+  command: docker tag {{quagga_router_image_id}} {{quagga_router_image_tag}}
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
 
-- name: install_quagga_router - start Quagga container
-  command: docker run -itd --name=router --privileged --net=host index.alauda.cn/georce/router
-  when: install_quagga_router
+
+# check if quagga_router container exists
+- name: check if quagga_router container exists
+  shell: docker ps | grep {{quagga_router_image_tag}}
+  ignore_errors: True
+  register: quagga_router_container_id
+
+## if container doesn't exist, create running script
+- name: quagga_router container doesn't exist, create running script
+  template: src=start_quagga_router.sh dest=/root/start_quagga_router.sh mode=755
+  when: install_quagga_router and quagga_router_container_id.rc != 0
+
+## if container doesn't exist, start quagga_router container
+- name: quagga_router container doesn't exist, start quagga_router container
+  shell: /root/start_quagga_router.sh
+  when: install_quagga_router and quagga_router_container_id.rc != 0
+
+- name: check quagga_router started ok
+  shell: docker ps | grep {{quagga_router_image_tag}}
 
 
 ################################ kubelet & kube-proxy #########################
