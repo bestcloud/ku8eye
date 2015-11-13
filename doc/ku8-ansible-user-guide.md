@@ -17,6 +17,7 @@ $ docker pull kubeguide/centos7-ansible:2.0
 $ docker run -tid -v /root/ansible/kubernetes_cluster_setup:/root/ansible/kubernetes_cluster_setup --name ansible2 kubeguide/centos7-ansible:2.0
 ```
 > **注：**该ansible镜像内已经安装好`sshpass`，并已在容器内部生成公钥私钥文件
+> **镜像`kubeguide/centos7-ansible:2.1`已内置全部二进制文件，可以直接用于安装。**
 
 
 ## 2. Kubernetes集群环境准备
