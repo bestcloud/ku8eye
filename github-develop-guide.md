@@ -1,8 +1,9 @@
 ![ImageLoadFailed](./res/ku8eye.png)
 
 
-Eclipse中导入maven工程时候，如果公司是代理上网，则需要设置M2插件的代理，这个是在Ecliplse之外的设置，如果是win7系统，则通常在C:\Users\youaccount\.m2 目录下是m2的repository，目录地下有repository目录.
+Eclipse中导入maven工程时候，如果公司是代理上网，则需要设置M2插件的代理，这个是在Ecliplse之外的设置，如果是win7系统，则通常在C:\Users\youaccount\\.m2 目录下是m2的repository，目录地下有repository目录.
 在.m2目录下建立settings.xml文档，里面设置代理，内容如下
+```xml
 <settings>  
   <proxies>  
     <proxy>  
@@ -21,9 +22,10 @@ Eclipse中导入maven工程时候，如果公司是代理上网，则需要设�
     </proxy>  
   </proxies>  
 </settings>  
+```
 
 如果是独立的maven，则配置文件应该是在maven的安装目录的conf目录下的setting.xml文件
-
+```xml
 <pluginGroups>
 </pluginGroups>
 <proxies>
@@ -42,7 +44,7 @@ Eclipse中导入maven工程时候，如果公司是代理上网，则需要设�
 <port>8080</port>
 </proxy>
 </proxies>
-
+```
 # 一：fork项目到自己的github账号
 
 1. 点击fork到自己的账号下
