@@ -14,4 +14,4 @@ KUBELET_HOSTNAME="--hostname_override={{kubelet_hostname_override}}"
 KUBELET_API_SERVER="--api_servers={{kube_master_url}}"
 
 # Add your own!
-KUBELET_ARGS="--pod_infra_container_image={{kube_pause_image_url}} --cluster_dns={{cluster_dns_ip}} --cluster_domain={{cluster_domain_name}}"
+KUBELET_ARGS="--pod_infra_container_image={{kubernetes_pause_image_tag}} --cluster_dns={{cluster_dns_ip}} --cluster_domain={{cluster_domain_name}}"
