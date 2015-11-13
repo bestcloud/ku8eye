@@ -1,12 +1,7 @@
 ---
-# for docker
-docker_registry_url: 192.168.1.201:5000
-
 # for kubelet, kube-proxy
 kube_master_url: http://192.168.1.201:8080
-kube_pause_image_url: 192.168.1.201:5000/google_containers/pause
 
-#!!!!!!!!! IMPORTANT - must be in kube-apiserver --service-cluster-ip-range RANGE !!!!!!!!
-#cluster_dns_ip: 20.1.0.100
-#cluster_domain_name: cluster.local
-
+# quagga router docker image info
+quagga_router_image_id: f96cfe685533
+quagga_router_image_tag: index.alauda.cn/georce/router

@@ -1,0 +1,5 @@
+---
+- hosts: all
+  tasks:
+    - name: add host entry for docker private registry server
+      shell: echo {{docker_registry_server_ip}} {{docker_registry_server_name}} >> /etc/hosts
