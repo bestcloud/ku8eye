@@ -9,6 +9,7 @@ package org.ku8eye.domain;
 public class User {
 	// user id ,used for login and also primary key
 	private String userId;
+	private String alias;
 	private String password;
 	private int tenantId;
 	// tenent user or admin usr
@@ -72,6 +73,14 @@ public class User {
 
 	public void setLastUpdated(java.util.Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 
 }
