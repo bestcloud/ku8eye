@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class MenuController {
-	
+
 	private static final String MENU_TYPE_ZONE = "1";
 
 	private static final String MENU_TYPE_CLUSTER_GROUP = "2";
@@ -78,7 +78,6 @@ public class MenuController {
 		//菜单3
 		Menu firstMenus3 = new Menu("3","Zone3","",MENU_TYPE_ZONE);
 		menus.add(firstMenus3);
-		
 		return menus;
 	}
 }
