@@ -1,0 +1,16 @@
+---
+- hosts: docker-registry
+  roles:
+    - docker-registry
+
+- hosts: etcd
+  roles:
+    - etcd
+
+- hosts: kube-master
+  roles:
+    - kube-master
+
+- hosts: kube-node
+  roles:
+    - kube-node

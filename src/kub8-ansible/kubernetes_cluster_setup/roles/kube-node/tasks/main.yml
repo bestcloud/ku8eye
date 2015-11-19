@@ -1,0 +1,163 @@
+---
+
+# on every node:
+# 1.  install docker
+# 2.  change docker0's IP address
+# 3.  start docker service
+# 3.1 install and start quagga router container
+# 4.  install kubelet and kube-proxy
+# 5.  change kubelet parameters
+# 6.  start kubelet and kube-proxy services
+
+
+#################################### docker ###################################
+
+# copy binary files to /usr/bin
+- name: copy docker to /usr/bin
+  copy: src=docker dest=/usr/bin/docker mode=755
+
+# make docker config files
+- name: copy config file docker to /etc/sysconfig
+  template: src=docker dest=/etc/sysconfig/docker
+
+# make docker runtime root directory
+- name: make docker runtime root directory {{docker_runtime_root_dir}}
+  file: dest={{docker_runtime_root_dir}} mode=755 state=directory
+
+# make systemd service config files
+- name: copy docker.socket to /usr/lib/systemd/system
+  copy: src=docker.socket dest=/usr/lib/systemd/system/docker.socket
+
+- name: copy docker.service to /usr/lib/systemd/system
+  copy: src=docker.service dest=/usr/lib/systemd/system/docker.service
+
+
+# enable and start services
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: start docker.socket service
+  service: name=docker.socket state=restarted
+
+- name: enable docker service
+  service: name=docker enabled=yes
+- name: start docker service
+  service: name=docker state=restarted
+
+- name: check docker.socket service started ok
+  command: systemctl status docker.socket
+- name: check docker service started ok
+  command: systemctl status docker
+
+
+# install Quagga router docker container based on condition install_quagga_router 
+
+# check if quagga_router image exists
+- name: check if quagga_router image exists
+  shell: docker images | grep {{quagga_router_image_id}}
+  ignore_errors: True
+  register: quagga_router_image_exists
+  when: install_quagga_router
+
+## image not exists, install it
+- name: install_quagga_router - copy Quagga image to /tmp
+  copy: src=georce_route_quagga.tar dest=/tmp/georce_route_quagga.tar mode=600
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
+
+## image not exists, install it
+- name: install_quagga_router - load Quagga image
+  command: docker load -i /tmp/georce_route_quagga.tar
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
+
+## image not exists, install it
+- name: install_quagga_router - tag Quagga image
+  command: docker tag {{quagga_router_image_id}} {{quagga_router_image_tag}}
+  when: install_quagga_router and (quagga_router_image_exists.rc != 0 or not quagga_router_image_exists)
+
+
+# check if quagga_router container exists
+- name: check if quagga_router container exists
+  shell: docker ps | grep {{quagga_router_image_tag}}
+  ignore_errors: True
+  register: quagga_router_container_id
+
+## if container doesn't exist, create running script
+- name: quagga_router container doesn't exist, create running script
+  template: src=start_quagga_router.sh dest=/root/start_quagga_router.sh mode=755
+  when: install_quagga_router and quagga_router_container_id.rc != 0
+
+## if container doesn't exist, start quagga_router container
+- name: quagga_router container doesn't exist, start quagga_router container
+  shell: /root/start_quagga_router.sh
+  when: install_quagga_router and quagga_router_container_id.rc != 0
+
+- name: check quagga_router started ok
+  shell: docker ps | grep {{quagga_router_image_tag}}
+
+
+################################ kubelet & kube-proxy #########################
+
+# copy binary files to /usr/bin
+- name: copy kubelet to /usr/bin
+  copy: src=kubelet dest=/usr/bin/kubelet mode=755
+
+- name: copy kube-proxy to /usr/bin
+  copy: src=kube-proxy dest=/usr/bin/kube-proxy mode=755
+
+- name: copy kubectl to /usr/bin
+  copy: src=kubectl dest=/usr/bin/kubectl mode=755
+
+- name: copy hyperkube to /usr/bin
+  copy: src=hyperkube dest=/usr/bin/hyperkube mode=755
+
+# create kube running dir
+- name: make dir /var/run/kubernetes
+  file: dest=/var/run/kubernetes mode=755 state=directory
+
+
+# make kube config files
+- name: make dir /etc/kubernetes
+  file: dest=/etc/kubernetes mode=755 state=directory
+
+- name: copy config file kubelet to /etc/kubernetes
+  template: src=kubelet dest=/etc/kubernetes/kubelet
+
+- name: copy config file config to /etc/kubernetes
+  template: src=config dest=/etc/kubernetes/config
+
+- name: copy config file proxy to /etc/kubernetes
+  template: src=proxy dest=/etc/kubernetes/proxy
+
+
+# make systemd service config files
+- name: copy kubelet.service to /usr/lib/systemd/system
+  copy: src=kubelet.service dest=/usr/lib/systemd/system/kubelet.service
+
+- name: copy kube-proxy.service to /usr/lib/systemd/system
+  copy: src=kube-proxy.service dest=/usr/lib/systemd/system/kube-proxy.service
+
+- name: make dir /var/lib/kubelet
+  file: dest=/var/lib/kubelet mode=755 state=directory
+
+# enable and start services
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: make dir /var/log/kubernetes
+  file: dest=/var/log/kubernetes mode=755 state=directory
+
+- name: enable kubelet service
+  service: name=kubelet enabled=yes
+- name: start kubelet service
+  service: name=kubelet state=restarted
+
+- name: enable kube-proxy service
+  service: name=kube-proxy enabled=yes
+- name: start kube-proxy service
+  service: name=kube-proxy state=restarted
+
+- name: check kubelet service started ok
+  command: systemctl status kubelet
+- name: check kube-proxy service started ok
+  command: systemctl status kube-proxy
+

@@ -1,0 +1,93 @@
+---
+# copy binary files to /usr/bin
+- name: copy kube-apiserver to /usr/bin
+  copy: src=kube-apiserver dest=/usr/bin/kube-apiserver mode=755
+
+- name: copy kube-controller-manager to /usr/bin
+  copy: src=kube-controller-manager dest=/usr/bin/kube-controller-manager mode=755
+
+- name: copy kube-scheduler to /usr/bin
+  copy: src=kube-scheduler dest=/usr/bin/kube-scheduler mode=755
+
+- name: copy kubectl to /usr/bin
+  copy: src=kubectl dest=/usr/bin/kubectl mode=755
+
+- name: copy hyperkube to /usr/bin
+  copy: src=hyperkube dest=/usr/bin/hyperkube mode=755
+
+
+# create running dir
+- name: make dir /var/run/kubernetes
+  file: dest=/var/run/kubernetes mode=755 state=directory
+
+
+# make ssh keys of apiserver
+
+- name: create keys - ca.key
+  command: openssl genrsa -out /var/run/kubernetes/ca.key 2048
+- name: create keys - ca.crt
+  command: openssl req -x509 -new -nodes -key /var/run/kubernetes/ca.key -subj "/CN={{ca_crt_CN}}" -days 5000 -out /var/run/kubernetes/ca.crt
+- name: create keys - server.key
+  command: openssl genrsa -out /var/run/kubernetes/server.key 2048
+- name: create keys - server.csr
+  command: openssl req -new -key /var/run/kubernetes/server.key -subj "/CN={{server_key_CN}}" -out /var/run/kubernetes/server.csr
+- name: create keys - server.crt
+  command: openssl x509 -req -in /var/run/kubernetes/server.csr -CA /var/run/kubernetes/ca.crt -CAkey /var/run/kubernetes/ca.key -CAcreateserial -out /var/run/kubernetes/server.crt -days 5000
+
+
+# make config files
+- name: make dir /etc/kubernetes
+  file: dest=/etc/kubernetes mode=755 state=directory
+
+- name: copy config file apiserver to /etc/kubernetes
+  template: src=apiserver dest=/etc/kubernetes/apiserver
+
+- name: copy config file config to /etc/kubernetes
+  template: src=config dest=/etc/kubernetes/config
+
+- name: copy config file controller-manager to /etc/kubernetes
+  template: src=controller-manager dest=/etc/kubernetes/controller-manager
+
+- name: copy config file scheduler to /etc/kubernetes
+  template: src=scheduler dest=/etc/kubernetes/scheduler
+
+
+# make systemd service config files
+- name: copy kube-apiserver.service to /usr/lib/systemd/system
+  copy: src=kube-apiserver.service dest=/usr/lib/systemd/system/kube-apiserver.service
+
+- name: copy kube-controller-manager.service to /usr/lib/systemd/system
+  copy: src=kube-controller-manager.service dest=/usr/lib/systemd/system/kube-controller-manager.service
+
+- name: copy kube-scheduler.service to /usr/lib/systemd/system
+  copy: src=kube-scheduler.service dest=/usr/lib/systemd/system/kube-scheduler.service
+
+
+# enable and start services
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: make dir /var/log/kubernetes
+  file: dest=/var/log/kubernetes mode=755 state=directory
+
+- name: enable kube-apiserver service
+  service: name=kube-apiserver enabled=yes
+- name: start kube-apiserver service
+  service: name=kube-apiserver state=restarted
+
+- name: enable kube-controller-manager service
+  service: name=kube-controller-manager enabled=yes
+- name: start kube-controller-manager service
+  service: name=kube-controller-manager state=restarted
+
+- name: enable kube-scheduler service
+  service: name=kube-scheduler enabled=yes
+- name: start kube-scheduler service
+  service: name=kube-scheduler state=restarted
+
+- name: check kube-apiserver service started ok
+  command: systemctl status kube-apiserver
+- name: check kube-controller-manager service started ok
+  command: systemctl status kube-controller-manager
+- name: check kube-scheduler service started ok
+  command: systemctl status kube-scheduler

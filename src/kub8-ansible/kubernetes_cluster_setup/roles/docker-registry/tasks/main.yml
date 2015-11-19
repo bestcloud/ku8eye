@@ -1,0 +1,121 @@
+---
+
+# installation steps:
+# 1. install docker
+# 2. change docker0's IP address
+# 3. start docker service
+# 4. load docker registry image
+# 5. start docker registry
+# 6. import google_container/pause image into registry
+
+
+# copy binary files to /usr/bin
+- name: copy docker to /usr/bin
+  copy: src=docker dest=/usr/bin/docker mode=755
+
+# make docker config files
+- name: copy config file docker to /etc/sysconfig
+  template: src=docker dest=/etc/sysconfig/docker
+
+# make docker runtime root directory
+- name: make docker runtime root directory {{docker_runtime_root_dir}}
+  file: dest={{docker_runtime_root_dir}} mode=755 state=directory
+
+# make systemd service config files
+- name: copy docker.socket to /usr/lib/systemd/system
+  copy: src=docker.socket dest=/usr/lib/systemd/system/docker.socket
+
+- name: copy docker.service to /usr/lib/systemd/system
+  copy: src=docker.service dest=/usr/lib/systemd/system/docker.service
+
+
+# enable and start services
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: restart docker.socket service
+  service: name=docker.socket state=restarted
+
+- name: enable docker service
+  service: name=docker enabled=yes
+- name: restart docker service
+  service: name=docker state=restarted
+
+- name: check docker.socket service started ok
+  command: systemctl status docker.socket
+- name: check docker service started ok
+  command: systemctl status docker
+
+
+
+############################# docker registry image #######################
+# check if registry image exists
+- name: check if registry image exists
+  shell: docker images | grep {{docker_registry_image_id}}
+  ignore_errors: True
+  register: registry_image_exists
+
+# copy registry image file to /tmp
+- name: copy registry image file to /tmp
+  copy: src=docker-registry.tar dest=/tmp/docker-registry.tar
+  when: registry_image_exists.rc != 0 or not registry_image_exists
+
+# load registry image
+- name: load registry image
+  shell: docker load -i /tmp/docker-registry.tar
+  when: registry_image_exists.rc != 0 or not registry_image_exists
+
+- name: tag registry image
+  shell: docker tag {{docker_registry_image_id}} {{docker_registry_image_tag}}
+  when: registry_image_exists.rc != 0 or not registry_image_exists
+
+
+############################# docker registry container #######################
+# check if registry container exists
+- name: check if registry container exists
+  shell: docker ps | grep registry
+  ignore_errors: True
+  register: registry_container_id
+
+## if container doesn't exist, create running script
+- name: registry container doesn't exist, create running script
+  template: src=start_docker_registry.sh dest=/root/start_docker_registry.sh mode=755
+  when: registry_container_id.rc != 0
+
+## if container doesn't exist, start docker registry container
+- name: registry container doesn't exist, start docker registry container
+  shell: /root/start_docker_registry.sh
+  when: registry_container_id.rc != 0
+
+- name: check docker registry started ok
+  get_url: url=http://{{docker_registry_server_name}}:5000/v2/_catalog dest=/tmp/registry_catalog
+
+
+
+############################# google_container/pause image #######################
+# check if pause image exists
+- name: check if pause image exists
+  shell: docker images | grep {{kubernetes_pause_image_id}}
+  ignore_errors: True
+  register: pause_image_id
+  when: push_pause_image
+
+## copy pause image file to /tmp
+- name: copy pause image file to /tmp
+  copy: src=kubernetes_pause.tar dest=/tmp/kubernetes_pause.tar
+  when: push_pause_image and pause_image_id.rc != 0
+
+## load pause image
+- name: load pause image
+  shell: docker load -i /tmp/kubernetes_pause.tar
+  when: push_pause_image and pause_image_id.rc != 0
+
+## tag pause image
+- name: tag pause image
+  shell: docker tag {{kubernetes_pause_image_id}} {{kubernetes_pause_image_tag}}
+  when: push_pause_image and pause_image_id.rc != 0
+
+## push pause image to private registry
+- name: push pause image to private registry
+  shell: docker push {{kubernetes_pause_image_tag}}
+  when: push_pause_image and pause_image_id.rc != 0

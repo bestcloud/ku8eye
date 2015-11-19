@@ -1,0 +1,19 @@
+# global variables
+
+dns_setup: false
+
+######## IMPORTANT - dns IP must be in kube-apiserver --service-cluster-ip-range RANGE ########
+# these 2 variables will be used in kubelet config file and skydns-rc.yaml file
+cluster_domain_name: cluster.local
+cluster_dns_ip: 20.1.0.100
+
+
+# docker private registry server name and IP address
+docker_registry_server_name: yourcompany.com
+docker_registry_server_ip: 192.168.1.202
+docker_registry_url: "{{docker_registry_server_name}}:5000"
+
+# push google_container/pause image to docker private registry
+push_pause_image: true
+kubernetes_pause_image_id: 6c4579af347b
+kubernetes_pause_image_tag: "{{docker_registry_url}}/google_containers/pause"

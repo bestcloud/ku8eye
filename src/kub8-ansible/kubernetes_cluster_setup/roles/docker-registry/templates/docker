@@ -1,0 +1,6 @@
+# /etc/sysconfig/docker
+
+# --bip: bridge IP address
+# --insecure-registry: insecure private registry
+# -g: graph root directory
+other_args='--bip={{docker0_ip}} --insecure-registry {{docker_registry_url}} -g {{docker_runtime_root_dir}}'
