@@ -3,6 +3,7 @@
 etcd_servers: http://192.168.1.201:4001
 apiserver_insecure_port: 8080
 apiserver_service_cluster_ip_range: 20.1.0.0/16
+apiserver_service_node_port_range: 1000-5000
 
 # for kube-controller-manager, kube-scheduler
 kube_master_url: http://192.168.1.201:8080

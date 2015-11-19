@@ -17,6 +17,7 @@ $ docker pull kubeguide/centos7-ansible:2.0
 $ docker run -tid -v /root/ansible/kubernetes_cluster_setup:/root/ansible/kubernetes_cluster_setup --name ansible2 kubeguide/centos7-ansible:2.0
 ```
 > **注：**该ansible镜像内已经安装好`sshpass`，并已在容器内部生成公钥私钥文件
+> **镜像`kubeguide/centos7-ansible:2.1`已内置全部二进制文件，可以直接用于安装。**
 
 
 ## 2. Kubernetes集群环境准备
@@ -347,6 +348,7 @@ kubernetes_cluster_setup
 - `etcd_servers: http://192.168.1.201:4001`            kube-apiserver所需etcd服务的URL
 - `apiserver_insecure_port: 1100`                      kube-apiserver监听的非安全端口号
 - `apiserver_service_cluster_ip_range: 20.1.0.0/16`    Kubernetes Services可分配IP地址池
+- `apiserver_service_node_port_range: 1000-5000`  NodePort 类型的 Service 可用端口范围，含两端
 
 -- for kube-controller-manager, kube-scheduler
 - `kube_master_url: http://192.168.1.201:1100`         kube-apiserver服务URL
