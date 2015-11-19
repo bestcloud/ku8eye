@@ -1,25 +1,29 @@
-package org.ku8eye.domain;
+package org.ku8eye.bean.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * used for ui menu
+ * @author wuzhih
+ *
+ */
 public class Menu {
-	
+
 	private String menuId;
-	
+
 	private String menuName;
-	
+
 	private String menuUrl;
-	
+
 	private String menuType;
-	
+
 	private List<Menu> subMenus;
-	
+
 	public Menu() {
 		super();
 	}
 
-	public Menu(String menuId, String menuName, String menuUrl,String menuType) {
+	public Menu(String menuId, String menuName, String menuUrl, String menuType) {
 		super();
 		this.menuId = menuId;
 		this.menuName = menuName;
@@ -67,5 +71,5 @@ public class Menu {
 	public void setMenuType(String menuType) {
 		this.menuType = menuType;
 	}
-	
+
 }
