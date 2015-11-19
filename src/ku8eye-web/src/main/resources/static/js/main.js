@@ -33,7 +33,7 @@ function setSecondLevelMenu(menus){
 	menuhtm.push("<ul class=\"treeview-menu\">");
 	$.each(menus,function(n,menudata) {
 		 
-		 menuhtm.push("<li><a href=\"#\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName);
+		 menuhtm.push("<li><a href=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName);
 		 if(menudata.subMenus.length>0){
 			 menuhtm.push("<i class=\"fa fa-angle-left pull-right\"></i></a>")
 			 menuhtm.push(setThirdLevelMenu(menudata.subMenus));
@@ -50,7 +50,7 @@ function setThirdLevelMenu(menus){
 	var menuhtm = [];
 	menuhtm.push("<ul class=\"treeview-menu\">");
 	$.each(menus,function(n,menudata) {
-		 menuhtm.push("<li><a href=\"#\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
+		 menuhtm.push("<li><a href=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
 	})
 	menuhtm.push("</ul>");
 	return '' + menuhtm.join('') + '';

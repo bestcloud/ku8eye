@@ -30,10 +30,10 @@ public interface TenantMapper {
      * @mbggenerated
      */
     @Insert({
-        "insert into tenant (ID, NAME, NOTE, ",
-        "LAST_UPDATED)",
-        "values (#{id,jdbcType=INTEGER}, #{name,jdbcType=CHAR}, #{note,jdbcType=VARCHAR}, ",
-        "#{lastUpdated,jdbcType=TIMESTAMP})"
+        "insert into tenant (ID, NAME, ALIAS, ",
+        "NOTE, LAST_UPDATED)",
+        "values (#{id,jdbcType=INTEGER}, #{name,jdbcType=CHAR}, #{alias,jdbcType=VARCHAR}, ",
+        "#{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
     })
     int insert(Tenant record);
 
@@ -45,13 +45,14 @@ public interface TenantMapper {
      */
     @Select({
         "select",
-        "ID, NAME, NOTE, LAST_UPDATED",
+        "ID, NAME, ALIAS, NOTE, LAST_UPDATED",
         "from tenant",
         "where ID = #{id,jdbcType=INTEGER}"
     })
     @Results({
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="NAME", property="name", jdbcType=JdbcType.CHAR),
+        @Result(column="ALIAS", property="alias", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -65,12 +66,13 @@ public interface TenantMapper {
      */
     @Select({
         "select",
-        "ID, NAME, NOTE, LAST_UPDATED",
+        "ID, NAME, ALIAS, NOTE, LAST_UPDATED",
         "from tenant"
     })
     @Results({
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="NAME", property="name", jdbcType=JdbcType.CHAR),
+        @Result(column="ALIAS", property="alias", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -85,6 +87,7 @@ public interface TenantMapper {
     @Update({
         "update tenant",
         "set NAME = #{name,jdbcType=CHAR},",
+          "ALIAS = #{alias,jdbcType=VARCHAR},",
           "NOTE = #{note,jdbcType=VARCHAR},",
           "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP}",
         "where ID = #{id,jdbcType=INTEGER}"

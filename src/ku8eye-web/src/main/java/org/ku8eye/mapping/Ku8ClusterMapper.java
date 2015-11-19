@@ -74,7 +74,7 @@ public interface Ku8ClusterMapper {
      */
     @Select({
         "select",
-        "ID, TENANT_ID, ZONE_ID, NAME, LABELS, K8S_VERSION, INSTALL_TYPE, NOTE, LAST_UPDATED",
+        "ID, TENANT_ID, ZONE_ID, NAME, LABELS, K8S_VERSION, INSTALL_TYPE, LAST_UPDATED",
         "from ku8_cluster"
     })
     @Results({
@@ -85,7 +85,6 @@ public interface Ku8ClusterMapper {
         @Result(column="LABELS", property="labels", jdbcType=JdbcType.VARCHAR),
         @Result(column="K8S_VERSION", property="k8sVersion", jdbcType=JdbcType.CHAR),
         @Result(column="INSTALL_TYPE", property="installType", jdbcType=JdbcType.TINYINT),
-        @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
     List<Ku8Cluster> selectAll();

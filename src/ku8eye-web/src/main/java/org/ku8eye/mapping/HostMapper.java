@@ -32,10 +32,12 @@ public interface HostMapper {
     @Insert({
         "insert into host (ID, ZONE_ID, ",
         "HOST_NAME, IP, ROOT_PASSWD, ",
-        "NOTE, LAST_UPDATED)",
+        "LOCATION, NOTE, ",
+        "LAST_UPDATED)",
         "values (#{id,jdbcType=INTEGER}, #{zoneId,jdbcType=INTEGER}, ",
         "#{hostName,jdbcType=CHAR}, #{ip,jdbcType=CHAR}, #{rootPasswd,jdbcType=CHAR}, ",
-        "#{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
+        "#{location,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, ",
+        "#{lastUpdated,jdbcType=TIMESTAMP})"
     })
     int insert(Host record);
 
@@ -47,7 +49,7 @@ public interface HostMapper {
      */
     @Select({
         "select",
-        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, NOTE, LAST_UPDATED",
+        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED",
         "from host",
         "where ID = #{id,jdbcType=INTEGER}"
     })
@@ -57,6 +59,7 @@ public interface HostMapper {
         @Result(column="HOST_NAME", property="hostName", jdbcType=JdbcType.CHAR),
         @Result(column="IP", property="ip", jdbcType=JdbcType.CHAR),
         @Result(column="ROOT_PASSWD", property="rootPasswd", jdbcType=JdbcType.CHAR),
+        @Result(column="LOCATION", property="location", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -70,7 +73,7 @@ public interface HostMapper {
      */
     @Select({
         "select",
-        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, NOTE, LAST_UPDATED",
+        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED",
         "from host"
     })
     @Results({
@@ -79,6 +82,7 @@ public interface HostMapper {
         @Result(column="HOST_NAME", property="hostName", jdbcType=JdbcType.CHAR),
         @Result(column="IP", property="ip", jdbcType=JdbcType.CHAR),
         @Result(column="ROOT_PASSWD", property="rootPasswd", jdbcType=JdbcType.CHAR),
+        @Result(column="LOCATION", property="location", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -96,6 +100,7 @@ public interface HostMapper {
           "HOST_NAME = #{hostName,jdbcType=CHAR},",
           "IP = #{ip,jdbcType=CHAR},",
           "ROOT_PASSWD = #{rootPasswd,jdbcType=CHAR},",
+          "LOCATION = #{location,jdbcType=VARCHAR},",
           "NOTE = #{note,jdbcType=VARCHAR},",
           "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP}",
         "where ID = #{id,jdbcType=INTEGER}"
