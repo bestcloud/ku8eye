@@ -17,17 +17,17 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootApplication
 public class App {
-	@Bean 
-    @ConfigurationProperties(prefix="spring.datasource")  
-    public DataSource primaryDataSource() {  
-        System.out.println("-------------------- DataSource init ---------------------");  
-        return DataSourceBuilder.create().build();  
-    }  
+	@Bean
+	@ConfigurationProperties(prefix = "spring.datasource")
+	public DataSource primaryDataSource() {
+		System.out.println("-------------------- DataSource init ---------------------");
+		return DataSourceBuilder.create().build();
+	}
+
 	@Bean
 	MapperScannerConfigurer mpperScannnerConfigurer() {
 		MapperScannerConfigurer msc = new MapperScannerConfigurer();
-		msc.setSqlSessionFactoryBeanName("sqlSessionFactory");
-		msc.setBasePackage("org.ku8eye.mapper");
+		msc.setBasePackage("org.ku8eye.mapping");
 		return msc;
 	}
 
