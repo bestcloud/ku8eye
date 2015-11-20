@@ -91,7 +91,7 @@ CMD ["/usr/sbin/init"]
 ## 运行容器
 `# docker run -tid --privileged -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.1`
 > **注意：需要 --privileged 来运行 /usr/sbin/init**
-> **之后，容器内部才能够使用 systemctl 来启动 mysqld 服务**
+> **之后，容器内部才能够使用 systemctl 来启动或停止 mysqld 服务**
 
 ## 待讨论事项
 1. 由于 mysqld 服务的启动依赖systemd系统，在build镜像时由于 /usr/sbin/init 还未启动，systemctl将不能在Dockerfile中执行
@@ -111,18 +111,18 @@ CMD ["/usr/sbin/init"]
     `mysql> FLUSH PRIVILEGES;`
     5) 创建数据库ku8eye：
     `mysql> CREATE DATABASE ku8eye DEFAULT CHARSET=utf8;`
-    6) 创建数据库用户ku8eye，密码为123456：
-    `mysql> CREATE USER 'ku8eye'@'localhost' IDENTIFIED BY '123456';`
+    6) 创建数据库用户ku8eye，密码为123456（@%表示所有从任意客户端均可登录）：
+    `mysql> CREATE USER 'ku8eye'@'%' IDENTIFIED BY '123456';`
     7) 给ku8eye用户授权：
-    `mysql> GRANT ALL ON ku8eye.* TO 'ku8eye'@'localhost';`
+    `mysql> GRANT ALL ON ku8eye.* TO 'ku8eye'@'%';`
     8) 将配置文件`/etc/sysconfig/mysql`恢复原状，再次重启mysqld服务。
 
     > 也可以将SQL语句保存为文件，例如 /root/mysql-init.sql：
     `UPDATE USER SET authentication_string=PASSWORD('123456') WHERE USER='root';
      FLUSH PRIVILEGES;
      CREATE DATABASE ku8eye DEFAULT CHARSET=utf8;
-     CREATE USER 'ku8eye'@'localhost' IDENTIFIED BY '123456';
-     GRANT ALL ON ku8eye.* TO 'ku8eye'@'localhost';`
+     CREATE USER 'ku8eye'@'%' IDENTIFIED BY '123456';
+     GRANT ALL ON ku8eye.* TO 'ku8eye'@'%';`
     > 然后执行 `# mysql -uroot mysql < /root/mysql-init.sql` 完成操作。
 
     **问题：是否可以不使用 --skip-grant-tables 来修改密码、创建数据库？**
