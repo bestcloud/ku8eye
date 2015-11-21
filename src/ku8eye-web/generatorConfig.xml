@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<classPathEntry
+		location="C:\Users\wuzhih\.m2\repository\mysql\mysql-connector-java\5.1.37\mysql-connector-java-5.1.37.jar" />
+
+	<context id="context1" targetRuntime="MyBatis3Simple">
+		<commentGenerator>
+			<property name="suppressAllComments" value="false" />
+			<property name="suppressDate" value="true" />
+			<property name="javaFileEncoding" value="UTF-8" />
+		</commentGenerator>
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://localhost/ku8eye" userId="ku8eye"
+			password="123456">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+		<javaModelGenerator targetPackage="org.ku8eye.domain"
+			targetProject="ku8eye-web">
+		</javaModelGenerator>
+		<javaClientGenerator targetPackage="org.ku8eye.mapping"
+			targetProject="ku8eye-web" type="ANNOTATEDMAPPER">
+		</javaClientGenerator>
+		<table tableName="%" />
+
+	</context>
+</generatorConfiguration>
