@@ -51,14 +51,14 @@ public class MenuController {
 	private List<Menu> generateMenus(){
 		List<Menu> menus =new ArrayList<Menu>();
 		//菜单4
-		Menu firstMenu4 = new Menu("4","My project","",MENU_TYPE_PROJECT_GROUP);
-		Menu firstMenu4Sub = new Menu("4_1","xxxProject","",MENU_TYPE_PROJECT_NODE);
+		Menu firstMenu4 = new Menu("4","My project","aaaa.do",MENU_TYPE_PROJECT_GROUP);
+		Menu firstMenu4Sub = new Menu("4_1","xxxProject","bbbbb.do",MENU_TYPE_PROJECT_NODE);
 		firstMenu4.getSubMenus().add(firstMenu4Sub);
 		menus.add(firstMenu4);
 		//菜单1
-		Menu firstMenus1 = new Menu("1","Zone1","",MENU_TYPE_ZONE);
+		Menu firstMenus1 = new Menu("1","Zone1","ccccc.do",MENU_TYPE_ZONE);
 		//菜单1 第二级 submenu
-		Menu firstMenuSub1 = new Menu("1_1","K8s Cluster","",MENU_TYPE_CLUSTER_GROUP);
+		Menu firstMenuSub1 = new Menu("1_1","K8s Cluster","ddddd.do",MENU_TYPE_CLUSTER_GROUP);
 		//菜单1 第三级 菜单即第二级的子菜单
 		Menu firstMenuSsuba = new Menu("1_1_1","ClusterA","",MENU_TYPE_CLUSTER_NODE);
 		firstMenuSub1.getSubMenus().add(firstMenuSsuba);
