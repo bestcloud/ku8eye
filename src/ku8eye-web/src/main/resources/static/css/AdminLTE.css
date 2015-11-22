@@ -3200,6 +3200,7 @@ table.text-center th {
 .login-page,
 .register-page {
   background: #d2d6de;
+  background-image: url('../img/papers/bg1.jpg')
 }
 .login-box,
 .register-box {
@@ -3219,6 +3220,8 @@ table.text-center th {
   padding: 20px;
   border-top: 0;
   color: #666;
+  -webkit-border-radius: 8px;
+  -webkit-box-shadow: #666 0px 0px 10px;
 }
 .login-box-body .form-control-feedback,
 .register-box-body .form-control-feedback {
