@@ -1,5 +1,6 @@
 $(function(){
 	initUserMenu();
+	initUserInfo();
 })
 
 function initUserMenu(){
@@ -68,4 +69,12 @@ function getMenuIcon(menutype){
 		case "7" : iconClass="fa-file"; break;//project node
 	}
 	return iconClass;
+}
+
+function initUserInfo(){
+	$.ajax({url: '/loginuser', success: function(user){
+	    if(user!=null&&user!=''){
+	    	$('.username').html(user.alias);
+	    }
+    }});
 }
