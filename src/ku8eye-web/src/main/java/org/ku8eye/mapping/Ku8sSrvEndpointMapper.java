@@ -30,14 +30,16 @@ public interface Ku8sSrvEndpointMapper {
      * @mbggenerated
      */
     @Insert({
-        "insert into ku8s_srv_endpoint (ID, SERVICE_TYPE, ",
-        "CLUSTER_ID, HOST_ID, ",
-        "SERVICE_URL, SERVICE_STATUS, ",
-        "NOTE, LAST_UPDATED)",
-        "values (#{id,jdbcType=INTEGER}, #{serviceType,jdbcType=TINYINT}, ",
-        "#{clusterId,jdbcType=INTEGER}, #{hostId,jdbcType=INTEGER}, ",
-        "#{serviceUrl,jdbcType=VARCHAR}, #{serviceStatus,jdbcType=TINYINT}, ",
-        "#{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
+        "insert into ku8s_srv_endpoint (ID, NODE_ROLE, ",
+        "SERVICE_TYPE, CLUSTER_ID, ",
+        "HOST_ID, SERVICE_URL, ",
+        "SERVICE_STATUS, NOTE, ",
+        "LAST_UPDATED)",
+        "values (#{id,jdbcType=INTEGER}, #{nodeRole,jdbcType=TINYINT}, ",
+        "#{serviceType,jdbcType=TINYINT}, #{clusterId,jdbcType=INTEGER}, ",
+        "#{hostId,jdbcType=INTEGER}, #{serviceUrl,jdbcType=VARCHAR}, ",
+        "#{serviceStatus,jdbcType=TINYINT}, #{note,jdbcType=VARCHAR}, ",
+        "#{lastUpdated,jdbcType=TIMESTAMP})"
     })
     int insert(Ku8sSrvEndpoint record);
 
@@ -49,12 +51,14 @@ public interface Ku8sSrvEndpointMapper {
      */
     @Select({
         "select",
-        "ID, SERVICE_TYPE, CLUSTER_ID, HOST_ID, SERVICE_URL, SERVICE_STATUS, NOTE, LAST_UPDATED",
+        "ID, NODE_ROLE, SERVICE_TYPE, CLUSTER_ID, HOST_ID, SERVICE_URL, SERVICE_STATUS, ",
+        "NOTE, LAST_UPDATED",
         "from ku8s_srv_endpoint",
         "where ID = #{id,jdbcType=INTEGER}"
     })
     @Results({
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
+        @Result(column="NODE_ROLE", property="nodeRole", jdbcType=JdbcType.TINYINT),
         @Result(column="SERVICE_TYPE", property="serviceType", jdbcType=JdbcType.TINYINT),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="HOST_ID", property="hostId", jdbcType=JdbcType.INTEGER),
@@ -73,11 +77,13 @@ public interface Ku8sSrvEndpointMapper {
      */
     @Select({
         "select",
-        "ID, SERVICE_TYPE, CLUSTER_ID, HOST_ID, SERVICE_URL, SERVICE_STATUS, NOTE, LAST_UPDATED",
+        "ID, NODE_ROLE, SERVICE_TYPE, CLUSTER_ID, HOST_ID, SERVICE_URL, SERVICE_STATUS, ",
+        "NOTE, LAST_UPDATED",
         "from ku8s_srv_endpoint"
     })
     @Results({
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
+        @Result(column="NODE_ROLE", property="nodeRole", jdbcType=JdbcType.TINYINT),
         @Result(column="SERVICE_TYPE", property="serviceType", jdbcType=JdbcType.TINYINT),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="HOST_ID", property="hostId", jdbcType=JdbcType.INTEGER),
@@ -96,7 +102,8 @@ public interface Ku8sSrvEndpointMapper {
      */
     @Update({
         "update ku8s_srv_endpoint",
-        "set SERVICE_TYPE = #{serviceType,jdbcType=TINYINT},",
+        "set NODE_ROLE = #{nodeRole,jdbcType=TINYINT},",
+          "SERVICE_TYPE = #{serviceType,jdbcType=TINYINT},",
           "CLUSTER_ID = #{clusterId,jdbcType=INTEGER},",
           "HOST_ID = #{hostId,jdbcType=INTEGER},",
           "SERVICE_URL = #{serviceUrl,jdbcType=VARCHAR},",
