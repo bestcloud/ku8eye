@@ -35,14 +35,22 @@
   <div class="login-box-body">
     <p class="login-box-msg">登录开启您的ku8 eye之旅</p>
 
-    <form action="/">
-      <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="User Name">
+    <form action="#">
+      <div id="d_username" class="form-group has-feedback">
+        <input id="username" type="email" class="form-control" placeholder="User Name">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        <label class="control-label hide" for="inputError">
+           <i class="fa fa-times-circle-o"></i>
+           <span class="t_username">用户名不能为空</span>
+        </label>
       </div>
-      <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password">
+      <div id="d_password" class="form-group has-feedback">
+        <input id="password" type="password" class="form-control" placeholder="Password">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        <label class="control-label hide" for="inputError">
+           <i class="fa fa-times-circle-o"></i>
+           <span class="t_password"></span>
+        </label>
       </div>
       <div class="row">
         <div class="col-xs-8">
@@ -54,15 +62,12 @@
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat btnlogin">登&nbsp;录</button>
+          <button type="button" class="btn btn-primary btn-block btn-flat btnlogin">登&nbsp;录</button>
         </div>
         <!-- /.col -->
       </div>
     </form>
     
-    <a href="#">I forgot my password</a><br>
-    <a href="register.html" class="text-center">Register a new membership</a>
-
   </div>
   <!-- /.login-box-body -->
 </div>
@@ -81,7 +86,64 @@
       radioClass: 'iradio_square-blue',
       increaseArea: '20%' // optional
     });
+    
+    $('.btnlogin').click(function(){
+    	login();
+    });
+    
+    $('#username,#password').keypress(function (event){
+    	if(event.keyCode==13){
+    		login();
+    	}
+    });
   });
+  
+  function login(){
+	  if(checkInput()){
+  		$.post("/checklogin", {username:$('#username').val(),password:$('#password').val()},
+  		   	    function(user){
+  		   	    	if(user==null||user===''){
+  		   	    		setErrorText("password","用户名或密码错误");
+  		   	    	}else{
+  		   	    		location.href="/index";
+  		   	    	}
+  		   	    });	
+  	}
+  }
+  
+  function checkInput(){
+	  resetText();
+	  if($("#username").val()===''){
+		 setErrorText("username","用户名不能为空");
+		 $("#username").focus();
+		 return false;
+	  }
+	  if($("#password").val()===''){
+		 setErrorText("password","密码不能为空");
+		 $("#password").focus();
+		 return false;
+	  }
+	  return true;
+  }
+  
+  function setErrorText(stype,error){
+	  if(stype==="username"){
+		  $("#d_username > label").removeClass("hide");
+		  $("#d_username").addClass("has-error");
+		  $(".t_username").html(error);
+	  }else if(stype==="password"){
+		  $("#d_password > label").removeClass("hide");
+		  $("#d_password").addClass("has-error");
+		  $(".t_password").html(error);	
+	  }
+  }
+  
+  function  resetText(){
+	  $("#d_username > label").addClass("hide");
+	  $("#d_username").removeClass("has-error");
+	  $("#d_password > label").addClass("hide");
+	  $("#d_password").removeClass("has-error");
+  }
 </script>
 </body>
 </html>

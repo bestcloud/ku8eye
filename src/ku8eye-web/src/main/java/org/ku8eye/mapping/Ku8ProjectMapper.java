@@ -73,8 +73,8 @@ public interface Ku8ProjectMapper {
      * @mbggenerated
      */
     @Select({
-        "select",
-        "ID, TENANT_ID, OWNER, NAME",
+    	"select",
+        "ID, TENANT_ID, OWNER, NAME, VERSION, K8S_VERSION, NOTE, LAST_UPDATED, YAML_SPEC",
         "from ku8_project"
     })
     @Results({
@@ -82,6 +82,11 @@ public interface Ku8ProjectMapper {
         @Result(column="TENANT_ID", property="tenantId", jdbcType=JdbcType.INTEGER),
         @Result(column="OWNER", property="owner", jdbcType=JdbcType.CHAR),
         @Result(column="NAME", property="name", jdbcType=JdbcType.VARCHAR),
+        @Result(column="VERSION", property="version", jdbcType=JdbcType.CHAR),
+        @Result(column="K8S_VERSION", property="k8sVersion", jdbcType=JdbcType.CHAR),
+        @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
+        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP),
+        @Result(column="YAML_SPEC", property="yamlSpec", jdbcType=JdbcType.LONGVARCHAR)
     })
     List<Ku8Project> selectAll();
 

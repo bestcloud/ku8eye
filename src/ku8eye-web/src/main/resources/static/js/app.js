@@ -267,11 +267,12 @@ function _init() {
         }
 
         //Fix for the control sidebar height
-        var controlSidebar = $($.AdminLTE.options.controlSidebarOptions.selector);
-        if (typeof controlSidebar !== "undefined") {
-          if (controlSidebar.height() > postSetWidth)
-            $(".content-wrapper, .right-side").css('min-height', controlSidebar.height());
-        }
+//        var controlSidebar = $($.AdminLTE.options.controlSidebarOptions.selector);
+//        if (typeof controlSidebar !== "undefined") {
+//        	
+//          if (controlSidebar.height() > postSetWidth)
+//            $(".content-wrapper, .right-side").css('min-height', controlSidebar.height());
+//        }
 
       }
     },
@@ -520,7 +521,7 @@ function _init() {
       });
     },
     _fixForContent: function (sidebar) {
-      $(".content-wrapper, .right-side").css('min-height', sidebar.height());
+       //$(".content-wrapper, .right-side").css('min-height', sidebar.height());
     }
   };
 
