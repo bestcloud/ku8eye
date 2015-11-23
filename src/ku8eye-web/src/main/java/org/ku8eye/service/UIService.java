@@ -8,14 +8,12 @@ import java.util.Map;
 
 import org.ku8eye.bean.ui.Menu;
 import org.ku8eye.domain.Host;
-import org.ku8eye.domain.Ku8Cluster;
 import org.ku8eye.domain.Ku8Project;
+import org.ku8eye.domain.Ku8ResPartion;
 import org.ku8eye.domain.User;
-import org.ku8eye.domain.Zone;
 import org.ku8eye.mapping.HostMapper;
-import org.ku8eye.mapping.Ku8ClusterMapper;
 import org.ku8eye.mapping.Ku8ProjectMapper;
-import org.ku8eye.mapping.ZoneMapper;
+import org.ku8eye.mapping.Ku8ResPartionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,11 +43,10 @@ public class UIService {
 	@Autowired
 	private Ku8ProjectMapper ku8ProjectDao;
 	@Autowired
-	private ZoneMapper zoneDao;
-	@Autowired
-	private Ku8ClusterMapper K8ClusterDao;
-	@Autowired
 	private HostMapper hostDao;
+
+	@Autowired
+	private Ku8ResPartionMapper Ku8ResPartionDao;
 
 	/**
 	 * fetch current user's menu
@@ -70,41 +67,54 @@ public class UIService {
 			firstMenu4.getSubMenus().add(firstMenu4Sub);
 
 		}
-		List<Zone> allZones = getAllZones(curUser);
-		Map<Integer, List<Ku8Cluster>> allClsters = getAllClusters(curUser);
+
 		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
-		for (Zone zone : allZones) {
-			// zone menu
-			Menu firstMenus1 = new Menu("zone" + zone.getId(), zone.getName(), "zone_main.html", MENU_TYPE_ZONE);
-			// 菜单1 第二级 submenu
-			Menu firstMenuSub1 = new Menu("1_1", "K8s Cluster", "", MENU_TYPE_CLUSTER_GROUP);
-			firstMenus1.getSubMenus().add(firstMenuSub1);
-			// 菜单1 第三级 菜单即第二级的子菜单
-			List<Ku8Cluster> zoneClusters = allClsters.get(zone.getId());
-			if (zoneClusters != null) {
-				for (Ku8Cluster cls : zoneClusters) {
-					Menu firstMenuSsuba = new Menu("cls" + cls.getId(), cls.getName(), "cluster_main.html",
-							MENU_TYPE_CLUSTER_NODE);
-					firstMenuSub1.getSubMenus().add(firstMenuSsuba);
-				}
+		int clusterId = 1;
+		int zoneId = 1;
+		List<Ku8ResPartion> resourceParts = getAllResPartions(clusterId);
+		// cluster menu
+		Menu firstMenus1 = new Menu("clsdef", "K8s Cluster", "zone_main.html", MENU_TYPE_ZONE);
+		// 菜单1 第二级 submenu
+		Menu firstMenuSub1 = new Menu("1_1", "Resource Partions", "", MENU_TYPE_CLUSTER_GROUP);
+		firstMenus1.getSubMenus().add(firstMenuSub1);
+		// 菜单1 第三级 菜单即第二级的子菜单
+		for (Ku8ResPartion resPart : resourceParts) {
+			Menu firstMenuSsuba = new Menu("respart" + resPart.getId(), resPart.getNamespace(), "namespace_main.html",
+					MENU_TYPE_CLUSTER_NODE);
+			firstMenuSub1.getSubMenus().add(firstMenuSsuba);
+		}
 
-			}
-			// host pool sub menu
-			Menu firstMenuSub2 = new Menu("1_2", "Host Pool", "", MENU_TYPE_HOST_GROUP);
-			firstMenus1.getSubMenus().add(firstMenuSub2);
-			menus.add(firstMenus1);
+		// host pool sub menu
+		Menu firstMenuSub2 = new Menu("hostp1", "Host Pool", "", MENU_TYPE_HOST_GROUP);
+		firstMenus1.getSubMenus().add(firstMenuSub2);
+		menus.add(firstMenus1);
 
-			List<Host> zoneHosts = allHosts.get(zone.getId());
-			if (zoneHosts != null) {
-				for (Host host : zoneHosts) {
-					Menu firstMenuSub2_1 = new Menu("host" + host.getId(), host.getHostName(), "host_main.html",
-							MENU_TYPE_HOST_NODE);
-					firstMenuSub2.getSubMenus().add(firstMenuSub2_1);
-				}
+		List<Host> zoneHosts = allHosts.get(zoneId);
+		if (zoneHosts != null) {
+			for (Host host : zoneHosts) {
+				Menu firstMenuSub2_1 = new Menu("host" + host.getId(), host.getHostName(), "host_main.html",
+						MENU_TYPE_HOST_NODE);
+				firstMenuSub2.getSubMenus().add(firstMenuSub2_1);
 			}
 		}
+
+		// cluster info menu
+		Menu firstMenuSub3 = new Menu("cls_inf", "Cluster Inf", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
+		firstMenus1.getSubMenus().add(firstMenuSub3);
+
 		return menus;
 
+	}
+
+	private List<Ku8ResPartion> getAllResPartions(int clusterId) {
+		List<Ku8ResPartion> allPartions = Ku8ResPartionDao.selectAll();
+		List<Ku8ResPartion> result = new LinkedList<Ku8ResPartion>();
+		for (Ku8ResPartion resPt : allPartions) {
+			if (resPt.getClusterId() == clusterId) {
+				result.add(resPt);
+			}
+		}
+		return result;
 	}
 
 	private Map<Integer, List<Host>> getAllHosts(User curUser) {
@@ -118,25 +128,6 @@ public class UIService {
 
 			}
 			list.add(host);
-		}
-		return result;
-	}
-
-	private List<Zone> getAllZones(User curUser) {
-		return zoneDao.selectAll();
-	}
-
-	private Map<Integer, List<Ku8Cluster>> getAllClusters(User curUser) {
-		List<Ku8Cluster> allClusters = K8ClusterDao.selectAll();
-		Map<Integer, List<Ku8Cluster>> result = new HashMap<Integer, List<Ku8Cluster>>();
-		for (Ku8Cluster cls : allClusters) {
-			List<Ku8Cluster> list = result.get(cls.getZoneId());
-			if (list == null) {
-				list = new LinkedList<Ku8Cluster>();
-				result.put(cls.getZoneId(), list);
-
-			}
-			list.add(cls);
 		}
 		return result;
 	}

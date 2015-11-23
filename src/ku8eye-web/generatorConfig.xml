@@ -24,7 +24,7 @@
 		<javaClientGenerator targetPackage="org.ku8eye.mapping"
 			targetProject="ku8eye-web" type="ANNOTATEDMAPPER">
 		</javaClientGenerator>
-		<table tableName="%" />
+		<table tableName="ku8_res_partion" />
 
 	</context>
 </generatorConfiguration>

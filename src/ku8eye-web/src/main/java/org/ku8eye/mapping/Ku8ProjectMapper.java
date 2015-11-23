@@ -74,7 +74,7 @@ public interface Ku8ProjectMapper {
      */
     @Select({
     	"select",
-        "ID, TENANT_ID, OWNER, NAME, VERSION, K8S_VERSION, NOTE, LAST_UPDATED, YAML_SPEC",
+        "ID, TENANT_ID, OWNER, NAME, VERSION, K8S_VERSION, LAST_UPDATED",
         "from ku8_project"
     })
     @Results({
@@ -84,9 +84,7 @@ public interface Ku8ProjectMapper {
         @Result(column="NAME", property="name", jdbcType=JdbcType.VARCHAR),
         @Result(column="VERSION", property="version", jdbcType=JdbcType.CHAR),
         @Result(column="K8S_VERSION", property="k8sVersion", jdbcType=JdbcType.CHAR),
-        @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
-        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="YAML_SPEC", property="yamlSpec", jdbcType=JdbcType.LONGVARCHAR)
+        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
     List<Ku8Project> selectAll();
 
