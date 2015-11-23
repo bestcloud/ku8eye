@@ -45,6 +45,7 @@ INSERT INTO `host` VALUES ('4', '1', 'mynode_4', '192.168.1.6', '123456', 'wang 
 DROP TABLE IF EXISTS `ku8s_srv_endpoint`;
 CREATE TABLE `ku8s_srv_endpoint` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `NODE_ROLE` tinyint(4) DEFAULT NULL COMMENT 'kubernetes node role(etcd,master ,node,docker registry ) ',
   `SERVICE_TYPE` tinyint(4) DEFAULT NULL COMMENT 'service type ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
   `HOST_ID` int(11) DEFAULT NULL COMMENT ' at witch host ',
@@ -255,3 +256,4 @@ INSERT INTO `zone` VALUES ('1', 'beijing', null, '2015-11-19 13:54:43');
 INSERT INTO `zone` VALUES ('2', 'guang zhou', null, '2015-11-19 13:58:15');
 INSERT INTO `zone` VALUES ('3', 'wu han', null, '2015-11-19 13:58:23');
 INSERT INTO `zone` VALUES ('4', 'shang hai', null, '2015-11-19 13:58:30');
+
