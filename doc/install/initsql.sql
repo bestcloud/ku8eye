@@ -85,6 +85,20 @@ INSERT INTO `ku8_cluster` VALUES ('2', '1', '1', 'dev cluster', 'dev', '1.0', '1
 INSERT INTO `ku8_cluster` VALUES ('3', '2', '1', 'private cluster', null, '1.0', '1', null, '2015-11-19 14:14:30');
 
 -- ----------------------------
+-- Table structure for Resource Partion
+-- ----------------------------
+DROP TABLE IF EXISTS `ku8_res_partion`;
+CREATE TABLE `ku8_res_partion` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `CLUSTER_ID` int(11) NOT NULL COMMENT 'k8s clusterId  ',
+  `NAMESPACE` char(64) NOT NULL COMMENT 'k8s namespace  ',
+  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+
+-- ----------------------------
 -- Table structure for ku8_group
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_group`;
@@ -137,7 +151,7 @@ CREATE TABLE `ku8_proj_instance` (
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
   `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
   `STATUS` tinyint(4) DEFAULT NULL COMMENT 'instance status OK, ERR,DELETED',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
@@ -159,7 +173,7 @@ CREATE TABLE `ku8_proj_rc_inst` (
   `PROJECT_SERVICE_ID` int(11) DEFAULT NULL COMMENT 'project service Id ',
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
   `RC_NAME` varchar(64) DEFAULT NULL COMMENT 'RC name ',
   `POD_LABEL` varchar(64) DEFAULT NULL COMMENT 'RC selector POD Label ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
@@ -183,7 +197,7 @@ CREATE TABLE `ku8_proj_service_inst` (
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
   `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
   `SERVICE_NAME` varchar(32) DEFAULT NULL COMMENT 'service name',
   `REPLICA` tinyint(4) DEFAULT NULL COMMENT 'service replica ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
