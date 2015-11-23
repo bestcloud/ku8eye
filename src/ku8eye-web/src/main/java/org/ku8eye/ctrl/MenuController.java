@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * resetFul菜单，可以放到系统的Controller中
+ * resetFul menu
  * 
  * @author jackChen
  *
@@ -23,7 +23,7 @@ public class MenuController {
 	private UIService uiService;
 
 	/**
-	 * reset获取菜单的对象
+	 * get menus
 	 * 
 	 * @param request
 	 * @return

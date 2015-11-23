@@ -27,7 +27,7 @@ public class UserMapperTest {
 		//Assert.assertEquals("guest", userLists.get(0).getUserId());
 	}
 
-	@Test
+	//@Test
 	@Transactional
 	public void insertUser() {
 		

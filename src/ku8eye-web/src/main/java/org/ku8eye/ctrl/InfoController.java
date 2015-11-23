@@ -5,10 +5,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.ku8eye.domain.User;
+import org.ku8eye.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -18,6 +23,10 @@ public class InfoController {
 	@Value("${application.hellowmsg:Hello World}")
 
 	private String message = "Hello World";
+	
+
+	@Autowired
+	private UserService userService;
 
 	@RequestMapping("/")
 
@@ -27,12 +36,17 @@ public class InfoController {
 
 		model.put("message", this.message);
 
-		return "main.html";
+		return "login.html";
 
 		/*** 当返回index字符串，会自动 路径寻找index.jsp */
 
 	}
-
+	
+	@RequestMapping("/index")
+	public ModelAndView main(HttpServletRequest request) {
+		return new ModelAndView("main.html");
+	}
+	
 	@RequestMapping(value = "sign")
 
 	public ModelAndView example(HttpServletRequest request) {
