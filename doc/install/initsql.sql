@@ -10,13 +10,13 @@ Target Server Type    : MYSQL
 Target Server Version : 50613
 File Encoding         : 65001
 
-Date: 2015-11-19 14:17:15
+Date: 2015-11-24 15:57:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for host
+-- Table structure for `host`
 -- ----------------------------
 DROP TABLE IF EXISTS `host`;
 CREATE TABLE `host` (
@@ -28,19 +28,24 @@ CREATE TABLE `host` (
   `LOCATION` varchar(128) DEFAULT NULL COMMENT 'host location ,etc room ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  `CORES` tinyint(4) DEFAULT NULL,
+  `MEMORY` mediumint(6) DEFAULT NULL,
+  `USAGE_FLAG` tinyint(4) DEFAULT NULL,
+  `SSH_LOGIN` tinyint(4) DEFAULT NULL,
+  `CLUSTER_ID` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of host
 -- ----------------------------
-INSERT INTO `host` VALUES ('1', '1', 'mynode_1', '192.168.1.3', '123456', 'wang jing', null, '2015-11-19 13:56:07');
-INSERT INTO `host` VALUES ('2', '1', 'mynode_2', '192.168.1.4', '123456', 'si hui', null, '2015-11-19 13:56:45');
-INSERT INTO `host` VALUES ('3', '1', 'mynode_3', '192.168.1.5', '123456', 'si hui', null, '2015-11-19 13:57:17');
-INSERT INTO `host` VALUES ('4', '1', 'mynode_4', '192.168.1.6', '123456', 'wang jing', null, '2015-11-19 13:57:42');
+INSERT INTO `host` VALUES ('1', '1', 'mynode_1', '192.168.1.3', '123456', 'wang jing', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '1');
+INSERT INTO `host` VALUES ('2', '1', 'mynode_2', '192.168.1.4', '123456', 'si hui', null, '2015-11-24 15:20:53', '8', '524288', '0', '0', '1');
+INSERT INTO `host` VALUES ('3', '1', 'mynode_3', '192.168.1.5', '123456', 'si hui', null, '2015-11-24 15:20:18', '16', '1048576', '0', '0', '1');
+INSERT INTO `host` VALUES ('4', '1', 'mynode_4', '192.168.1.6', '123456', 'wang jing', null, '2015-11-24 15:20:56', '24', '262144', '0', '0', '1');
 
 -- ----------------------------
--- Table structure for ku8s_srv_endpoint
+-- Table structure for `ku8s_srv_endpoint`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8s_srv_endpoint`;
 CREATE TABLE `ku8s_srv_endpoint` (
@@ -61,7 +66,7 @@ CREATE TABLE `ku8s_srv_endpoint` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for ku8_cluster
+-- Table structure for `ku8_cluster`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_cluster`;
 CREATE TABLE `ku8_cluster` (
@@ -75,40 +80,15 @@ CREATE TABLE `ku8_cluster` (
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ku8_cluster
 -- ----------------------------
 INSERT INTO `ku8_cluster` VALUES ('1', '1', '1', 'test cluster', 'test', '1.0', '1', null, '2015-11-19 14:13:46');
-INSERT INTO `ku8_cluster` VALUES ('2', '1', '1', 'dev cluster', 'dev', '1.0', '1', null, '2015-11-19 14:14:06');
-INSERT INTO `ku8_cluster` VALUES ('3', '2', '1', 'private cluster', null, '1.0', '1', null, '2015-11-19 14:14:30');
 
 -- ----------------------------
--- Table structure for Resource Partion
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_res_partion`;
-CREATE TABLE `ku8_res_partion` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `CLUSTER_ID` int(11) NOT NULL COMMENT 'k8s clusterId  ',
-  `NAMESPACE` char(64) NOT NULL COMMENT 'k8s namespace  ',
-  `POD_LIMIT` int(11) NOT NULL COMMENT 'pod count limit ',
-  `CPU_LIMIT` int(11) NOT NULL COMMENT 'total cpu  limit ',
-  `MEMORY_LIMIT` int(11) NOT NULL COMMENT 'total memory  limit ',
-  `RC_LIMIT` int(11) NOT NULL COMMENT 'total RC  limit ',
-  `SERVICE_LIMIT` int(11) NOT NULL COMMENT 'total service  limit ',
-  `PV_LIMIT` int(11) NOT NULL COMMENT 'total persistance Volume  limit ',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
-INSERT INTO `ku8_res_partion` VALUES ('1', '1', 'default', '100', '20', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
-INSERT INTO `ku8_res_partion` VALUES ('2', '1', 'dev env', '20', '10', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
-INSERT INTO `ku8_res_partion` VALUES ('3', '1', 'test env', '10', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
-INSERT INTO `ku8_res_partion` VALUES ('4', '1', 'uat env', '8', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
--- ----------------------------
--- Table structure for ku8_group
+-- Table structure for `ku8_group`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_group`;
 CREATE TABLE `ku8_group` (
@@ -127,7 +107,7 @@ CREATE TABLE `ku8_group` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for ku8_project
+-- Table structure for `ku8_project`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_project`;
 CREATE TABLE `ku8_project` (
@@ -150,7 +130,7 @@ INSERT INTO `ku8_project` VALUES ('1', '1', 'hpcms', 'demo project', '1.0', '1.0
 INSERT INTO `ku8_project` VALUES ('2', '2', 'guest', 'demo2 project', '1.0', '1.0', null, null, '2015-11-19 14:12:44');
 
 -- ----------------------------
--- Table structure for ku8_proj_instance
+-- Table structure for `ku8_proj_instance`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_proj_instance`;
 CREATE TABLE `ku8_proj_instance` (
@@ -160,7 +140,7 @@ CREATE TABLE `ku8_proj_instance` (
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
   `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
   `STATUS` tinyint(4) DEFAULT NULL COMMENT 'instance status OK, ERR,DELETED',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
@@ -172,7 +152,7 @@ CREATE TABLE `ku8_proj_instance` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for ku8_proj_rc_inst
+-- Table structure for `ku8_proj_rc_inst`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_proj_rc_inst`;
 CREATE TABLE `ku8_proj_rc_inst` (
@@ -182,7 +162,7 @@ CREATE TABLE `ku8_proj_rc_inst` (
   `PROJECT_SERVICE_ID` int(11) DEFAULT NULL COMMENT 'project service Id ',
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
   `RC_NAME` varchar(64) DEFAULT NULL COMMENT 'RC name ',
   `POD_LABEL` varchar(64) DEFAULT NULL COMMENT 'RC selector POD Label ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
@@ -195,7 +175,7 @@ CREATE TABLE `ku8_proj_rc_inst` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for ku8_proj_service_inst
+-- Table structure for `ku8_proj_service_inst`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_proj_service_inst`;
 CREATE TABLE `ku8_proj_service_inst` (
@@ -206,7 +186,7 @@ CREATE TABLE `ku8_proj_service_inst` (
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
   `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(64) DEFAULT NULL COMMENT 'deployed in this namespace',
+  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
   `SERVICE_NAME` varchar(32) DEFAULT NULL COMMENT 'service name',
   `REPLICA` tinyint(4) DEFAULT NULL COMMENT 'service replica ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
@@ -219,7 +199,34 @@ CREATE TABLE `ku8_proj_service_inst` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for tenant
+-- Table structure for `ku8_res_partion`
+-- ----------------------------
+DROP TABLE IF EXISTS `ku8_res_partion`;
+CREATE TABLE `ku8_res_partion` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `CLUSTER_ID` int(11) NOT NULL COMMENT 'k8s clusterId  ',
+  `NAMESPACE` char(64) NOT NULL COMMENT 'k8s namespace  ',
+  `POD_LIMIT` int(11) NOT NULL COMMENT 'pod count limit ',
+  `CPU_LIMIT` int(11) NOT NULL COMMENT 'total cpu  limit ',
+  `MEMORY_LIMIT` int(11) NOT NULL COMMENT 'total memory  limit ',
+  `RC_LIMIT` int(11) NOT NULL COMMENT 'total RC  limit ',
+  `SERVICE_LIMIT` int(11) NOT NULL COMMENT 'total service  limit ',
+  `PV_LIMIT` int(11) NOT NULL COMMENT 'total persistance Volume  limit ',
+  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of ku8_res_partion
+-- ----------------------------
+INSERT INTO `ku8_res_partion` VALUES ('2', '1', 'dev env', '20', '10', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('3', '1', 'test env', '10', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('4', '1', 'uat env', '8', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('5', '1', 'default', '100', '20', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
+
+-- ----------------------------
+-- Table structure for `tenant`
 -- ----------------------------
 DROP TABLE IF EXISTS `tenant`;
 CREATE TABLE `tenant` (
@@ -238,7 +245,7 @@ INSERT INTO `tenant` VALUES ('1', 'hp_cms', 'hp cms team', null, null);
 INSERT INTO `tenant` VALUES ('2', 'develop_team', 'develop team', null, null);
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for `user`
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -261,7 +268,7 @@ INSERT INTO `user` VALUES ('hpcms', 'hp cms', '123456', '1', '0', '1', null, '20
 INSERT INTO `user` VALUES ('ku8eye', 'ku8 admin', '123456', '1', '0', null, 'demo init user', '2015-11-19 11:16:21');
 
 -- ----------------------------
--- Table structure for zone
+-- Table structure for `zone`
 -- ----------------------------
 DROP TABLE IF EXISTS `zone`;
 CREATE TABLE `zone` (
@@ -270,13 +277,9 @@ CREATE TABLE `zone` (
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of zone
 -- ----------------------------
 INSERT INTO `zone` VALUES ('1', 'beijing', null, '2015-11-19 13:54:43');
-INSERT INTO `zone` VALUES ('2', 'guang zhou', null, '2015-11-19 13:58:15');
-INSERT INTO `zone` VALUES ('3', 'wu han', null, '2015-11-19 13:58:23');
-INSERT INTO `zone` VALUES ('4', 'shang hai', null, '2015-11-19 13:58:30');
-
