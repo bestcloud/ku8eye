@@ -33,11 +33,15 @@ public interface HostMapper {
         "insert into host (ID, ZONE_ID, ",
         "HOST_NAME, IP, ROOT_PASSWD, ",
         "LOCATION, NOTE, ",
-        "LAST_UPDATED)",
+        "LAST_UPDATED, CORES, ",
+        "MEMORY, USAGE_FLAG, ",
+        "SSH_LOGIN, CLUSTER_ID)",
         "values (#{id,jdbcType=INTEGER}, #{zoneId,jdbcType=INTEGER}, ",
         "#{hostName,jdbcType=CHAR}, #{ip,jdbcType=CHAR}, #{rootPasswd,jdbcType=CHAR}, ",
         "#{location,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, ",
-        "#{lastUpdated,jdbcType=TIMESTAMP})"
+        "#{lastUpdated,jdbcType=TIMESTAMP}, #{cores,jdbcType=TINYINT}, ",
+        "#{memory,jdbcType=INTEGER}, #{usageFlag,jdbcType=TINYINT}, ",
+        "#{sshLogin,jdbcType=TINYINT}, #{clusterId,jdbcType=INTEGER})"
     })
     int insert(Host record);
 
@@ -49,7 +53,8 @@ public interface HostMapper {
      */
     @Select({
         "select",
-        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED",
+        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED, CORES, ",
+        "MEMORY, USAGE_FLAG, SSH_LOGIN, CLUSTER_ID",
         "from host",
         "where ID = #{id,jdbcType=INTEGER}"
     })
@@ -61,7 +66,12 @@ public interface HostMapper {
         @Result(column="ROOT_PASSWD", property="rootPasswd", jdbcType=JdbcType.CHAR),
         @Result(column="LOCATION", property="location", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
-        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
+        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP),
+        @Result(column="CORES", property="cores", jdbcType=JdbcType.TINYINT),
+        @Result(column="MEMORY", property="memory", jdbcType=JdbcType.INTEGER),
+        @Result(column="USAGE_FLAG", property="usageFlag", jdbcType=JdbcType.TINYINT),
+        @Result(column="SSH_LOGIN", property="sshLogin", jdbcType=JdbcType.TINYINT),
+        @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER)
     })
     Host selectByPrimaryKey(Integer id);
 
@@ -73,7 +83,8 @@ public interface HostMapper {
      */
     @Select({
         "select",
-        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED",
+        "ID, ZONE_ID, HOST_NAME, IP, ROOT_PASSWD, LOCATION, NOTE, LAST_UPDATED, CORES, ",
+        "MEMORY, USAGE_FLAG, SSH_LOGIN, CLUSTER_ID",
         "from host"
     })
     @Results({
@@ -84,7 +95,12 @@ public interface HostMapper {
         @Result(column="ROOT_PASSWD", property="rootPasswd", jdbcType=JdbcType.CHAR),
         @Result(column="LOCATION", property="location", jdbcType=JdbcType.VARCHAR),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
-        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
+        @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP),
+        @Result(column="CORES", property="cores", jdbcType=JdbcType.TINYINT),
+        @Result(column="MEMORY", property="memory", jdbcType=JdbcType.INTEGER),
+        @Result(column="USAGE_FLAG", property="usageFlag", jdbcType=JdbcType.TINYINT),
+        @Result(column="SSH_LOGIN", property="sshLogin", jdbcType=JdbcType.TINYINT),
+        @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER)
     })
     List<Host> selectAll();
 
@@ -102,7 +118,12 @@ public interface HostMapper {
           "ROOT_PASSWD = #{rootPasswd,jdbcType=CHAR},",
           "LOCATION = #{location,jdbcType=VARCHAR},",
           "NOTE = #{note,jdbcType=VARCHAR},",
-          "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP}",
+          "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP},",
+          "CORES = #{cores,jdbcType=TINYINT},",
+          "MEMORY = #{memory,jdbcType=INTEGER},",
+          "USAGE_FLAG = #{usageFlag,jdbcType=TINYINT},",
+          "SSH_LOGIN = #{sshLogin,jdbcType=TINYINT},",
+          "CLUSTER_ID = #{clusterId,jdbcType=INTEGER}",
         "where ID = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(Host record);
