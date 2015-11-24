@@ -185,10 +185,13 @@ $ ssh 192.168.1.203
 ......
 ```
 
-### 4.2 进入容器
-``` script
-$ docker exec -ti ku8eye-web bash
-```
+### 4.2 启动容器，进入容器
+**启动ku8eye-web容器，将宿主机的known_hosts文件挂载到容器内部：**
+**$ docker run -tid -p 3306:3306 -p 8080:8080 <font color=red>-v /root/.ssh/known_hosts:/root/.ssh/known_hosts</font> --name ku8eye-web --privileged ku8eye-web:0.1 /sbin/init**
+（也可以使用 docker cp known_hosts container_id:/root/.ssh/known_hosts 复制到容器内部）
+
+`$ docker exec -ti ku8eye-web bash`
+
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
 > **$ docker exec -ti ansible2 ansible-playbook -i /root/ansible/kubernetes_cluster_setup/hosts /root/ansible/kubernetes_cluster_setup/pre-setup/ping.yml**
 
