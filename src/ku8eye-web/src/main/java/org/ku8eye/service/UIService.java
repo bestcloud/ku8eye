@@ -74,25 +74,20 @@ public class UIService {
 		Menu firstMenuSub1 = new Menu("1_1", "Resource Partions", "dddddd.do", MENU_TYPE_CLUSTER_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub1);
 		// 菜单1 第三级 菜单即第二级的子菜单
-		childMenu = new Menu("namespace-list", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
+		childMenu = new Menu("respartion_main", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
 		firstMenuSub1.getSubMenus().add(childMenu);
-		childMenu = new Menu("namespace-report", "Report ", "namespace_report.html", MENU_TYPE_CLUSTER_NODE);
+		childMenu = new Menu("respartion_report", "Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
 		firstMenuSub1.getSubMenus().add(childMenu);
 
 		// host pool sub menu
 		Menu firstMenuSub2 = new Menu("hostp1", "Host Pool", "ddddd.do", MENU_TYPE_HOST_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub2);
 		menus.add(firstMenus1);
-
-		List<Host> zoneHosts = allHosts.get(zoneId);
-		if (zoneHosts != null) {
-			for (Host host : zoneHosts) {
-				Menu firstMenuSub2_1 = new Menu("host" + host.getId(), host.getHostName(), "host_main.html",
-						MENU_TYPE_HOST_NODE);
-				firstMenuSub2.getSubMenus().add(firstMenuSub2_1);
-			}
-		}
-
+		childMenu = new Menu("host-list", "List ", "host_main.html", MENU_TYPE_HOST_NODE);
+		firstMenuSub2.getSubMenus().add(childMenu);
+		
+		childMenu = new Menu("host-report", "Report ", "host_report.html", MENU_TYPE_HOST_NODE);
+		firstMenuSub2.getSubMenus().add(childMenu);
 		// cluster info menu
 		Menu firstMenuSub3 = new Menu("cls_inf", "Cluster Inf", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub3);
