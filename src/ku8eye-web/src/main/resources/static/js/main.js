@@ -9,7 +9,9 @@ function initUserMenu(){
 	 $.ajax({url: '/menus', success: function(menu){
 	    setMenu($('.sidebar-menu'),menu);
 	    $('.smenuitem').bind('click',function(){
-	    	$(".content").load($(this).attr("data"));
+	    	if($(this).attr("data")!=''){
+		    	$(".content").load($(this).attr("data"));
+	    	}
 	    });
      }});
 }
@@ -56,7 +58,7 @@ function setThirdLevelMenu(menus){
 	var menuhtm = [];
 	menuhtm.push("<ul class=\"treeview-menu\">");
 	$.each(menus,function(n,menudata) {
-		 menuhtm.push("<li><a href=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
+		 menuhtm.push("<li><a class=\"smenuitem\" href='javascript:void(0)' data=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
 	})
 	menuhtm.push("</ul>");
 	return '' + menuhtm.join('') + '';
