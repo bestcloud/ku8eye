@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
+<style>
+	ul li{list-style-type:none;}
+	.installationMode{
+		width:90%;
+		height:100%;
+		margin:0 auto;
+	}
+	.installationMode tr th{
+		padding:4% 10% 4% 9% ;
+		text-align:left;
+	}
+	.installationMode ul{
+		padding:4% 1% 4% 10% ;
+        color: #ffffff;
+        border-radius: 8px;
+		background-color:#880015;
+	}
+	.installationMode ul h3{
+		font-weight: 600;
+		padding-bottom:15px;
+	}
+	.installationMode ul .mode_li{
+		padding-left:40px;
+	}
+</style>
 
-</head>
-<html>
-<body class="hold-transition skin-blue sidebar-mini">
-	ddddddddddd
-</body>
-</html>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div style="padding-bottom: 5px;">	
+					<h1>您的计算机软件未安装，请安装！</h1>
+				</div>
+
+				<table id="example1" class="installationMode">
+					<thead>
+						<tr>
+							<th><a href="mode.html?mode=singleMachine"><ul class="Mode">
+							<li><h3>单机环境</h3></li>
+							<li class="mode_li">要求：1节点</li>
+							<li class="mode_li">适合新手入门学习</li>
+							</ul></a></th>
+							<th><a href="mode.html?mode=validationTest"><ul>
+							<li><h3>测试验证环境</h3></li>
+							<li class="mode_li">要求：最少两节点,建议3节点</li>
+							<li class="mode_li">适合新手入门学习</li>
+							</ul></a></th>
+						</tr>
+						<tr>
+							<th><a href="mode.html?mode=production"><ul>
+							<li><h3>生产环境</h3></li>
+							<li class="mode_li">要求：至少3节点</li>
+							<li class="mode_li">适合企业生产环境,HA功能</li>
+							</ul></a></th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+
+
