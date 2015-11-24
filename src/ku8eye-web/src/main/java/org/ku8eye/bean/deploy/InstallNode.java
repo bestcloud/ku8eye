@@ -1,6 +1,8 @@
 package org.ku8eye.bean.deploy;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,14 +11,13 @@ import java.util.Map;
  * @author wuzhih
  *
  */
-public class InstallNode {
+public class InstallNode implements Cloneable {
 	private int hostId;
 	private String ip;
 	private String hostName;
 	// node role ,for example etcd 、master、 node ,docker registry
-	private String nodeRole;
-	// node specific params,key is param name,values is InstallParam
-	private Map<String, InstallParam> nodeParams = new LinkedHashMap<String, InstallParam>();
+	// node specific params,key is node Role,values is related role's InstallParam
+	private Map<String, List<InstallParam>> nodeRoleParams = new LinkedHashMap<String, List<InstallParam>>();
 	// if it's a default node from template,if true ,it can't be deleted
 	private boolean defautNode;
 
@@ -44,22 +45,7 @@ public class InstallNode {
 		this.hostName = hostName;
 	}
 
-	public String getNodeRole() {
-		return nodeRole;
-	}
-
-	public void setNodeRole(String nodeRole) {
-		this.nodeRole = nodeRole;
-	}
-
-	public Map<String, InstallParam> getNodeParams() {
-		return nodeParams;
-	}
-
-	public void setNodeParams(Map<String, InstallParam> nodeParams) {
-		this.nodeParams = nodeParams;
-	}
-
+	
 	public boolean isDefautNode() {
 		return defautNode;
 	}
@@ -68,4 +54,30 @@ public class InstallNode {
 		this.defautNode = defautNode;
 	}
 
+	public Map<String, List<InstallParam>> getNodeRoleParams() {
+		return nodeRoleParams;
+	}
+
+	public void setNodeRoleParams(Map<String, List<InstallParam>> nodeRoleParams) {
+		this.nodeRoleParams = nodeRoleParams;
+	}
+
+	public InstallNode clone() {
+		try {
+			InstallNode newNode = (InstallNode) super.clone();
+			Map<String, List<InstallParam>> nodeParams = new LinkedHashMap<String, List<InstallParam>>();
+			for (Map.Entry<String, List<InstallParam>> entry : this.getNodeRoleParams().entrySet()) {
+				List<InstallParam> roleParams=new LinkedList<InstallParam>();
+				for(InstallParam param:entry.getValue())
+				{
+					roleParams.add(param.clone());
+				}
+				nodeParams.put(entry.getKey(),roleParams);
+			}
+			newNode.setNodeRoleParams(nodeParams);
+			return newNode;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

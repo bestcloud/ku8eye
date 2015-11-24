@@ -6,7 +6,7 @@ package org.ku8eye.bean.deploy;
  * @author wuzhih
  *
  */
-public class InstallParam {
+public class InstallParam implements Cloneable {
 	private String name;
 	private String value;
 	private String describe;
@@ -35,4 +35,11 @@ public class InstallParam {
 		this.describe = describe;
 	}
 
+	public InstallParam clone() {
+		try {
+			return (InstallParam) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
