@@ -58,34 +58,29 @@ public class UIService {
 	public List<Menu> generateMenus(User curUser) {
 		List<Menu> menus = new ArrayList<Menu>();
 		// projects menu
-		Menu firstMenu4 = new Menu("projects", "My projects", "dddddd.do", MENU_TYPE_PROJECT_GROUP);
+		Menu firstMenu4 = new Menu("projects", "My Applications", "dddddd.do", MENU_TYPE_PROJECT_GROUP);
 		menus.add(firstMenu4);
-		List<Ku8Project> allProjects = getMyProjects(curUser);
-		for (Ku8Project proj : allProjects) {
-			Menu firstMenu4Sub = new Menu("prj" + proj.getId(), proj.getName(), "project_main.html",
-					MENU_TYPE_PROJECT_NODE);
-			firstMenu4.getSubMenus().add(firstMenu4Sub);
 
-		}
+		Menu childMenu = new Menu("project-list", "List ", "project_main.html", MENU_TYPE_PROJECT_NODE);
+		firstMenu4.getSubMenus().add(childMenu);
 
+		childMenu = new Menu("project-report", "Report ", "project_report.html", MENU_TYPE_PROJECT_NODE);
+		firstMenu4.getSubMenus().add(childMenu);
 		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
-		int clusterId = 1;
 		int zoneId = 1;
-		List<Ku8ResPartion> resourceParts = getAllResPartions(clusterId);
 		// cluster menu
-		Menu firstMenus1 = new Menu("clsdef", "K8s Cluster", "zone_main.html", MENU_TYPE_ZONE);
+		Menu firstMenus1 = new Menu("clsdef", "K8s Cluster", "dddddd.do", MENU_TYPE_ZONE);
 		// 菜单1 第二级 submenu
-		Menu firstMenuSub1 = new Menu("1_1", "Resource Partions", "", MENU_TYPE_CLUSTER_GROUP);
+		Menu firstMenuSub1 = new Menu("1_1", "Resource Partions", "dddddd.do", MENU_TYPE_CLUSTER_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub1);
 		// 菜单1 第三级 菜单即第二级的子菜单
-		for (Ku8ResPartion resPart : resourceParts) {
-			Menu firstMenuSsuba = new Menu("respart" + resPart.getId(), resPart.getNamespace(), "namespace_main.html",
-					MENU_TYPE_CLUSTER_NODE);
-			firstMenuSub1.getSubMenus().add(firstMenuSsuba);
-		}
+		childMenu = new Menu("namespace-list", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
+		firstMenuSub1.getSubMenus().add(childMenu);
+		childMenu = new Menu("namespace-report", "Report ", "namespace_report.html", MENU_TYPE_CLUSTER_NODE);
+		firstMenuSub1.getSubMenus().add(childMenu);
 
 		// host pool sub menu
-		Menu firstMenuSub2 = new Menu("hostp1", "Host Pool", "", MENU_TYPE_HOST_GROUP);
+		Menu firstMenuSub2 = new Menu("hostp1", "Host Pool", "ddddd.do", MENU_TYPE_HOST_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub2);
 		menus.add(firstMenus1);
 

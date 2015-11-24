@@ -31,9 +31,15 @@ public interface Ku8ResPartionMapper {
      */
     @Insert({
         "insert into ku8_res_partion (ID, CLUSTER_ID, ",
-        "NAMESPACE, NOTE, LAST_UPDATED)",
+        "NAMESPACE, POD_LIMIT, ",
+        "CPU_LIMIT, MEMORY_LIMIT, ",
+        "RC_LIMIT, SERVICE_LIMIT, ",
+        "PV_LIMIT, NOTE, LAST_UPDATED)",
         "values (#{id,jdbcType=INTEGER}, #{clusterId,jdbcType=INTEGER}, ",
-        "#{namespace,jdbcType=CHAR}, #{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
+        "#{namespace,jdbcType=CHAR}, #{podLimit,jdbcType=INTEGER}, ",
+        "#{cpuLimit,jdbcType=INTEGER}, #{memoryLimit,jdbcType=INTEGER}, ",
+        "#{rcLimit,jdbcType=INTEGER}, #{serviceLimit,jdbcType=INTEGER}, ",
+        "#{pvLimit,jdbcType=INTEGER}, #{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
     })
     int insert(Ku8ResPartion record);
 
@@ -45,7 +51,8 @@ public interface Ku8ResPartionMapper {
      */
     @Select({
         "select",
-        "ID, CLUSTER_ID, NAMESPACE, NOTE, LAST_UPDATED",
+        "ID, CLUSTER_ID, NAMESPACE, POD_LIMIT, CPU_LIMIT, MEMORY_LIMIT, RC_LIMIT, SERVICE_LIMIT, ",
+        "PV_LIMIT, NOTE, LAST_UPDATED",
         "from ku8_res_partion",
         "where ID = #{id,jdbcType=INTEGER}"
     })
@@ -53,6 +60,12 @@ public interface Ku8ResPartionMapper {
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="NAMESPACE", property="namespace", jdbcType=JdbcType.CHAR),
+        @Result(column="POD_LIMIT", property="podLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="CPU_LIMIT", property="cpuLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="MEMORY_LIMIT", property="memoryLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="RC_LIMIT", property="rcLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="SERVICE_LIMIT", property="serviceLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="PV_LIMIT", property="pvLimit", jdbcType=JdbcType.INTEGER),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -66,13 +79,20 @@ public interface Ku8ResPartionMapper {
      */
     @Select({
         "select",
-        "ID, CLUSTER_ID, NAMESPACE, NOTE, LAST_UPDATED",
+        "ID, CLUSTER_ID, NAMESPACE, POD_LIMIT, CPU_LIMIT, MEMORY_LIMIT, RC_LIMIT, SERVICE_LIMIT, ",
+        "PV_LIMIT, NOTE, LAST_UPDATED",
         "from ku8_res_partion"
     })
     @Results({
         @Result(column="ID", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="NAMESPACE", property="namespace", jdbcType=JdbcType.CHAR),
+        @Result(column="POD_LIMIT", property="podLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="CPU_LIMIT", property="cpuLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="MEMORY_LIMIT", property="memoryLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="RC_LIMIT", property="rcLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="SERVICE_LIMIT", property="serviceLimit", jdbcType=JdbcType.INTEGER),
+        @Result(column="PV_LIMIT", property="pvLimit", jdbcType=JdbcType.INTEGER),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -88,6 +108,12 @@ public interface Ku8ResPartionMapper {
         "update ku8_res_partion",
         "set CLUSTER_ID = #{clusterId,jdbcType=INTEGER},",
           "NAMESPACE = #{namespace,jdbcType=CHAR},",
+          "POD_LIMIT = #{podLimit,jdbcType=INTEGER},",
+          "CPU_LIMIT = #{cpuLimit,jdbcType=INTEGER},",
+          "MEMORY_LIMIT = #{memoryLimit,jdbcType=INTEGER},",
+          "RC_LIMIT = #{rcLimit,jdbcType=INTEGER},",
+          "SERVICE_LIMIT = #{serviceLimit,jdbcType=INTEGER},",
+          "PV_LIMIT = #{pvLimit,jdbcType=INTEGER},",
           "NOTE = #{note,jdbcType=VARCHAR},",
           "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP}",
         "where ID = #{id,jdbcType=INTEGER}"

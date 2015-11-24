@@ -92,12 +92,21 @@ CREATE TABLE `ku8_res_partion` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
   `CLUSTER_ID` int(11) NOT NULL COMMENT 'k8s clusterId  ',
   `NAMESPACE` char(64) NOT NULL COMMENT 'k8s namespace  ',
+  `POD_LIMIT` int(11) NOT NULL COMMENT 'pod count limit ',
+  `CPU_LIMIT` int(11) NOT NULL COMMENT 'total cpu  limit ',
+  `MEMORY_LIMIT` int(11) NOT NULL COMMENT 'total memory  limit ',
+  `RC_LIMIT` int(11) NOT NULL COMMENT 'total RC  limit ',
+  `SERVICE_LIMIT` int(11) NOT NULL COMMENT 'total service  limit ',
+  `PV_LIMIT` int(11) NOT NULL COMMENT 'total persistance Volume  limit ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
-
+INSERT INTO `ku8_res_partion` VALUES ('1', '1', 'default', '100', '20', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('2', '1', 'dev env', '20', '10', '1024', '50', '50', '50', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('3', '1', 'test env', '10', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
+INSERT INTO `ku8_res_partion` VALUES ('4', '1', 'uat env', '8', '5', '1024', '20', '30', '30', null, '2015-11-24 11:21:22');
 -- ----------------------------
 -- Table structure for ku8_group
 -- ----------------------------
