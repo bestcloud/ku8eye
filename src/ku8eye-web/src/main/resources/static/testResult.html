@@ -8,69 +8,30 @@
 					<thead>
 						<tr>
 							<th><input type='checkbox' class='chkbox' name='child' /></th>
-							<th>½ÚµãIP</th>
-							<th>½Úµã½ÇÉ«</th>
-							<th>·şÎñ×´Ì¬</th>
+							<th>èŠ‚ç‚¹IP</th>
+							<th>èŠ‚ç‚¹è§’è‰²</th>
+							<th>æœåŠ¡çŠ¶æ€</th>
 							
 						</tr>
 						<tr>
 							<th><input type='checkbox' class='chkbox' name='child' /></th>
 							<th>systemparm1</th>
-							<th>¼¯ÈºÈÕÖ¾¼¶±ğ</th>
-							<th>xxxxxx</th>
+							<th>ku8 Node</th>
+							<th>æ£€æµ‹OK</th>
 							
 						</tr>
 						<tr>
 							<th><input type='checkbox' class='chkbox' name='child' /></th>
-							<th>systemparm2</th>
-							<th>¼¯ÈºÈÕÖ¾¼¶±ğ</th>
-							<th>xxxxxx</th>
+							<th>systemparm1</th>
+							<th>ku8 Node</th>
+							<th>æ£€æµ‹OK</th>
 							
 						</tr>
 					</thead>
 				</table>
 				<div style="padding-bottom: 5px;padding-top:15px">
-					<a id="nodeDetection" class="btn btn-primary " data-toggle="modal">Íê³É</a>
+					<a id="complete" class="btn btn-primary " data-toggle="modal">å®Œæˆ</a>
 				</div>
-			</div>
-			<!-- /.box-body -->
-		</div>
-		<!-- /.box -->
-	</div>
-	<!-- /.col -->
-</div>
-
-<div class="row" id="Detection">
-	<div class="col-xs-12">
-		<div class="box">
-			<!-- /.box-header -->
-			<div class="box-body">
-				<table id="example1" class="table table-bordered table-hover"
-					style="font-size: 12px;">
-					<thead>
-						<tr>
-							<th><input type='checkbox' class='chkbox' name='child' />
-							</th>
-							<th>½ÚµãIP</th>
-							<th>½Úµã½ÇÉ«</th>
-							<th>°²×°²ÎÊı</th>
-						</tr>
-						<tr>
-							<td><input type='checkbox' class='chkbox' name='child' />
-							</td>
-							<td>192.168.1.1</td>
-							<td>½Úµã½ÇÉ«</td>
-							<td>°²×°²ÎÊı</td>
-						</tr>
-						<tr>
-							<td><input type='checkbox' class='chkbox' name='child' />
-							</td>
-							<td>192.168.1.1</td>
-							<td>½Úµã½ÇÉ«</td>
-							<td>°²×°²ÎÊı</td>
-						</tr>
-					</thead>
-				</table>
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -81,19 +42,6 @@
 
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
-	$("#Detection").hide();
-	$("#nodeDetection").click(function(){
-		
-		setTimeout(load,2000);
-		function load(){
-			$("#Detection").show();
-		}
-		
-	});
-	$("#install").click(function(){
-		
-		$(".content").load('installProgress.html');
-		
-	});
+	
 	
 </script>
