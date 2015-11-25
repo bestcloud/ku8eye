@@ -24,9 +24,10 @@
 	}
 </style>
 <script>
-$("#installationMode").click(function(){
+
+function installationMode(){
 	$(".content").load('mode.html');
-})
+}
 </script>
 
 <div class="row">
@@ -41,19 +42,19 @@ $("#installationMode").click(function(){
 				<table id="example1" class="installationMode">
 					<thead>
 						<tr>
-							<th id="installationMode"><ul class="Mode">
+							<th onClick="installationMode()"><ul class="Mode">
 							<li><h3>单机环境</h3></li>
 							<li class="mode_li">要求：1节点</li>
 							<li class="mode_li">适合新手入门学习</li>
 							</ul></th>
-							<th id="installationMode"><ul>
+							<th onClick="installationMode()"><ul>
 							<li><h3>测试验证环境</h3></li>
 							<li class="mode_li">要求：最少两节点,建议3节点</li>
 							<li class="mode_li">适合新手入门学习</li>
 							</ul></th>
 						</tr>
 						<tr>
-							<th id="installationMode"><ul>
+							<th onClick="installationMode()"><ul>
 							<li><h3>生产环境</h3></li>
 							<li class="mode_li">要求：至少3节点</li>
 							<li class="mode_li">适合企业生产环境,HA功能</li>
