@@ -1,12 +1,12 @@
-<div class="row">
+<div class="row" id="myModal1">
 	<div class="col-xs-12">
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;">
 					<h5>您选择了XXX模式，需要至少一个节点，建议N个节点</h5>
-					<a id="addNode" class="btn btn-primary " data-toggle="modal" data-target="#myModal">添加节点</a> 
-					<a id="nextStep" class="btn btn-primary " data-toggle="modal" data-target="#myModal">下一步</a> 
+					<a id="addNode" class="btn btn-primary " data-toggle="modal" data-target="#myModal2">添加节点</a> 
+					<a id="nextStep" class="btn btn-primary " data-toggle="modal" data-target="#">下一步</a> 
 				</div>
 				<table id="example1" class="table table-bordered table-hover"
 					style="font-size: 12px;">
@@ -22,15 +22,15 @@
 							<td><input type='checkbox' class='chkbox' name='child' />
 							</td>
 							<td>192.168.1.1</td>
-							<td>节点角色</td>
-							<td>安装参数</td>
+							<td>ku8 Master</td>
+							<td>&nbsp;</td>
 						</tr>
 						<tr>
 							<td><input type='checkbox' class='chkbox' name='child' />
 							</td>
-							<td>192.168.1.1</td>
-							<td>节点角色</td>
-							<td>安装参数</td>
+							<td>192.168.1.2</td>
+							<td>ku8 Node</td>
+							<td>&nbsp;</td>
 						</tr>
 					</thead>
 				</table>
@@ -41,8 +41,71 @@
 	</div>
 	<!-- /.col -->
 </div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">新增节点</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Horizontal Form -->
+		          <div class="box box-info" style="margin-bottom:0px;">
+		            <!-- form start -->
+		            <form class="form-horizontal">
+		              <div class="box-body">
+		                <div class="form-group">
+		                  <label for="inputEmail3" class="col-sm-2 control-label">节点IP:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="nodeIP" placeholder="192.168.1.1">
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">节点角色:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="nodeRole" placeholder="ku8 Master">
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">安装参数:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="parameter" >
+		                  </div>
+		                </div>
+		               
+		              </div>
+		              <!-- /.box-body -->
+		            </form>
+		          </div>
+		          <!-- /.box -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="save">保<span style="padding-left: 12px" />存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
 $("#nextStep").click(function(){
 	$(".content").load('modeNext.html');
-})
+});
+$("#save").click(function(){
+	
+	$("#example1").append("<tr><td><input type='checkbox' class='chkbox' name='child' /></td><td>"+$("#nodeIP").val()+"</td><td>"+$("#nodeRole").val()+"</td><td>"+$("#parameter").val()+"</td></tr>");
+	$("#nodeIP").val("");
+	$("#nodeRole").val("");
+	$("#parameter").val("");
+	
+});
 </script>
