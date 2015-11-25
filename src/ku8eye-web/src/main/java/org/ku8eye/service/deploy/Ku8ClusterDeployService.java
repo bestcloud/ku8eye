@@ -60,7 +60,7 @@ public class Ku8ClusterDeployService {
 		kuberNdoeParams.add(new InstallParam("kube_master_url", "192.168.1.2:1100", " kube-apiserver服务URL"));
 		kuberNdoeParams.add(new InstallParam("quagga_router_image_id", "f96cfe685533", "quagga router 镜像ID"));
 		kuberNdoeParams.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router", "index.alauda.cn/georce/router quagga router 镜像tag"));
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, kuberNdoeParams);
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, kuberNdoeParams);
 		
 		
 		List<InstallParam> dockerRegistryParams  = new LinkedList<InstallParam>();
@@ -70,7 +70,7 @@ public class Ku8ClusterDeployService {
 		dockerRegistryParams.add(new InstallParam("docker_registry_root_dir", "/hadoop1/docker_registry", " docker registry 运行目录"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, dockerRegistryParams);
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, dockerRegistryParams);
 		temp.getNodes().add(node);
 	 	
 		return temp;
