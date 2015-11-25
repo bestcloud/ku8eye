@@ -1,0 +1,5 @@
+<%
+for(host in nodes){
+println(host+" params "+"assss");
+}
+%>
