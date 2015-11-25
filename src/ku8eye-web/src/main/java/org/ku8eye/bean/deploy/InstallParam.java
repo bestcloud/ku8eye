@@ -11,6 +11,18 @@ public class InstallParam implements Cloneable {
 	private String value;
 	private String describe;
 
+	public InstallParam()
+	{
+		
+	}
+	
+	public InstallParam(String name,String value,String describe)
+	{
+		this.name=name;
+		this.value=value;
+		this.describe=describe;
+	}
+	
 	public String getName() {
 		return name;
 	}
