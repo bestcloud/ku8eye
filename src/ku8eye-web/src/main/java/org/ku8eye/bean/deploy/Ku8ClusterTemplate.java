@@ -1,5 +1,6 @@
 package org.ku8eye.bean.deploy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -18,8 +19,16 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_NODE = "kube-node";
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 
+	public Ku8ClusterTemplate()
+	{
+		
+		initGlobalParams();
+	}
+	
+	//pause镜像ID
 	private String logoImage;
 	private String detailPageUrl;
+	 //kube-dns服务设置的domain名
 	private String name;
 	private String describe;
 	private String version = "1.0";
@@ -30,7 +39,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// template type to distinct different templates
 	private int templateType;
 	// global insall params,key is param's name
-	private List<InstallParam> globalParams = new LinkedList<InstallParam>();
+	private List<InstallParam> globalParams;
 	// nodes to install
 	private List<InstallNode> nodes;
     private List<String> allowedNewRoles=new LinkedList<String>();
@@ -147,5 +156,18 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	
+	private void initGlobalParams()
+	{
+		globalParams = new LinkedList<InstallParam>();
+		globalParams.add(new InstallParam("cluster_domain_name","cluster.local","kube-dns服务设置的domain名"));
+		globalParams.add(new InstallParam("cluster_dns_ip","20.1.0.100","kube-dns服务IP地址"));
+		globalParams.add(new InstallParam("docker_registry_server_name","","docker registry 主机名"));
+		globalParams.add(new InstallParam("docker_registry_server_ip","","docker registry 主机IP地址"));
+		globalParams.add(new InstallParam("push_pause_image","true","是否将 Kubernetes pause 镜像push到 docker registry"));
+		globalParams.add(new InstallParam("kubernetes_pause_image_id","6c4579af347b ","pause镜像ID"));
+		globalParams.add(new InstallParam("kubernetes_pause_image_tag","{{docker_registry_url}}/google_containers/pause","pause镜像在 docker registry 的URL"));
 	}
 }
