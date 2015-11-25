@@ -44,6 +44,13 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
+ 
+		<dependency>
+			<groupId>org.beetl</groupId>
+			<artifactId>beetl-core</artifactId>
+			<version>2.2.3</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<resources>
