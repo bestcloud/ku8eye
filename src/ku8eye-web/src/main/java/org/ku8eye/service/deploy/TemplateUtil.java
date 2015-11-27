@@ -14,15 +14,12 @@ import org.beetl.core.resource.ClasspathResourceLoader;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-@Component
-@ConfigurationProperties(prefix = "deploy.ansible.root")
+
 public class TemplateUtil {
 
 	private String tmpFileYML;
 	private String hostsFile;
-	private String passwordFile;
+	
 
 	public void setTmpFileYML(String tmpFileStr) {
 		this.tmpFileYML = tmpFileStr;
@@ -32,29 +29,31 @@ public class TemplateUtil {
 		this.hostsFile = hostsFile;
 	}
 
-	public void setPasswordFile(String passwordFile) {
-		this.passwordFile = passwordFile;
-	}
 
-	public void createAnsibleFiles(Ku8ClusterTemplate template) throws Exception {
+
+	public void createAnsibleFiles(Ku8ClusterTemplate tmp) throws Exception {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
+
 		// creatYml file
 		String[] files = tmpFileYML.split(",");
 		for (String fileline : files) {
 			String[] fpara = fileline.split(":");
-			creatParameterFile(template.getGlobParameterByRole(fpara[0]), gt, fpara[1], fpara[2]);
+			creatParameterFile(tmp.getGlobParameterByRole(fpara[0]), gt,
+					fpara[1], fpara[2]);
 		}
 		// creat hosts file
 		String[] hostsLine = hostsFile.split(":");
-		creatHostsParameterFile(template.getNodes(), gt, hostsLine[0], hostsLine[1]);
+		creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0], hostsLine[1]);
 		// creat password file
 
-		writeFile(template.getPassword(), passwordFile);
+	
+
 	}
 
-	void creatParameterFile(List<InstallParam> l, GroupTemplate gt, String temlate, String outFile) throws Exception {
+	void creatParameterFile(List<InstallParam> l, GroupTemplate gt,
+			String temlate, String outFile) throws Exception {
 
 		Template t = gt.getTemplate(temlate);
 		for (InstallParam para : l) {
@@ -64,8 +63,8 @@ public class TemplateUtil {
 		writeFile(t.render(), outFile);
 	}
 
-	void creatHostsParameterFile(List<InstallNode> l, GroupTemplate gt, String temlate, String outFile)
-			throws Exception {
+	void creatHostsParameterFile(List<InstallNode> l, GroupTemplate gt,
+			String temlate, String outFile) throws Exception {
 
 		Template t = gt.getTemplate(temlate);
 		HashMap<String, List<InstallParam>> registry_list = new HashMap<String, List<InstallParam>>();
@@ -79,18 +78,22 @@ public class TemplateUtil {
 			Map<String, List<InstallParam>> hm = node.getNodeRoleParams();
 
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD) != null) {
-				etde_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD));
+				etde_list.put(node.getIp(),
+						hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER) != null) {
-				master_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER));
+				master_list.put(node.getIp(),
+						hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY) != null) {
-				registry_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
+				registry_list.put(node.getIp(),
+						hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
 
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE) != null) {
-				nodes_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE));
+				nodes_list.put(node.getIp(),
+						hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE));
 			}
 		}
 		t.binding("master", master_list);
@@ -122,18 +125,3 @@ public class TemplateUtil {
 		// createAnsibleFiles();
 	}
 }
-// class showParameter implements org.beetl.core.Format
-// {
-// @Override
-// public Object format(Object paramObject, String paramString) {
-//
-// String result="";
-// for(InstallParam para:(List<InstallParam>)paramObject)
-// {
-// result=" "+para.getName()+"="+para.getValue();
-// }
-// return result;
-// }
-//
-//
-// }

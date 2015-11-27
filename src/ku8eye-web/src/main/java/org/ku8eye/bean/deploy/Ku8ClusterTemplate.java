@@ -2,10 +2,8 @@ package org.ku8eye.bean.deploy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Template for Ku8 Cluster install
@@ -43,7 +41,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// nodes to install
 	private List<InstallNode> nodes = new ArrayList<InstallNode>();
 	private List<String> allowedNewRoles = new ArrayList<String>();
-	private String password;
 
 	public String getLogoImage() {
 		return logoImage;
@@ -102,14 +99,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 	public void setDescribe(String describe) {
 		this.describe = describe;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getVersion() {
