@@ -30,19 +30,20 @@ public interface HostMapper {
      * @mbggenerated
      */
     @Insert({
-        "insert into host (ID, ZONE_ID, ",
+        "insert into host (ZONE_ID, ",
         "HOST_NAME, IP, ROOT_PASSWD, ",
         "LOCATION, NOTE, ",
         "LAST_UPDATED, CORES, ",
         "MEMORY, USAGE_FLAG, ",
         "SSH_LOGIN, CLUSTER_ID)",
-        "values (#{id,jdbcType=INTEGER}, #{zoneId,jdbcType=INTEGER}, ",
+        "values (#{zoneId,jdbcType=INTEGER}, ",
         "#{hostName,jdbcType=CHAR}, #{ip,jdbcType=CHAR}, #{rootPasswd,jdbcType=CHAR}, ",
         "#{location,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, ",
         "#{lastUpdated,jdbcType=TIMESTAMP}, #{cores,jdbcType=TINYINT}, ",
         "#{memory,jdbcType=INTEGER}, #{usageFlag,jdbcType=TINYINT}, ",
         "#{sshLogin,jdbcType=TINYINT}, #{clusterId,jdbcType=INTEGER})"
     })
+  
     int insert(Host record);
 
     /**
