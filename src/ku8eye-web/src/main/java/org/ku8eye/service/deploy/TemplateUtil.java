@@ -14,10 +14,7 @@ import org.beetl.core.resource.ClasspathResourceLoader;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-@Component
-@ConfigurationProperties(prefix = "deploy.ansible.root")
+
 public class TemplateUtil {
 
 	private String tmpFileYML;
@@ -128,18 +125,3 @@ public class TemplateUtil {
 		// createAnsibleFiles();
 	}
 }
-// class showParameter implements org.beetl.core.Format
-// {
-// @Override
-// public Object format(Object paramObject, String paramString) {
-//
-// String result="";
-// for(InstallParam para:(List<InstallParam>)paramObject)
-// {
-// result=" "+para.getName()+"="+para.getValue();
-// }
-// return result;
-// }
-//
-//
-// }

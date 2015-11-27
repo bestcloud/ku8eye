@@ -49,16 +49,32 @@ public class Ku8ClusterDeployService {
 		node.setHostId(1);
 		node.setHostName("Etcd");
 		node.setIp("192.168.1.2");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD,
-				initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER,
-				initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE,
-				initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY,
-				initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
 		temp.getNodes().add(node);
 		return temp;
+	}
+
+	public List<String> validateTemplate(Ku8ClusterTemplate template) {
+		/**
+		 * @todo
+		 */
+		return null;
+	}
+
+	public void createInstallScripts(Ku8ClusterTemplate template) throws Exception {
+		tmpUtil.createAnsibleFiles(template);
+	}
+
+	public Ku8ClusterTemplate getAndCloneTemplate(int templateId) {
+		for (Ku8ClusterTemplate temp : allTemplates) {
+			if (temp.getId() == templateId) {
+				return temp.clone();
+			}
+		}
+		return null;
 	}
 
 	private List<InstallParam> initInstallParameter() {
@@ -82,40 +98,35 @@ public class Ku8ClusterDeployService {
 		etcd_node.setHostId(2);
 		etcd_node.setHostName("Etcd");
 		etcd_node.setIp("192.168.1.2");
-		etcd_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD,
-				initInstallParameter());
+		etcd_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
 
 		InstallNode master_node = new InstallNode();
 		master_node.setDefautNode(true);
 		master_node.setHostId(3);
 		master_node.setHostName("Kuber Master");
 		master_node.setIp("192.168.1.3");
-		master_node.getNodeRoleParams().put(
-				Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		master_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
 
 		InstallNode nodes_node1 = new InstallNode();
 		nodes_node1.setDefautNode(true);
 		nodes_node1.setHostId(4);
 		nodes_node1.setHostName("Kuber Node 1");
 		nodes_node1.setIp("192.168.1.4");
-		nodes_node1.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE,
-				initInstallParameter());
+		nodes_node1.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
 
 		InstallNode nodes_node2 = new InstallNode();
 		nodes_node2.setDefautNode(false);
 		nodes_node2.setHostId(5);
 		nodes_node2.setHostName("Kuber Node 2");
 		nodes_node2.setIp("192.168.1.5");
-		nodes_node2.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE,
-				initInstallParameter());
+		nodes_node2.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
 
 		InstallNode resistry = new InstallNode();
 		resistry.setDefautNode(true);
 		resistry.setHostId(5);
 		resistry.setHostName("Kuber Node 2");
 		resistry.setIp("192.168.1.5");
-		resistry.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY,
-				initInstallParameter());
+		resistry.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
 
 		temp.getNodes().add(etcd_node);
 		temp.getNodes().add(master_node);
@@ -132,24 +143,20 @@ public class Ku8ClusterDeployService {
 		}
 		tmpUtil.createAnsibleFiles(temp);
 		String[] command = { "ansible-playbook -i hosts pre-setup/keys.yml",
-				"ansible-playbook -i hosts pre-setup/disablefirewalld.yml",
-				"ansible-playbook -i hosts setup.ym" };
+				"ansible-playbook -i hosts pre-setup/disablefirewalld.yml", "ansible-playbook -i hosts setup.ym" };
 		processCaller.asnyCall(command);
 	}
-	
-	public List<String> deployResult()throws Exception
-	{
+
+	public List<String> deployResult() throws Exception {
 		return processCaller.getOutputs();
 	}
-	
-	public boolean deployIsFinish() throws Exception
-	{
+
+	public boolean deployIsFinish() throws Exception {
 		return processCaller.isFinished();
 	}
-	
-	public String deployHasError()throws Exception
-	{
-		if(!processCaller.isNormalExit())
+
+	public String deployHasError() throws Exception {
+		if (!processCaller.isNormalExit())
 			return processCaller.getErrorMsg();
 		else
 			return "no error message..";
