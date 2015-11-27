@@ -1,50 +1,45 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-链接：http://pan.baidu.com/s/1gd0iyaf 密码：b4se
+链接：http://pan.baidu.com/s/1kTrT1qB 密码：ed63
 
-文件名为：ku8eye-web-0.1.tar.gz
-用gunzip解压缩后，得到文件ku8eye-web-0.1.tar
+文件名为：ku8eye-web-0.2.tar.gz
+用gunzip解压缩后，得到文件ku8eye-web-0.2.tar
 
 导入docker镜像：
-`# docker load -i ku8eye-web-0.1.tar`
+`# docker load -i ku8eye-web-0.2.tar`
 
 给该镜像打上tag：
-`# docker tag 4beaacf8c465 ku8eye-web:0.1`
+`# docker tag bce17fb36e19 ku8eye-web:0.2`
 
 运行开发环境：
-`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web --privileged ku8eye-web:0.1 /sbin/init`
-其中 3306 为 mysql 服务端口，8080 为 tomcat 服务端口，映射到宿主机上
---privileged 和 最后的 /sbin/init 表示启动init服务，之后docker容器内部才可以使用 systemd 系统。
+`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
+其中 3306 为 mysql 服务端口，8080 为 tomcat 服务端口，均需要映射到宿主机上
+
+容器启动成功后，需等待15秒左右，等待mysql数据库与web应用启动完成。
+打开浏览器，地址输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
+
 
 # - 容器内包含的软件
 ## 1. Ansible安装环境，以及安装Kubernetes所需的全部软件
-**Ansible的使用方法详见下文的[Ansible安装Kubernetes集群说明](#ansible_setup_manual)
-## 2. JDK1.8
-**环境变量 JAVA_HOME=/root/jdk1.8.0_65**
+**Ansible的使用方法详见下文的[Ansible安装Kubernetes集群说明](#ansible_setup_manual)**
+## 2. JRE1.8
+**环境变量 JAVA_HOME=/root/jre1.8.0_65**
 ## 3. MySQL 5.7.9
 **数据库名：ku8eye**
 **数据库用户名：ku8eye，密码：123456**
+## 4. ku8eye-web 应用（jar包）
 
 
-# - ku8eye-web镜像的Dockerfile
-## Dockerfile说明
-**基础镜像为CentOS官方最新版：centos:latest**
+# - ku8eye-web镜像的Dockerfile说明
 
-**主要步骤：**
-1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
-2. 安装 sshpass，并执行 `ssh-keygen` 生成密钥
-3. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
-4. 复制 JDK1.8 到 `/root/jdk1.8.0_65`，并设置环境变量 JAVA_HOME 和 PATH
-5. 复制 MySQL 5.7.9 所需rpm包到 `/root/mysql-5.7.9.el7.x86_64.rpm`，并执行 `rpm` 命令完成安装
-6. 由于 MySQL rpm 安装后使用 systemd 系统进行服务管理，该镜像的启动命令将为 `/usr/sbin/init`
-
-**完整的Dockerfile如下：**
+**完整的Dockerfile：**
 ```
 FROM centos:latest
-MAINTAINER ku8eye.bestcloud
+MAINTAINER ku8eye.bestcloud@github
 
-WORKDIR /root
+# set timezone
+ENV TZ Asia/Shanghai
 
 # set http proxy if needed
 # ENV http_proxy="http://<ip>:<port>" https_proxy="http://<ip>:<port>"
@@ -53,94 +48,118 @@ WORKDIR /root
 RUN yum clean all && \
     yum -y install epel-release && \
     yum -y install PyYAML python-jinja2 python-httplib2 python-keyczar python-paramiko python-setuptools git python-pip
-RUN mkdir /etc/ansible/
-RUN echo -e '[local]\nlocalhost' > /etc/ansible/hosts
+RUN mkdir /etc/ansible/ && echo -e '[local]\nlocalhost' > /etc/ansible/hosts
 RUN pip install ansible
 
 # 2. install sshpass, and generate ssh keys
 RUN yum -y install sshpass
 RUN ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
+# make ansible not do key checking from ~/.ssh/known_hosts file
+ENV ANSIBLE_HOST_KEY_CHECKING false
 
 # 3. add ku8eye-ansible binary and config files
 COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
 
-# 4. add JDK1.8
-COPY jdk-8u65-linux-x64.gz /root
-RUN cd /root && tar xzf jdk-8u65-linux-x64.gz
-ENV JAVA_HOME="/root/jdk-8u65-linux-x64" PATH="$PATH:/root/jdk1.8.0_65/bin"
-RUN rm -rf /root/jdk-8u65-linux-x64.gz
+# 4. install MariaDB (mysql)
+COPY MariaDB.repo /etc/yum.repos.d/MariaDB.repo
+RUN yum -y install MariaDB-server MariaDB-client
+COPY mariadb_create_ku8eye_db_and_user.sql /root/mariadb_create_ku8eye_db_and_user.sql
+COPY initsql.sql /root/initsql.sql
 
-# 5. add MySQL 5.7.9
-COPY mysql-5.7.9.el7.x86_64.rpm /root/mysql-5.7.9.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/libaio-0.3.109-12.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/numactl-libs-2.0.9-4.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/net-tools-2.0-0.17.20131004git.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/mysql-community-common-5.7.9-1.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/mysql-community-libs-5.7.9-1.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/mysql-community-client-5.7.9-1.el7.x86_64.rpm
-RUN rpm -ih /root/mysql-5.7.9.el7.x86_64.rpm/mysql-community-server-5.7.9-1.el7.x86_64.rpm
-RUN rm -rf /root/mysql-5.7.9.el7.x86_64.rpm
+# 5. add JRE1.8
+COPY jre1.8.0_65 /root/jre1.8.0_65
+ENV JAVA_HOME="/root/jre1.8.0_65" PATH="$PATH:/root/jre1.8.0_65/bin"
+RUN chmod +x /root/jre1.8.0_65/bin/*
 
-# 6. enable systemd to work
-CMD ["/usr/sbin/init"]
+# 6. install supervisor
+RUN pip install supervisor
+COPY supervisord.conf /etc/supervisord.conf
 
+# 7. start mariadb, init db data, and start ku8eye-web app
+COPY ku8eye-web-0.0.1-SNAPSHOT.jar /root/ku8eye-web-0.0.1-SNAPSHOT.jar
+COPY run.sh /root/run.sh
+COPY run_mysqld.sh /root/run_mysqld.sh
+COPY run_tomcat.sh /root/run_tomcat.sh
+RUN chmod +x /root/*.sh
+ENTRYPOINT /usr/bin/supervisord
+```
+**基础镜像为CentOS官方最新版：centos:latest**
+
+**主要步骤：**
+1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
+**注：`设置环境变量 ANSIBLE_HOST_KEY_CHECKING=false` 表示ansible在ssh登录其他机器时，不执行基于known_hosts文件的 key checking 操作，这样能够跳过首次ssh连接需要输入yes的操作。**
+2. 为ansible安装 sshpass，并执行 `ssh-keygen` 生成密钥
+3. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
+4. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
+MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseurl地址`）
+```
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.1/centos7-amd64/
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=0
+```
+5. 复制 JRE1.8 到容器的 `/root/jre1.8.0_65` 目录，并设置环境变量 JAVA_HOME 和 PATH
+
+6. 执行pip安装supervisor，并复制配置文件 supervisord.conf 到容器的 `/etc` 目录
+supervisord.conf文件内容为：
+其中，设置nodaemon为true表示 supervisord 将在前台运行
+```
+[supervisord]
+nodaemon = true
+
+[program:ku8eye-web]
+command = /root/run.sh
+autorestart = false
+autostart = true
+redirect_stderr = true
+startretries = 0
+startsecs = 10
+```
+/root/run.sh文件的内容包括启动mysql服务，创建数据库/用户，初始化数据，最后启动web服务，内容为：
+```
+#!/bin/sh
+
+# start mysqld service
+/root/run_mysqld.sh
+# wait for mysqld to startup completely
+sleep 5
+echo "====== mysqld_safe start done."
+
+# create database and user "ku8eye"
+echo "====== create database and user ku8eye"
+mysql < /root/mariadb_create_ku8eye_db_and_user.sql
+sleep 1
+
+# run ku8eye-web initsql.sql to create tables
+echo "====== run ku8eye-web initsql.sql to create tables"
+mysql -uku8eye -p123456 ku8eye < /root/initsql.sql
+sleep 1
+
+# start ku8eye-web app
+/root/run_tomcat.sh
+echo "====== start ku8eye-web done."
 ```
 
+7. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
+
+8. 最后，设置启动命令为 `/usr/bin/supervisord`
+
+
+
+
 ## 创建镜像
-`# docker build -t="ku8eye-web:0.1" --rm .`
-
-
-## 镜像build待讨论事项
-1. 由于 mysqld 服务的启动依赖systemd系统，在build镜像时由于 /usr/sbin/init 还未启动，systemctl将不能在Dockerfile中执行
-    故只能在该镜像build完成，并用 docker run 启动之后，登录到容器内部，才能使用 systemctl 命令来启动 mysqld服务。
-    **问题：是否可以不使用systemd系统来管理mysql？**
-    
-2. mysql服务在第一次启动后，root用户无法登录，遇到如下错误：
-    `ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)`
-    **解决方法：**
-    1) 修改mysqld服务的配置文件`/etc/sysconfig/mysql` ，加上参数：`MYSQLD_OPTS="--skip-grant-tables"`，然后重启mysqld服务：
-    `# systemctl restart mysqld`
-    2) 用root用户登录：
-    `# mysql -uroot mysql`
-    3) 修改root用户的密码（例如：123456）：
-    `mysql> UPDATE USER SET authentication_string=PASSWORD('123456') WHERE USER='root';`
-    4) 使权限设置生效：
-    `mysql> FLUSH PRIVILEGES;`
-    5) 创建数据库ku8eye：
-    `mysql> CREATE DATABASE ku8eye DEFAULT CHARSET=utf8;`
-    6) 创建数据库用户ku8eye，密码为123456（@%表示所有从任意客户端均可登录）：
-    `mysql> CREATE USER 'ku8eye'@'%' IDENTIFIED BY '123456';`
-    7) 给ku8eye用户授权：
-    `mysql> GRANT ALL ON ku8eye.* TO 'ku8eye'@'%';`
-    8) 将配置文件`/etc/sysconfig/mysql`恢复原状，再次重启mysqld服务。
-
-    > 也可以将SQL语句保存为文件，例如 /root/mysql-init.sql：
-    `UPDATE USER SET authentication_string=PASSWORD('123456') WHERE USER='root';
-     FLUSH PRIVILEGES;
-     CREATE DATABASE ku8eye DEFAULT CHARSET=utf8;
-     CREATE USER 'ku8eye'@'%' IDENTIFIED BY '123456';
-     GRANT ALL ON ku8eye.* TO 'ku8eye'@'%';`
-    > 然后执行 `# mysql -uroot mysql < /root/mysql-init.sql` 完成操作。
-
-    **问题：是否可以不使用 --skip-grant-tables 来修改密码、创建数据库？**
-
-3. mysql的安装过程是否不太适合在docker容器内安装
-    **问题：是否可以安装 mariadb 来代替 mysql？**
-
-4. 镜像的体积
-    **问题：镜像体积2.8GB，如何瘦身？**
+`# docker build -t="ku8eye-web:0.2" --rm .`
 
 
 
-
-# <A HREF="#ansible_setup_manual>Ansible安装Kubernetes集群说明</a>
+# Ansible安装Kubernetes集群说明
 
 **Ansible**是一款基于Python开发的自动化运维工具，本文通过使用 **ansible-playbook** 完成Kubernetes集群的一键安装。
 
 ## 1. Ansible 安装环境准备
-**1.** 准备一台Linux服务器，并安装docker。
-**2.** 将所有ansible脚本和源文件放在安装服务器的/root/ansible/kubernetes_cluster_setup目录中。
-**3.** 下载**ku8eye web开发环境** docker镜像并启动容器。
+**1.** 准备一台Linux服务器，安装docker。
+**2.** 下载**ku8eye web开发环境** docker镜像并启动容器（见本文开始章节的说明）。
 
 ## 2. Kubernetes集群环境准备
 一个Kubernetes集群由etcd服务、master服务和一组node组成。
@@ -165,41 +184,19 @@ Docker：推荐 v1.9.0 及以上版本
 
 
 ## 4. Kubernetes集群安装前的准备工作
-### 4.1 手工在安装服务器上ssh连接一次全部待安装机器
-由于ansible的安装过程完全基于ssh远程登录操作，所以需要第一次记住远程主机的fingerprint到本地~/.ssh/known_hosts文件中，后续的ssh操作才不会被提示。
 
-这个操作需要在安装机器上手工来完成，确保本机的 ~/.ssh/known_hosts文件中包含了所有待安装服务器的fingerprint信息，然后在启动 ku8eye-web 容器时，将这个文件挂载到容器内部，容器内使用ansible就可以直接进行ssh远程登录操作了。
-
-示例如下：（第一次连接必须手工输入yes）
-``` script
-$ ssh 192.168.1.200
-The authenticity of host '192.168.1.200 (192.168.1.200)' can't be established.
-ECDSA key fingerprint is 4c:de:25:76:ea:bd:78:18:82:bd:4e:29:39:23:06:92.
-Are you sure you want to continue connecting (yes/no)? yes
-......
-$ ssh 192.168.1.201
-......
-$ ssh 192.168.1.202
-......
-$ ssh 192.168.1.203
-......
-```
-
-### 4.2 启动容器，进入容器
-**启动ku8eye-web容器，将宿主机的known_hosts文件挂载到容器内部：**
-**$ docker run -tid -p 3306:3306 -p 8080:8080 <font color=red>-v /root/.ssh/known_hosts:/root/.ssh/known_hosts</font> --name ku8eye-web --privileged ku8eye-web:0.1 /sbin/init**
-（也可以使用 docker cp known_hosts container_id:/root/.ssh/known_hosts 复制到容器内部）
-
+### 4.1 启动容器，进入容器
+`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
 `$ docker exec -ti ku8eye-web bash`
 
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
-> **$ docker exec -ti ansible2 ansible-playbook -i /root/ansible/kubernetes_cluster_setup/hosts /root/ansible/kubernetes_cluster_setup/pre-setup/ping.yml**
+> **$ docker exec -ti ku8eye-web ansible-playbook -i /root/ansible/kubernetes_cluster_setup/hosts /root/ansible/kubernetes_cluster_setup/pre-setup/ping.yml**
 
 
-## 4.3 修改 ansible 的 hosts 配置文件
+### 4.2 修改 ansible 的 hosts 配置文件
 修改/root/ansible/kubernetes_cluster_setup/hosts文件，内容为待安装Kubernetes集群各服务器的分组与IP地址。
 > 注：通过修改hosts文件可以选择安装哪些role到哪些主机上。
-``` script
+```
 [docker-registry]
 192.168.1.200
 
@@ -214,15 +211,15 @@ $ ssh 192.168.1.203
 192.168.1.203
 ```
 
-### 4.3 修改/root/ansible/kubernetes_cluster_setup目录下`rootpassword`文件，内容为待安装所有服务器root用户的口令例如：
-``` script
+### 4.3 修改/root/ansible/kubernetes_cluster_setup目录下`rootpassword`文件，内容为待安装所有服务器root用户的密码例如：
+```
 password123
 ```
-> 注：所有待安装服务器的root口令需要相同
+> 注：如各服务器的root密码不同，则需修改hosts文件以标明每台服务器的密码
 
 
 ### 4.4 执行ansible-playbook命令完成复制公钥操作：
-``` script
+```
 $ ansible-playbook -i hosts pre-setup/keys.yml
 
 PLAY ***************************************************************************
@@ -247,7 +244,7 @@ PLAY RECAP *********************************************************************
 ```
 
 **keys.yml文件内容如下：**
-``` script
+```
 # Using this module REQUIRES the sshpass package to be installed!
 #
 # This REQUIRES you have created a ~/.ssh/id_rsa.pub public key
@@ -283,7 +280,7 @@ PLAY RECAP *********************************************************************
 
 
 ### 4.5 执行ansible-playbook命令停止所有机器的防火墙服务：
-``` script
+```
 $ ansible-playbook -i hosts pre-setup/disablefirewalld.yml
 
 PLAY ***************************************************************************
@@ -328,7 +325,7 @@ PLAY RECAP *********************************************************************
 
 ### 4.6 执行ansible-playbook命令为每台服务器添加docker registry服务器主机名与IP地址的host记录
 **`注：本文中安装的docker registry将使用主机名作为私库的地址，如果希望使用IP地址，请修改相应的配置文件`**
-``` script
+```
 # ansible-playbook -i hosts pre-setup/add_docker_registry_host.yml 
 
 PLAY ***************************************************************************
@@ -360,10 +357,10 @@ PLAY RECAP *********************************************************************
     - name: add host entry for docker private registry server
       shell: echo {{docker_registry_server_ip}} {{docker_registry_server_name}} >> /etc/hosts
 ```
-
+其中参数 {{docker_registry_server_ip}} {{docker_registry_server_name}} 在 `group_vars/all.yml` 文件中进行配置。
 
 ## 5. Kubernetes集群安装
-<font color=red size=5>注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见第[5.6](#kube_role_config)节）</font>
+<font color=red size=5>注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见 [5.6 修改配置文件的内容](#kube_role_config) 一节的说明）</font>
 ### 5.1 创建Role
 #### 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
 * docker-registry
@@ -381,7 +378,7 @@ templates：需修改参数的配置文件，其中参数由defaults目录中的
 默认文件为all.yml
 
 ### 5.4 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建setup.yml文件，内容为ansible-playbook在各host安装role的配置：
-``` script
+```
 ---
 - hosts: docker-registry
   roles:
@@ -448,7 +445,7 @@ kubernetes_cluster_setup
 
 
 
-### <a href="#kube_role_config">5.6 修改配置文件的内容</a>
+### 5.6 修改配置文件的内容
 **安装Kubernetes集群所需修改的配置文件列表如下：**
 ```
 kubernetes_cluster_setup
@@ -475,6 +472,11 @@ kubernetes_cluster_setup
         └─defaults
                 main.yml          node相关参数
 ```
+
+<font color=red>**特别说明：**
+**需要仔细规划以下两组IP地址范围，它们都不能与物理机的IP地址范围重叠：**
+**a. 各主机上docker0网桥的IP地址。**
+**b. Kubernetes中Service的 Cluster IP地址范围。**</font>
 
 #### 1) 全局参数 group_vars\all.yml
 - `cluster_domain_name: cluster.local`       kube-dns服务设置的domain名
@@ -570,7 +572,7 @@ kubernetes_cluster_setup
 ```
 
 ### 5.7 运行 ansible-playbook 完成集群的安装
-``` script
+```
 $ ansible-playbook -i hosts setup.yml
 
 PLAY ***************************************************************************
@@ -948,7 +950,7 @@ PLAY RECAP *********************************************************************
 ```
 
 ### 5.8 登录master服务器，验证Kubernetes集群正常启动
-``` script
+```
 $ kubectl get nodes
 NAME            LABELS                                 STATUS
 192.168.1.202   kubernetes.io/hostname=192.168.1.202   Ready
