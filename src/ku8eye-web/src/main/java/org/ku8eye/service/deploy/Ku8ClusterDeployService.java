@@ -1,5 +1,6 @@
 package org.ku8eye.service.deploy;
 
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,17 +34,23 @@ public class Ku8ClusterDeployService {
 		temp.setDescribe("All service in one server");
 		temp.setMinNodes(1);
 		temp.setMaxNodes(1);
+		
 		InstallNode node = new InstallNode();
-		List<InstallParam> roleParams = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, roleParams);
-		roleParams = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, roleParams);
-		roleParams = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, roleParams);
-		roleParams = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, roleParams);
+		node.setDefautNode(true);
+		node.setHostId(1);
+		node.setHostName("Etcd");
+		node.setIp("192.168.1.2");
+		
+		List<InstallParam> etcdParams = new LinkedList<InstallParam>();
+		etcdParams.add(new InstallParam("peer_ip", "192.168.1.2", "etcd所在主机的IP地址"));
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, etcdParams);
+		List<InstallParam> kuberMasterParams  = new LinkedList<InstallParam>();
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, kuberMasterParams);
+		List<InstallParam> kuberNdoeParams  = new LinkedList<InstallParam>();
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, kuberNdoeParams);
+		List<InstallParam> dockerRegistryParams  = new LinkedList<InstallParam>();
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, dockerRegistryParams);
 		temp.getNodes().add(node);
 		return temp;
-
 	}
 }
