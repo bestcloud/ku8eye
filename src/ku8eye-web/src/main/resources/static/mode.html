@@ -18,7 +18,7 @@
 							<th>节点角色</th>
 							<th>安装参数</th>
 						</tr>
-						<tr>
+						<!--  <tr>
 							<td><input type='checkbox' class='chkbox' name='child' />
 							</td>
 							<td>192.168.1.1</td>
@@ -31,7 +31,7 @@
 							<td>192.168.1.2</td>
 							<td>ku8 Node</td>
 							<td>&nbsp;</td>
-						</tr>
+						</tr>-->
 					</thead>
 				</table>
 			</div>
@@ -60,24 +60,80 @@
 		            <form class="form-horizontal">
 		              <div class="box-body">
 		                <div class="form-group">
-		                  <label for="inputEmail3" class="col-sm-2 control-label">节点IP:</label>
+		                  <label for="inputEmail3" class="col-sm-2 control-label">ZONE_ID：</label>
 		
 		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="nodeIP" placeholder="192.168.1.1">
+		                    <input type="text" class="form-control" id="zone_id" placeholder="192.168.1.1">
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="inputPassword3" class="col-sm-2 control-label">节点角色:</label>
+		                  <label for="inputPassword3" class="col-sm-2 control-label">HOST_NAME:</label>
 		
 		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="nodeRole" placeholder="ku8 Master">
+		                    <input type="text" class="form-control" id="host_name" placeholder="ku8 Master">
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="inputPassword3" class="col-sm-2 control-label">安装参数:</label>
+		                  <label for="inputPassword3" class="col-sm-2 control-label">IP:</label>
 		
 		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="parameter" >
+		                    <input type="text" class="form-control" id="ip" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">ROOT_PASSWD:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="root_passwd" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">LOCATION:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="location" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">NOTE:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="note" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">CORES:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="cores">
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">MEMORY:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="memory" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">USAGE_FLAG:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="usage_flag" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">SSH_LOGIN:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="ssh_login" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="inputPassword3" class="col-sm-2 control-label">CLUSTER_ID:</label>
+		
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="cluster_id" >
 		                  </div>
 		                </div>
 		               
@@ -101,11 +157,69 @@ $("#nextStep").click(function(){
 	$(".content").load('modeNext.html');
 });
 $("#save").click(function(){
-	
-	$("#example1").append("<tr><td><input type='checkbox' class='chkbox' name='child' /></td><td>"+$("#nodeIP").val()+"</td><td>"+$("#nodeRole").val()+"</td><td>"+$("#parameter").val()+"</td></tr>");
-	$("#nodeIP").val("");
-	$("#nodeRole").val("");
-	$("#parameter").val("");
+	var _zone_id =$("#zone_id").val();
+	var _host_name =$("#host_name").val();
+	var _ip =$("#ip").val();
+	var _root_passwd =$("#root_passwd").val();
+	var _location =$("#location").val();
+	var _note =$("#note").val();
+	var _cores =$("#cores").val();
+	var _memory =$("#memory").val();
+	var _usage_flag =$("#usage_flag").val();
+	var _ssh_login =$("#ssh_login").val();
+	var _cluster_id =$("#cluster_id").val();
+    $.ajax({
+        url:"/hostl",
+        type: "POST",
+        data:{
+            zone_id:_zone_id,
+            host_name:_host_name,
+            ip:_ip,
+            root_passwd:_root_passwd,
+            location:_location,
+            note:_note,
+            cores:_cores,
+            memory:_memory,
+            usage_flag:_usage_flag,
+            ssh_login:_ssh_login,
+            cluster_id:_cluster_id,
+        },
+        dataType:"text",
+        success: function(msg){
+            $("#example1").append("<tr><td><input type='checkbox' class='chkbox' name='child' /></td><td>"+_ip+"</td><td>"+_host_name+"</td><td>"+_note+"</td></tr>");
+        },
+        onFail: function () {
+           alert("添加失败");
+        }
+    });       
 	
 });
+
+
+
+
+$(document).ajaxStart(function() { Pace.restart(); });
+    $('#example1').DataTable({
+        "ajax":"/hostlist/1",
+        "columns": [
+        			{ "data": "", render: function ( data, type, row ) {
+                		// Combine the first and last names into a single table field
+                			return "<input type='checkbox' class='chkbox' name='child' />";
+            		} },
+        			{ "data": "ip" },
+        			{ "data": "hostName" },
+        			{ "data": "note" },
+        			
+	       		],
+       		"buttons": [
+       		          {
+       		              text: 'Reload',
+       		              action: function ( e, dt, node, config ) {
+       		                  dt.ajax.reload();
+       		              }
+       		          }
+       		      ]
+    });
+      
+ 
 </script>
