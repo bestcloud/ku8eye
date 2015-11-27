@@ -15,13 +15,14 @@ import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
+import org.springframework.stereotype.Component;
+@Component
 @ConfigurationProperties(prefix = "deploy.ansible.root")
 public class TemplateUtil {
 
 	private String tmpFileYML;
 	private String hostsFile;
-	private String passwordFile;
+	
 
 	public void setTmpFileYML(String tmpFileStr) {
 		this.tmpFileYML = tmpFileStr;
@@ -31,36 +32,27 @@ public class TemplateUtil {
 		this.hostsFile = hostsFile;
 	}
 
-	public void setPasswordFile(String passwordFile) {
-		this.passwordFile = passwordFile;
-	}
 
-	public void createAnsibleFiles() throws Exception {
+
+	public void createAnsibleFiles(Ku8ClusterTemplate tmp) throws Exception {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-		List<Ku8ClusterTemplate> tmpList = Ku8ClusterDeployService
-				.getAllTemplates();
-		if (tmpList.size() < 0) {
-			return;
-		}
 
-		for (Ku8ClusterTemplate tmp : tmpList) {
-			// creatYml file
-			String[] files = tmpFileYML.split(",");
-			for (String fileline : files) {
-				String[] fpara = fileline.split(":");
-				creatParameterFile(tmp.getGlobParameterByRole(fpara[0]), gt,
-						fpara[1], fpara[2]);
-			}
-			// creat hosts file
-			String[] hostsLine = hostsFile.split(":");
-			creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0],
-					hostsLine[1]);
-			// creat password file
-
-			writeFile(tmp.getPassword(), passwordFile);
+		// creatYml file
+		String[] files = tmpFileYML.split(",");
+		for (String fileline : files) {
+			String[] fpara = fileline.split(":");
+			creatParameterFile(tmp.getGlobParameterByRole(fpara[0]), gt,
+					fpara[1], fpara[2]);
 		}
+		// creat hosts file
+		String[] hostsLine = hostsFile.split(":");
+		creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0], hostsLine[1]);
+		// creat password file
+
+	
+
 	}
 
 	void creatParameterFile(List<InstallParam> l, GroupTemplate gt,

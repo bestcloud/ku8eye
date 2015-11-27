@@ -43,7 +43,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// nodes to install
 	private List<InstallNode> nodes= new ArrayList<InstallNode>();
 	private List<String> allowedNewRoles = new ArrayList<String>();
-	private String password;
+	
 	
 	
 	public String getLogoImage() {
@@ -107,13 +107,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		this.describe = describe;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	
 
 	public String getVersion() {
 		return version;
