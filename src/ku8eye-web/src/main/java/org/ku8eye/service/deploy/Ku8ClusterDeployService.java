@@ -1,6 +1,7 @@
 package org.ku8eye.service.deploy;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,15 +42,24 @@ public class Ku8ClusterDeployService {
 		node.setHostName("Etcd");
 		node.setIp("192.168.1.2");
 		
-		List<InstallParam> etcdParams = new LinkedList<InstallParam>();
-		etcdParams.add(new InstallParam("peer_ip", "192.168.1.2", "etcd所在主机的IP地址"));
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, etcdParams);
-		List<InstallParam> kuberMasterParams  = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, kuberMasterParams);
-		List<InstallParam> kuberNdoeParams  = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, kuberNdoeParams);
-		List<InstallParam> dockerRegistryParams  = new LinkedList<InstallParam>();
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, dockerRegistryParams);
+		List<InstallParam> etc =new ArrayList<InstallParam>();
+		etc.add(new InstallParam("etcd_parameter", "123123", "desc"));
+//		etcdParams.add(new InstallParam("peer_ip", "192.168.1.2", "etcd所在主机的IP地址"));
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, etc);
+		
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, new ArrayList<InstallParam>());
+		
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, new ArrayList<InstallParam>());
+		
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, new ArrayList<InstallParam>());
+//		List<InstallNode> nodeList=new ArrayList<InstallNode>();
+//		nodeList.add(node);
+//		for(String key:node.getNodeRoleParams().keySet())
+//		{
+//			System.out.println("===>????>>>>"+key);
+//		}
+		
+		
 		temp.getNodes().add(node);
 		return temp;
 	}
