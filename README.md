@@ -1,5 +1,9 @@
 ![ImageLoadFailed](./res/ku8eye.png)
 
+2015-11-27 更新 ku8eye-web 预览版，以docker镜像形式提供，下载地址为：
+链接：http://pan.baidu.com/s/1kTrT1qB 密码：ed63
+详细的使用方法参见[ku8eye web 开发环境使用手册](./doc/ku8eye-web-dev-env.md)
+
 A powerful web based Mangement of  Google's Kubernetes
 It has the following goals
  - 1. One step to install kubernetes cluster. The fastest way to get up-and-running with Google Kubernetes cluster. complete with intelligent default settings based on your system. 
