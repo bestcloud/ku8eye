@@ -1,16 +1,13 @@
 package org.ku8eye.service.deploy;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.el.lang.FunctionMapperImpl.Function;
 import org.beetl.core.Configuration;
-import org.beetl.core.Context;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
 import org.beetl.core.resource.ClasspathResourceLoader;
@@ -19,19 +16,29 @@ import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-
 @ConfigurationProperties(prefix = "deploy.ansible.root")
 public class TemplateUtil {
-private String home;
 
-	
-	
-	public static void createAnsibleFiles() throws IOException {
+	private String tmpFileYML;
+	private String hostsFile;
+	private String passwordFile;
+
+	public void setTmpFileYML(String tmpFileStr) {
+		this.tmpFileYML = tmpFileStr;
+	}
+
+	public void setHostsFile(String hostsFile) {
+		this.hostsFile = hostsFile;
+	}
+
+	public void setPasswordFile(String passwordFile) {
+		this.passwordFile = passwordFile;
+	}
+
+	public void createAnsibleFiles() throws Exception {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-		// Template t = gt.getTemplate("/templates/ansible-host.beetl");
-
 		List<Ku8ClusterTemplate> tmpList = Ku8ClusterDeployService
 				.getAllTemplates();
 		if (tmpList.size() < 0) {
@@ -39,97 +46,47 @@ private String home;
 		}
 
 		for (Ku8ClusterTemplate tmp : tmpList) {
-			String str = getAllGlobleParameterFile(
-					tmp.getGlobParameterByRole(Ku8ClusterTemplate.DEFAULT_GLOBAL),
-					gt);
-//			System.out.println(str);
-//			System.out.println("===========>>");
-			 str = getDockerRegistryParameterFile(
-			 tmp.getGlobParameterByRole(Ku8ClusterTemplate.NODE_ROLE_REGISTRY),
-			 gt);
-//			 System.out.println(str);
-//			 System.out.println("===========>>");
-			 str = getEtcdParameterFile(
-			 tmp.getGlobParameterByRole(Ku8ClusterTemplate.NODE_ROLE_ETCD),
-			 gt);
-//			 System.out.println(str);
-//			 System.out.println("===========>>");
-			 str = getKuberMasterParameterFile(
-			 tmp.getGlobParameterByRole(Ku8ClusterTemplate.NODE_ROLE_MASTER),
-			 gt);
-//			 System.out.println(str);
-//			 System.out.println("===========>>");
-			 str = getKuberNodeParameterFile(
-			 tmp.getGlobParameterByRole(Ku8ClusterTemplate.NODE_ROLE_NODE),
-			 gt);
-//			 System.out.println(str);
-//			 System.out.println("===========>>");
+			// creatYml file
+			String[] files = tmpFileYML.split(",");
+			for (String fileline : files) {
+				String[] fpara = fileline.split(":");
+				creatParameterFile(tmp.getGlobParameterByRole(fpara[0]), gt,
+						fpara[1], fpara[2]);
+			}
+			// creat hosts file
+			String[] hostsLine = hostsFile.split(":");
+			creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0],
+					hostsLine[1]);
+			// creat password file
 
-			str = getHostsParameterFile(tmp.getNodes(), gt);
-			 System.out.println(str);
-			 System.out.println("===========>>");
-
-			
+			writeFile(tmp.getPassword(), passwordFile);
 		}
 	}
 
-	static String getAllGlobleParameterFile(List<InstallParam> l,
-			GroupTemplate gt) {
-		Template t = gt.getTemplate("/templates/all.yml");
+	void creatParameterFile(List<InstallParam> l, GroupTemplate gt,
+			String temlate, String outFile) throws Exception {
+
+		Template t = gt.getTemplate(temlate);
 		for (InstallParam para : l) {
 			t.binding(para.getName(), para.getValue());
 		}
-		return t.render();
+
+		writeFile(t.render(), outFile);
 	}
 
-	static String getDockerRegistryParameterFile(List<InstallParam> l,
-			GroupTemplate gt) {
-		Template t = gt.getTemplate("/templates/docker_registry.yml");
-		for (InstallParam para : l) {
-			t.binding(para.getName(), para.getValue());
-		}
-		return t.render();
-	}
+	void creatHostsParameterFile(List<InstallNode> l, GroupTemplate gt,
+			String temlate, String outFile) throws Exception {
 
-	static String getEtcdParameterFile(List<InstallParam> l, GroupTemplate gt) {
-		Template t = gt.getTemplate("/templates/etcd.yml");
-		for (InstallParam para : l) {
-			t.binding(para.getName(), para.getValue());
-		}
-		return t.render();
-	}
-
-	static String getKuberMasterParameterFile(List<InstallParam> l,
-			GroupTemplate gt) {
-		Template t = gt.getTemplate("/templates/kuber_master.yml");
-		for (InstallParam para : l) {
-			t.binding(para.getName(), para.getValue());
-		}
-		return t.render();
-	}
-
-	static String getKuberNodeParameterFile(List<InstallParam> l,
-			GroupTemplate gt) {
-		Template t = gt.getTemplate("/templates/kuber_node.yml");
-		for (InstallParam para : l) {
-			t.binding(para.getName(), para.getValue());
-		}
-		return t.render();
-	}
-
-	static String getHostsParameterFile(List<InstallNode> l, GroupTemplate gt) {
-
-		Template t = gt.getTemplate("/templates/hosts");
+		Template t = gt.getTemplate(temlate);
 		HashMap<String, List<InstallParam>> registry_list = new HashMap<String, List<InstallParam>>();
 		HashMap<String, List<InstallParam>> etde_list = new HashMap<String, List<InstallParam>>();
 		HashMap<String, List<InstallParam>> master_list = new HashMap<String, List<InstallParam>>();
 		HashMap<String, List<InstallParam>> nodes_list = new HashMap<String, List<InstallParam>>();
-//		gt.registerFormat("ShowParameter",new showParameter());
-		
+		// gt.registerFormat("ShowParameter",new showParameter());
+
 		for (InstallNode node : l) {
 
 			Map<String, List<InstallParam>> hm = node.getNodeRoleParams();
-
 
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD) != null) {
 				etde_list.put(node.getIp(),
@@ -154,25 +111,43 @@ private String home;
 		t.binding("etcd", etde_list);
 		t.binding("registry", registry_list);
 		t.binding("node", nodes_list);
-		return t.render();
+
+		writeFile(t.render(), outFile);
+	}
+
+	private void writeFile(String fileInfo, String outFile) throws Exception {
+		FileOutputStream out = null;
+		try {
+
+			File file = new File(outFile);
+			if (!file.exists())
+				file.createNewFile();
+			out = new FileOutputStream(file, false);
+			out.write(fileInfo.getBytes("utf-8"));
+
+		} finally {
+			if (out != null)
+				out.close();
+		}
+
 	}
 
 	public static void main(String[] args) throws IOException {
-		createAnsibleFiles();
+		// createAnsibleFiles();
 	}
 }
-//class showParameter implements org.beetl.core.Format
-//{
-//	@Override
-//	public Object format(Object paramObject, String paramString) {
-// 
-//		String result="";
-//		for(InstallParam para:(List<InstallParam>)paramObject)
-//		{
-//			result=" "+para.getName()+"="+para.getValue();	
-//		}
-//		return result;
-//	}
-//  
+// class showParameter implements org.beetl.core.Format
+// {
+// @Override
+// public Object format(Object paramObject, String paramString) {
 //
-//}
+// String result="";
+// for(InstallParam para:(List<InstallParam>)paramObject)
+// {
+// result=" "+para.getName()+"="+para.getValue();
+// }
+// return result;
+// }
+//
+//
+// }
