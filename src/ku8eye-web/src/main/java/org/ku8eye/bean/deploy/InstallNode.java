@@ -1,5 +1,6 @@
 package org.ku8eye.bean.deploy;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class InstallNode implements Cloneable {
 	private String hostName;
 	// node role ,for example etcd 、master、 node ,docker registry
 	// node specific params,key is node Role,values is related role's InstallParam
-	private Map<String, List<InstallParam>> nodeRoleParams = new LinkedHashMap<String, List<InstallParam>>();
+	private Map<String, List<InstallParam>> nodeRoleParams = new HashMap<String, List<InstallParam>>();
 	// if it's a default node from template,if true ,it can't be deleted
 	private boolean defautNode;
 

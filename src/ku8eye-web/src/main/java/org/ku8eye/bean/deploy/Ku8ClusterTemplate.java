@@ -18,8 +18,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_MASTER = "kube-master";
 	public static String NODE_ROLE_NODE = "kube-node";
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
-
-	static String DEFAULT_GLOBAL = "default-global";
+	public static String DEFAULT_GLOBAL = "default-global";
 
 	public Ku8ClusterTemplate() {
 
@@ -42,9 +41,11 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// global insall params,key is param's name
 	private HashMap<String, List<InstallParam>> globalParams;
 
+	
+	
 	// nodes to install
-	private List<InstallNode> nodes;
-	private List<String> allowedNewRoles = new LinkedList<String>();
+	private List<InstallNode> nodes= new ArrayList<InstallNode>();
+	private List<String> allowedNewRoles = new ArrayList<String>();
 
 	public String getLogoImage() {
 		return logoImage;
@@ -74,6 +75,11 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 	}
 
+	public  List<InstallParam> getGlobParameterByRole(String role)
+	{
+		return globalParams.get(role);
+	}
+	
 	public void setLogoImage(String logoImage) {
 		this.logoImage = logoImage;
 	}
@@ -189,8 +195,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 		// etcd
 		List<InstallParam> etcdParams = new ArrayList<InstallParam>();
+		
 		etcdParams.add(new InstallParam("etcd_data_dir",
 				" /var/lib/etcd/etcd_data", "etcd数据存储目录"));
+		etcdParams.add(new InstallParam("peer_ip",
+				" 192.168.1.201", ""));
+		globalParams.put(NODE_ROLE_ETCD, etcdParams);
+		
+		
+		
 		// docker reg
 		List<InstallParam> dockerRegistryParams = new ArrayList<InstallParam>();
 		dockerRegistryParams.add(new InstallParam("docker0_ip",
@@ -205,7 +218,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 				"774242a00f13", "docker registry 镜像ID"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_image_tag",
 				"registry:2.2.0", "docker registry 镜像tag"));
-
+		globalParams.put(NODE_ROLE_REGISTRY, dockerRegistryParams);
 		// kub master
 		List<InstallParam> kuberMasterParams = new ArrayList<InstallParam>();
 		kuberMasterParams.add(new InstallParam("etcd_servers",
@@ -222,6 +235,11 @@ public class Ku8ClusterTemplate implements Cloneable {
 				"http://192.168.1.2:1100", "kube-apiserver服务URL"));
 		kuberMasterParams.add(new InstallParam("kube_node_sync_period", "10s",
 				"master与node信息同步时间间隔"));
+		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ecip.hp.com",
+				""));
+		kuberMasterParams.add(new InstallParam("server_key_CN", "192.168.1.201",
+				""));
+		globalParams.put(NODE_ROLE_MASTER, kuberMasterParams);
 		// kubnode
 		List<InstallParam> kuberNdoeParams = new ArrayList<InstallParam>();
 		kuberNdoeParams.add(new InstallParam("kube_master_url",
@@ -231,5 +249,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 		kuberNdoeParams.add(new InstallParam("quagga_router_image_tag",
 				"index.alauda.cn/georce/router",
 				"index.alauda.cn/georce/router quagga router 镜像tag"));
+		globalParams.put(NODE_ROLE_NODE, kuberNdoeParams);
 	}
 }
