@@ -1,0 +1,3 @@
+---
+peer_ip: ${peer_ip}
+etcd_data_dir: ${etcd_data_dir}

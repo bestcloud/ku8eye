@@ -1,0 +1,59 @@
+# machines list in group
+
+[docker-registry]
+<%
+ for(host in registry){
+  print(host.key);
+  for(para in host.value )
+  {
+  print(" "+para.name+"="+para.value);
+  }
+  println("");
+}
+%>
+
+[etcd]
+<%
+ for(host in etcd){
+  print(host.key);
+  for(para in host.value )
+  {
+  print(" "+para.name+"="+para.value);
+  }
+  println("");
+}
+%>
+
+
+[kube-master]
+
+<%
+ for(host in master){
+  print(host.key);
+  for(para in host.value )
+  {
+  print(" "+para.name+"="+para.value);
+  }
+  println("");
+}
+%>
+
+
+# for docker, different docker0's IP on different node
+# and kubelet, kube-proxy
+[kube-node]
+
+<%
+ for(host in node){
+  print(host.key);
+  for(para in host.value )
+  {
+  print(" "+para.name+"="+para.value);
+  }
+  println("");
+}
+%>
+
+
+#192.168.1.202 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=true
+#......
