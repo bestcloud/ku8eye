@@ -179,20 +179,18 @@
 		
 		
 		function pageRate(){
-			alert("第二页");
 			var itemId = $( '.content' ).data( 'itemId' );
+			$("#mode_h5").val();
 			$.ajax({
 		        url:"/deploycluster/selecttemplate/"+itemId,
 		        type: "GET",
 		        dataType:"json",
 		        success: function(data){
+		        	d.node=data;
 		        	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
 		        	$.each(data.nodes,function(i,item){
 		        		$("#example").append("<tr><td><input type='checkbox' value='"+item.hostId+"' class='chkbox' name='child' /></td><td>"+item.ip+"</td><td>"+item.hostName+"</td><td>"+item.hostName+"</td></tr>");
 		        	});
-		        },
-		        onFail: function () {
-		           alert("添加失败");
 		        }
 		    }); 
 			
@@ -223,23 +221,28 @@
 			
 			
 			$("#save").click(function(){
-		    	alert("点击了按钮！");
+		    	
 		    	var de="";
 		    	$(":checkbox:checked").closest("tr").find(":checkbox").each(function(i, eleDom) {
 					// 遍历每个被选中的复选框所在行的文本框的值
 					de += eleDom.value + ",";
 				});
-		    	alert("要添加的节点id"+de);
+		    	
 		    	
 		    	$.ajax({
 			        url:"/hostlist/"+de,
 			        type: "GET",
-			        dataType:"text",
+			        dataType:"json",
 			        success: function(data){
-			        	alert("添加成功!!!="+data);
-			        },
-			        onFail: function () {
-			           alert("添加失败");
+			        	var node1="";
+			        	var node2="";
+			        	$.each(d.node.nodes,function(i,item){
+			        		node1+="<tr><td><input type='checkbox' value='"+item.hostId+"' class='chkbox' name='child' /></td><td>"+item.ip+"</td><td>"+item.hostName+"</td><td>"+item.hostName+"</td></tr>";
+			        	});
+			        	$.each(data,function(i,item){
+			        		node2+="<tr><td><input type='checkbox' value='"+item.hostId+"' class='chkbox' name='child' /></td><td>"+item.ip+"</td><td>"+item.hostName+"</td><td>"+item.hostName+"</td></tr>";
+			        	});
+			        	$("#example").html(node1+node2);
 			        }
 			    }); 
 			

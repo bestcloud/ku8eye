@@ -3,6 +3,7 @@ package org.ku8eye.ctrl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,9 @@ import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
 import org.ku8eye.domain.User;
 import org.ku8eye.service.HostService;
+import org.ku8eye.service.deploy.Ku8ClusterDeployService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +31,8 @@ public class HostController {
 
 	@Autowired
 	private HostService hostService;
+	private Ku8ClusterDeployService deployService;
+	ModelMap model;
 	private Logger log = Logger.getLogger(this.toString());
 	
 	@RequestMapping(value = "/addlist/{zoneId}")
@@ -41,36 +46,65 @@ public class HostController {
 	
 	
 	@RequestMapping(value = "/hostlist/{IdString}")
-	public GridData getProjects(@PathVariable("IdString") String zoneId) {
-		GridData grid = new GridData();
-		log.info("要发送的id的String为"+zoneId);
+	public List<InstallNode> getProjects(@PathVariable("IdString") String zoneId) {
+		
 		List<Host> pros = hostService.getHostsByZoneString(zoneId);
-		log.info("要发送的id的String为"+pros);
-		log.info("ddddddddddddddddddddddddddddd");
-		Ku8ClusterTemplate templates=new Ku8ClusterTemplate();
-		templates.addNewNode("docker-registry");
 		
 		
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
-		temp.setId(1);
-		temp.setName("Distribute Cluster");
-		temp.setTemplateType(1);
-		temp.setDescribe("Distribute server");
-		temp.setMinNodes(3);
-		temp.setMaxNodes(20);
-
-		InstallNode etcd_node = new InstallNode();
-		etcd_node.setDefautNode(true);
-		etcd_node.setHostId(2);
-		etcd_node.setHostName("Etcd");
-		etcd_node.setIp("192.168.1.2");
-		etcd_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		List<InstallNode> nodes = new LinkedList<InstallNode>();
 		
-		temp.getNodes().add(etcd_node);
+		InstallNode node = new InstallNode();
+		node.setDefautNode(true);
+		node.setHostId(1);
+		node.setHostName("sdfsdfsdf");
+		node.setIp("1.2.2.2");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		temp.getNodes().add(node);
 		
-		grid.setData(pros);		
-		return grid;
+		InstallNode node1 = new InstallNode();
+		node1.setDefautNode(true);
+		node1.setHostId(1);
+		node1.setHostName("sdfsdfsdf");
+		node1.setIp("1.2.2.2");
+		node1.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		temp.getNodes().add(node1);
+		
+		temp.addNewNode("kube-master");
+		
+		nodes.add(node);
+		nodes.add(node1);
+		
+		return nodes;
 	}
+
+	
+//	@RequestMapping(value = "/hostlist/{IdString}")
+//	public Ku8ClusterTemplate getProjects(@PathVariable("IdString") String zoneId) {
+//		GridData grid = new GridData();
+//		log.info("要发送的id的String为"+zoneId);
+//		List<Host> pros = hostService.getHostsByZoneString(zoneId);
+//
+//		
+//		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
+//
+//		InstallNode node = new InstallNode();
+//		node.setDefautNode(true);
+//		node.setHostId(1);
+//		node.setHostName("sdfsdfsdf");
+//		node.setIp("1.2.2.2");
+//		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+//		temp.getNodes().add(node);
+//		
+//		temp.addNewNode("kube-master");
+//		log.info("添加节点完成");
+//		
+//		//temp=temp.clone();
+//		
+//		return temp;
+//	}
+	
+	
 
 	private List<InstallParam> initInstallParameter() {
 		List<InstallParam> list = new ArrayList<InstallParam>();
