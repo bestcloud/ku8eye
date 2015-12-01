@@ -1,12 +1,17 @@
 package org.ku8eye.ctrl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.ku8eye.bean.GridData;
+import org.ku8eye.bean.deploy.InstallNode;
+import org.ku8eye.bean.deploy.InstallParam;
+import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
 import org.ku8eye.domain.User;
 import org.ku8eye.service.HostService;
@@ -23,29 +28,64 @@ public class HostController {
 
 	@Autowired
 	private HostService hostService;
-	int adf;
-
-	@RequestMapping(value = "/hostlist/{zoneId}")
+	private Logger log = Logger.getLogger(this.toString());
+	
+	@RequestMapping(value = "/addlist/{zoneId}")
 	public GridData getProjects(@PathVariable("zoneId") int zoneId) {
-		adf = zoneId;
 		GridData grid = new GridData();
-		if (zoneId == 1) {
-			List<Host> pros = hostService.getHostsByZoneId(zoneId);
-			grid.setData(pros);
-		} else if (zoneId == 2) {
-			HttpServletRequest res = null;
-			Object b = res.getAttribute("nodeip");
-		}
+		List<Host> pros = hostService.getHostsByZoneId(zoneId);
+		log.info("进入了！！！");
+		grid.setData(pros);
+		return grid;
+	}
+	
+	
+	@RequestMapping(value = "/hostlist/{IdString}")
+	public GridData getProjects(@PathVariable("IdString") String zoneId) {
+		GridData grid = new GridData();
+		log.info("要发送的id的String为"+zoneId);
+		List<Host> pros = hostService.getHostsByZoneString(zoneId);
+		log.info("要发送的id的String为"+pros);
+		log.info("ddddddddddddddddddddddddddddd");
+		Ku8ClusterTemplate templates=new Ku8ClusterTemplate();
+		templates.addNewNode("docker-registry");
+		
+		
+		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
+		temp.setId(1);
+		temp.setName("Distribute Cluster");
+		temp.setTemplateType(1);
+		temp.setDescribe("Distribute server");
+		temp.setMinNodes(3);
+		temp.setMaxNodes(20);
 
+		InstallNode etcd_node = new InstallNode();
+		etcd_node.setDefautNode(true);
+		etcd_node.setHostId(2);
+		etcd_node.setHostName("Etcd");
+		etcd_node.setIp("192.168.1.2");
+		etcd_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		
+		temp.getNodes().add(etcd_node);
+		
+		grid.setData(pros);		
 		return grid;
 	}
 
+	private List<InstallParam> initInstallParameter() {
+		List<InstallParam> list = new ArrayList<InstallParam>();
+		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
+		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
+		return list;
+	}
+
+
 	/**
-	 * check login username and password
+	 * add host
 	 * 
-	 * @param username
-	 * @param password
-	 * @return
+	 * 
+	 *
+	 *
 	 */
 	@RequestMapping(value = "/hostl")
 	public int checkLogin(HttpServletRequest request,
