@@ -20,10 +20,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class Ku8ClusterDeployService {
 
-	@Autowired
-	private TemplateUtil tmpUtil;
-	@Autowired
-	private ProcessCaller processCaller;
+	
+	private TemplateUtil tmpUtil= new TemplateUtil();
+	
+	private ProcessCaller processCaller =new ProcessCaller();
 	private final List<Ku8ClusterTemplate> allTemplates;
 
 	{
@@ -137,16 +137,25 @@ public class Ku8ClusterDeployService {
 		return temp;
 	}
 
-	public void deploy(Ku8ClusterTemplate temp) throws Exception {
+	public void setup(Ku8ClusterTemplate temp) throws Exception {
 		if (!processCaller.isFinished()) {
 			throw new Exception(" Ku8Cluser deploy is running...");
 		}
-		tmpUtil.createAnsibleFiles(temp);
-		String[] command = { "ansible-playbook -i hosts pre-setup/keys.yml",
-				"ansible-playbook -i hosts pre-setup/disablefirewalld.yml", "ansible-playbook -i hosts setup.ym" };
-		processCaller.asnyCall(command);
+		processCaller.asnyCall("ansible-playbook -i hosts setup.ym");
 	}
 
+	
+	public void deployKeyFiles()
+	{
+		processCaller.asnyCall("ansible-playbook -i hosts pre-setup/keys.yml");
+	}
+	
+	public void disableFirewalld()
+	{
+		processCaller.asnyCall("ansible-playbook -i hosts pre-setup/disablefirewalld.yml");
+	}
+	
+	
 	public List<String> deployResult() throws Exception {
 		return processCaller.getOutputs();
 	}
