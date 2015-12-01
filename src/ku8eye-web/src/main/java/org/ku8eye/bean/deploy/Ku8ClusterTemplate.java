@@ -51,7 +51,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 	// add a "pre paramed" node of specified nodeRole
 	public InstallNode addNewNode(String nodeRole) {
-		log.info("sdfsdfsdfddddddddd"+nodeRole);
 		for (InstallNode node : nodes) {
 			List<InstallParam> roleParams = node.getNodeRoleParams().get(nodeRole);
 			if (roleParams != null) {

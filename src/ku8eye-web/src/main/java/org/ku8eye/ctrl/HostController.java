@@ -77,33 +77,6 @@ public class HostController {
 		
 		return nodes;
 	}
-
-	
-//	@RequestMapping(value = "/hostlist/{IdString}")
-//	public Ku8ClusterTemplate getProjects(@PathVariable("IdString") String zoneId) {
-//		GridData grid = new GridData();
-//		log.info("要发送的id的String为"+zoneId);
-//		List<Host> pros = hostService.getHostsByZoneString(zoneId);
-//
-//		
-//		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
-//
-//		InstallNode node = new InstallNode();
-//		node.setDefautNode(true);
-//		node.setHostId(1);
-//		node.setHostName("sdfsdfsdf");
-//		node.setIp("1.2.2.2");
-//		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-//		temp.getNodes().add(node);
-//		
-//		temp.addNewNode("kube-master");
-//		log.info("添加节点完成");
-//		
-//		//temp=temp.clone();
-//		
-//		return temp;
-//	}
-	
 	
 
 	private List<InstallParam> initInstallParameter() {
