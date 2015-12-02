@@ -22,8 +22,7 @@ public class Ku8ClusterDeployService {
 
 	@Autowired
 	private TemplateUtil tmpUtil;
-	@Autowired
-	private ProcessCaller processCaller;
+	private ProcessCaller processCaller=new ProcessCaller();
 	private final List<Ku8ClusterTemplate> allTemplates;
 
 	{
@@ -87,6 +86,7 @@ public class Ku8ClusterDeployService {
 	private Ku8ClusterTemplate createDistributeTemplate() {
 
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
+		temp.setId(1);
 		temp.setName("Distribute Cluster");
 		temp.setTemplateType(1);
 		temp.setDescribe("Distribute server");

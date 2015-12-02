@@ -1,7 +1,9 @@
 package org.ku8eye.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.ku8eye.domain.Host;
 import org.ku8eye.domain.User;
 import org.ku8eye.mapping.HostMapper;
@@ -21,6 +23,7 @@ public class HostService {
 	@Autowired
 	private HostMapper hostDao;
 	private List<Host> hostList;
+	private Logger log = Logger.getLogger(this.toString());
 	/**
 	 * find User by userid
 	 * @param pUserId
@@ -31,6 +34,11 @@ public class HostService {
 		return hostDao.selectAll();
 	}
 	
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Host getHostsByZoneString(int  zoneId){	
+		return hostDao.selectByPrimaryKey(zoneId);
+	}
 	
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

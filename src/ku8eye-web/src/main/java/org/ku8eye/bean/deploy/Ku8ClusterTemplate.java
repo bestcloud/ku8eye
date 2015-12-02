@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * Template for Ku8 Cluster install
  * 
@@ -17,6 +19,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_NODE = "kube-node";
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 	public static String DEFAULT_GLOBAL = "default-global";
+	private Logger log = Logger.getLogger(this.toString());
 
 	public Ku8ClusterTemplate() {
 
@@ -84,6 +87,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public void setDetailPageUrl(String detailPageUrl) {
 		this.detailPageUrl = detailPageUrl;
 	}
+	
 
 	public String getName() {
 		return name;

@@ -23,12 +23,6 @@
 		padding-left:40px;
 	}
 </style>
-<script>
-
-function installationMode(){
-	$(".content").load('mode.html');
-}
-</script>
 
 <div class="row">
 	<div class="col-xs-12">
@@ -41,26 +35,7 @@ function installationMode(){
 
 				<table id="example1" class="installationMode">
 					<thead>
-						<tr>
-							<th onClick="installationMode()"><ul class="Mode">
-							<li><h3>单机环境</h3></li>
-							<li class="mode_li">要求：1节点</li>
-							<li class="mode_li">适合新手入门学习</li>
-							</ul></th>
-							<th onClick="installationMode()"><ul>
-							<li><h3>测试验证环境</h3></li>
-							<li class="mode_li">要求：最少两节点,建议3节点</li>
-							<li class="mode_li">适合新手入门学习</li>
-							</ul></th>
-						</tr>
-						<tr>
-							<th onClick="installationMode()"><ul>
-							<li><h3>生产环境</h3></li>
-							<li class="mode_li">要求：至少3节点</li>
-							<li class="mode_li">适合企业生产环境,HA功能</li>
-							</ul></th>
-							<th>&nbsp;</th>
-						</tr>
+						
 					</thead>
 				</table>
 			</div>
@@ -71,5 +46,7 @@ function installationMode(){
 	<!-- /.col -->
 </div>
 <!-- /.row -->
-
+<script>
+$.dailyInit();
+</script>
 
