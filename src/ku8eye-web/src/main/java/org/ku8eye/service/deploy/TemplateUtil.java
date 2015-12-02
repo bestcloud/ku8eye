@@ -124,7 +124,7 @@ public class TemplateUtil {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-		// createAnsibleFiles();
-	}
+//	public static void main(String[] args) throws IOException {
+//		// createAnsibleFiles();
+//	}
 }
