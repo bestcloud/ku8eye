@@ -48,33 +48,26 @@ public class HostController {
 	@RequestMapping(value = "/hostlist/{IdString}")
 	public List<InstallNode> getProjects(@PathVariable("IdString") String zoneId) {
 		
-		List<Host> pros = hostService.getHostsByZoneString(zoneId);
-		
-		
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
 		List<InstallNode> nodes = new LinkedList<InstallNode>();
-		
 		InstallNode node = new InstallNode();
-		node.setDefautNode(true);
-		node.setHostId(1);
-		node.setHostName("sdfsdfsdf");
-		node.setIp("1.2.2.2");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-		temp.getNodes().add(node);
-		
-		InstallNode node1 = new InstallNode();
-		node1.setDefautNode(true);
-		node1.setHostId(1);
-		node1.setHostName("sdfsdfsdf");
-		node1.setIp("1.2.2.2");
-		node1.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-		temp.getNodes().add(node1);
+		String strList[]=zoneId.split(",");
+		for(String s:strList)
+		{
+			if(!s.isEmpty())
+			{
+				Host pros = hostService.getHostsByZoneString(Integer.parseInt(s));
+				node.setDefautNode(true);
+				node.setHostId(pros.getId());
+				node.setHostName(pros.getHostName());
+				node.setIp(pros.getIp());
+				node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+				temp.getNodes().add(node);
+				nodes.add(node);
+			}
+		}
 		
 		temp.addNewNode("kube-master");
-		
-		nodes.add(node);
-		nodes.add(node1);
-		
 		return nodes;
 	}
 	

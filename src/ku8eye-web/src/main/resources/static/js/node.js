@@ -70,14 +70,6 @@
 	$.dailyInit = function( options ) {
 		var defaults = {};
 		var settings = $.extend( {}, defaults, options );
-//        var date = new Date();
-//        dailyDate.y = date.getFullYear();
-//        dailyDate.m = date.getMonth() + 1;
-//        dailyDate.d = date.getDate();
-//        dailyDate.date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-//        if( dailyDate.d<10 ){ dailyDate.d='0'+dailyDate.d };
-//        if( dailyDate.m<10 ){ dailyDate.m='0'+dailyDate.m };
-//        merger = dailyDate.y.toString() +"-"+ dailyDate.m.toString()+"-" + dailyDate.d.toString();
         $( '#page' ).pageControl({
             page: "cluster_main",
             loading: true,
@@ -194,7 +186,7 @@
 		        }
 		    }); 
 			
-			//添加节点对话框
+			//添加节点对话框的值
 			$('#example1').DataTable({
 		        "ajax":"/addlist/1",
 		        "columns": [
@@ -234,6 +226,7 @@
 			        type: "GET",
 			        dataType:"json",
 			        success: function(data){
+			        	alert(data);
 			        	var node1="";
 			        	var node2="";
 			        	$.each(d.node.nodes,function(i,item){
@@ -248,10 +241,7 @@
 			
 				
 		    });
-			
-			
-			
-			
+
 		}
 		
 	};
