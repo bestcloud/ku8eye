@@ -1,0 +1,14 @@
+---
+# for kube-apiserver
+etcd_servers: ${etcd_servers}
+apiserver_insecure_port: ${apiserver_insecure_port}
+apiserver_service_cluster_ip_range: ${apiserver_service_cluster_ip_range}
+apiserver_service_node_port_range: ${apiserver_service_node_port_range}
+
+# for kube-controller-manager, kube-scheduler
+kube_master_url: ${kube_master_url}
+kube_node_sync_period: ${kube_node_sync_period}
+
+# to generate ssh keys on master server
+ca_crt_CN: ${ca_crt_CN}
+server_key_CN: ${server_key_CN}

@@ -1,0 +1,7 @@
+---
+# for kubelet, kube-proxy
+kube_master_url: ${kube_master_url}
+
+# quagga router docker image info
+quagga_router_image_id: ${quagga_router_image_id}
+quagga_router_image_tag: ${quagga_router_image_tag}

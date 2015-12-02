@@ -1,0 +1,7 @@
+---
+docker0_ip: ${docker0_ip}
+docker_runtime_root_dir: ${docker_runtime_root_dir}
+
+docker_registry_root_dir: ${docker_registry_root_dir}
+docker_registry_image_id: ${docker_registry_image_id}
+docker_registry_image_tag: ${docker_registry_image_tag}
