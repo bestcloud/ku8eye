@@ -1,7 +1,7 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-链接：http://pan.baidu.com/s/1kTrT1qB 密码：ed63
+链接：http://pan.baidu.com/s/1i3RoOkP 密码：1h6t
 
 文件名为：ku8eye-web-0.2.tar.gz
 用gunzip解压缩后，得到文件ku8eye-web-0.2.tar
@@ -10,7 +10,7 @@
 `# docker load -i ku8eye-web-0.2.tar`
 
 给该镜像打上tag：
-`# docker tag bce17fb36e19 ku8eye-web:0.2`
+`# docker tag fc08f40019a5 ku8eye-web:0.2`
 
 运行开发环境：
 `docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
@@ -22,7 +22,7 @@
 
 # - 容器内包含的软件
 ## 1. Ansible安装环境，以及安装Kubernetes所需的全部软件
-**Ansible的使用方法详见下文的[Ansible安装Kubernetes集群说明](#ansible_setup_manual)**
+**Ansible的使用方法详见下文的[Ansible安装Kubernetes集群说明](#Ansible安装Kubernetes集群说明)**
 ## 2. JRE1.8
 **环境变量 JAVA_HOME=/root/jre1.8.0_65**
 ## 3. MySQL 5.7.9
@@ -34,121 +34,118 @@
 # - ku8eye-web镜像的Dockerfile说明
 
 **完整的Dockerfile：**
-```
-FROM centos:latest
-MAINTAINER ku8eye.bestcloud@github
 
-# set timezone
-ENV TZ Asia/Shanghai
+	FROM centos:latest
+	MAINTAINER ku8eye.bestcloud@github
+	
+	# set timezone
+	ENV TZ Asia/Shanghai
+	
+	# set http proxy if needed
+	# ENV http_proxy="http://<ip>:<port>" https_proxy="http://<ip>:<port>"
+	
+	# 1. install ansible
+	RUN yum clean all && \
+	    yum -y install epel-release && \
+	    yum -y install PyYAML python-jinja2 python-httplib2 python-keyczar python-paramiko python-setuptools git python-pip
+	RUN mkdir /etc/ansible/ && echo -e '[local]\nlocalhost' > /etc/ansible/hosts
+	RUN pip install ansible
+	
+	# 2. install sshpass, and generate ssh keys
+	RUN yum -y install sshpass
+	RUN ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
+	# make ansible not do key checking from ~/.ssh/known_hosts file
+	ENV ANSIBLE_HOST_KEY_CHECKING false
+	
+	# 3. add ku8eye-ansible binary and config files
+	COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
+	
+	# 4. install MariaDB (mysql)
+	COPY MariaDB.repo /etc/yum.repos.d/MariaDB.repo
+	RUN yum -y install MariaDB-server MariaDB-client
+	COPY mariadb_create_ku8eye_db_and_user.sql /root/mariadb_create_ku8eye_db_and_user.sql
+	COPY initsql.sql /root/initsql.sql
+	
+	# 5. add JRE1.8
+	COPY jre1.8.0_65 /root/jre1.8.0_65
+	ENV JAVA_HOME="/root/jre1.8.0_65" PATH="$PATH:/root/jre1.8.0_65/bin"
+	RUN chmod +x /root/jre1.8.0_65/bin/*
+	
+	# 6. install supervisor
+	RUN pip install supervisor
+	COPY supervisord.conf /etc/supervisord.conf
+	
+	# 7. start mariadb, init db data, and start ku8eye-web app
+	COPY ku8eye-web-0.0.1-SNAPSHOT.jar /root/ku8eye-web-0.0.1-SNAPSHOT.jar
+	COPY run.sh /root/run.sh
+	COPY run_mysqld.sh /root/run_mysqld.sh
+	COPY run_tomcat.sh /root/run_tomcat.sh
+	RUN chmod +x /root/*.sh
+	ENTRYPOINT /usr/bin/supervisord
 
-# set http proxy if needed
-# ENV http_proxy="http://<ip>:<port>" https_proxy="http://<ip>:<port>"
-
-# 1. install ansible
-RUN yum clean all && \
-    yum -y install epel-release && \
-    yum -y install PyYAML python-jinja2 python-httplib2 python-keyczar python-paramiko python-setuptools git python-pip
-RUN mkdir /etc/ansible/ && echo -e '[local]\nlocalhost' > /etc/ansible/hosts
-RUN pip install ansible
-
-# 2. install sshpass, and generate ssh keys
-RUN yum -y install sshpass
-RUN ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
-# make ansible not do key checking from ~/.ssh/known_hosts file
-ENV ANSIBLE_HOST_KEY_CHECKING false
-
-# 3. add ku8eye-ansible binary and config files
-COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
-
-# 4. install MariaDB (mysql)
-COPY MariaDB.repo /etc/yum.repos.d/MariaDB.repo
-RUN yum -y install MariaDB-server MariaDB-client
-COPY mariadb_create_ku8eye_db_and_user.sql /root/mariadb_create_ku8eye_db_and_user.sql
-COPY initsql.sql /root/initsql.sql
-
-# 5. add JRE1.8
-COPY jre1.8.0_65 /root/jre1.8.0_65
-ENV JAVA_HOME="/root/jre1.8.0_65" PATH="$PATH:/root/jre1.8.0_65/bin"
-RUN chmod +x /root/jre1.8.0_65/bin/*
-
-# 6. install supervisor
-RUN pip install supervisor
-COPY supervisord.conf /etc/supervisord.conf
-
-# 7. start mariadb, init db data, and start ku8eye-web app
-COPY ku8eye-web-0.0.1-SNAPSHOT.jar /root/ku8eye-web-0.0.1-SNAPSHOT.jar
-COPY run.sh /root/run.sh
-COPY run_mysqld.sh /root/run_mysqld.sh
-COPY run_tomcat.sh /root/run_tomcat.sh
-RUN chmod +x /root/*.sh
-ENTRYPOINT /usr/bin/supervisord
-```
 **基础镜像为CentOS官方最新版：centos:latest**
 
 **主要步骤：**
-1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
+### 1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
 **注：`设置环境变量 ANSIBLE_HOST_KEY_CHECKING=false` 表示ansible在ssh登录其他机器时，不执行基于known_hosts文件的 key checking 操作，这样能够跳过首次ssh连接需要输入yes的操作。**
-2. 为ansible安装 sshpass，并执行 `ssh-keygen` 生成密钥
-3. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
-4. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
+### 2. 为ansible安装 sshpass，并执行 `ssh-keygen` 生成密钥
+### 3. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
+### 4. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
 MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseurl地址`）
-```
-[mariadb]
-name = MariaDB
-baseurl = http://yum.mariadb.org/10.1/centos7-amd64/
-gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-gpgcheck=0
-```
-5. 复制 JRE1.8 到容器的 `/root/jre1.8.0_65` 目录，并设置环境变量 JAVA_HOME 和 PATH
 
-6. 执行pip安装supervisor，并复制配置文件 supervisord.conf 到容器的 `/etc` 目录
+	[mariadb]
+	name = MariaDB
+	baseurl = http://yum.mariadb.org/10.1/centos7-amd64/
+	gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+	gpgcheck=0
+
+### 5. 复制 JRE1.8 到容器的 `/root/jre1.8.0_65` 目录，并设置环境变量 JAVA_HOME 和 PATH
+
+### 6. 执行pip安装supervisor，并复制配置文件 supervisord.conf 到容器的 `/etc` 目录
 supervisord.conf文件内容为：
 其中，设置nodaemon为true表示 supervisord 将在前台运行
-```
-[supervisord]
-nodaemon = true
 
-[program:ku8eye-web]
-command = /root/run.sh
-autorestart = false
-autostart = true
-redirect_stderr = true
-startretries = 0
-startsecs = 10
-```
+	[supervisord]
+	nodaemon = true
+	
+	[program:ku8eye-web]
+	command = /root/run.sh
+	autorestart = false
+	autostart = true
+	redirect_stderr = true
+	startretries = 0
+	startsecs = 10
+
 /root/run.sh文件的内容包括启动mysql服务，创建数据库/用户，初始化数据，最后启动web服务，内容为：
-```
-#!/bin/sh
 
-# start mysqld service
-/root/run_mysqld.sh
-# wait for mysqld to startup completely
-sleep 5
-echo "====== mysqld_safe start done."
+	#!/bin/sh
+	
+	# start mysqld service
+	/root/run_mysqld.sh
+	# wait for mysqld to startup completely
+	sleep 5
+	echo "====== mysqld_safe start done."
+	
+	# create database and user "ku8eye"
+	echo "====== create database and user ku8eye"
+	mysql < /root/mariadb_create_ku8eye_db_and_user.sql
+	sleep 1
+	
+	# run ku8eye-web initsql.sql to create tables
+	echo "====== run ku8eye-web initsql.sql to create tables"
+	mysql -uku8eye -p123456 ku8eye < /root/initsql.sql
+	sleep 1
+	
+	# start ku8eye-web app
+	/root/run_tomcat.sh
+	echo "====== start ku8eye-web done."
 
-# create database and user "ku8eye"
-echo "====== create database and user ku8eye"
-mysql < /root/mariadb_create_ku8eye_db_and_user.sql
-sleep 1
+### 7. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
 
-# run ku8eye-web initsql.sql to create tables
-echo "====== run ku8eye-web initsql.sql to create tables"
-mysql -uku8eye -p123456 ku8eye < /root/initsql.sql
-sleep 1
-
-# start ku8eye-web app
-/root/run_tomcat.sh
-echo "====== start ku8eye-web done."
-```
-
-7. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
-
-8. 最后，设置启动命令为 `/usr/bin/supervisord`
-
+### 8. 最后，设置启动命令为 `/usr/bin/supervisord`
 
 
-
-## 创建镜像
+### 9. 运行docker build完成镜像的创建
 `# docker build -t="ku8eye-web:0.2" --rm .`
 
 
@@ -158,8 +155,9 @@ echo "====== start ku8eye-web done."
 **Ansible**是一款基于Python开发的自动化运维工具，本文通过使用 **ansible-playbook** 完成Kubernetes集群的一键安装。
 
 ## 1. Ansible 安装环境准备
-**1.** 准备一台Linux服务器，安装docker。
-**2.** 下载**ku8eye web开发环境** docker镜像并启动容器（见本文开始章节的说明）。
+**1.1.** 准备一台Linux服务器，安装docker。
+
+**1.2.** 下载**ku8eye web开发环境** docker镜像并启动容器（见本文开始章节的说明）。
 
 ## 2. Kubernetes集群环境准备
 一个Kubernetes集群由etcd服务、master服务和一组node组成。
@@ -183,255 +181,244 @@ Docker：推荐 v1.9.0 及以上版本
 > **注2：请勿将运行ansible的服务器纳入Kubernetes集群内。**
 
 
-## 4. Kubernetes集群安装前的准备工作
+## 3. Kubernetes集群安装前的准备工作
 
-### 4.1 启动容器，进入容器
+### 3.1 启动容器，进入容器
 `$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
 `$ docker exec -ti ku8eye-web bash`
 
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
-> **$ docker exec -ti ku8eye-web ansible-playbook -i /root/ansible/kubernetes_cluster_setup/hosts /root/ansible/kubernetes_cluster_setup/pre-setup/ping.yml**
+> **$ docker exec -ti ku8eye-web ansible-playbook -i /root/kubernetes_cluster_setup/hosts /root/kubernetes_cluster_setup/pre-setup/ping.yml**
 
 
-### 4.2 修改 ansible 的 hosts 配置文件
-修改/root/ansible/kubernetes_cluster_setup/hosts文件，内容为待安装Kubernetes集群各服务器的分组与IP地址。
+### 3.2 修改 ansible 的 hosts 配置文件
+修改/root/kubernetes_cluster_setup/hosts文件，内容为待安装Kubernetes集群各服务器的分组与IP地址。
 > 注：通过修改hosts文件可以选择安装哪些role到哪些主机上。
-```
-[docker-registry]
-192.168.1.200
+> 每台服务器的用户名和密码分别设置
 
-[etcd]
-192.168.1.201
-
-[kube-master]
-192.168.1.201
-
-[kube-node]
-192.168.1.202
-192.168.1.203
-```
-
-### 4.3 修改/root/ansible/kubernetes_cluster_setup目录下`rootpassword`文件，内容为待安装所有服务器root用户的密码例如：
-```
-password123
-```
-> 注：如各服务器的root密码不同，则需修改hosts文件以标明每台服务器的密码
+	[docker-registry]
+	192.168.1.200 ansible_ssh_user=root ansible_ssh_pass=123456
+	
+	[etcd]
+	192.168.1.201 ansible_ssh_user=root ansible_ssh_pass=123456
+	
+	[kube-master]
+	192.168.1.201 ansible_ssh_user=root ansible_ssh_pass=123456
+	
+	[kube-node]
+	192.168.1.202 ansible_ssh_user=root ansible_ssh_pass=123456
+	192.168.1.203 ansible_ssh_user=root ansible_ssh_pass=123456
 
 
-### 4.4 执行ansible-playbook命令完成复制公钥操作：
-```
-$ ansible-playbook -i hosts pre-setup/keys.yml
+### 3.4 执行ansible-playbook命令完成复制公钥操作：
 
-PLAY ***************************************************************************
+	$ ansible-playbook -i hosts pre-setup/keys.yml
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.200]
+	ok: [192.168.1.201]
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [Push rsa public key to all machines] *************************************
+	ok: [192.168.1.200]
+	ok: [192.168.1.201]
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	PLAY RECAP *********************************************************************
+	192.168.1.200              : ok=2    changed=0    unreachable=0    failed=0   
+	192.168.1.201              : ok=2    changed=0    unreachable=0    failed=0   
+	192.168.1.202              : ok=2    changed=0    unreachable=0    failed=0   
+	192.168.1.203              : ok=2    changed=0    unreachable=0    failed=0   
 
-TASK [setup] *******************************************************************
-ok: [192.168.1.200]
-ok: [192.168.1.201]
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [Push rsa public key to all machines] *************************************
-ok: [192.168.1.200]
-ok: [192.168.1.201]
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-PLAY RECAP *********************************************************************
-192.168.1.200              : ok=2    changed=0    unreachable=0    failed=0   
-192.168.1.201              : ok=2    changed=0    unreachable=0    failed=0   
-192.168.1.202              : ok=2    changed=0    unreachable=0    failed=0   
-192.168.1.203              : ok=2    changed=0    unreachable=0    failed=0   
-```
 
 **keys.yml文件内容如下：**
-```
-# Using this module REQUIRES the sshpass package to be installed!
-#
-# This REQUIRES you have created a ~/.ssh/id_rsa.pub public key
-#
-# Place the root password for all nodes in ~/rootpassword, run this playbook,
-# and it will put your public key on all the nodes.  Then delete rootpassword!
-#
-# You can also comment out the "vars" section and use --ask-pass on the command
-# line.
-#
-# All ansible modules will fail if the host is not in the ssh known_hosts.
-# Normally ansible just asks if the host key is acceptable.  BUT when using
-# password instead of public key authentication it will not ask and will instead
-# fail.
-#
-# You can solve this by running a meaningless play to first get the ssh host
-# key, then lay down the public key. Something like:
-#       ansible-playbook -i inventory ping.yml
-# Then answer yes as you check the host keys.
-#
-# You also could set the environment variable ANSIBLE_HOST_KEY_CHECKING=False
-# when running this playbook.  You would have to answer the host key questions
-# the next time you run ansible.
-# 
----
-- hosts: all
-  vars:
-          ansible_ssh_pass: "{{ lookup('file', '/root/ansible/kubernetes_cluster_setup/rootpassword') }}"
-  tasks:
-          - name: Push rsa public key to all machines
-            authorized_key: user={{ ansible_ssh_user }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-```
+
+	# Using this module REQUIRES the sshpass package to be installed!
+	#
+	# This REQUIRES you have created a ~/.ssh/id_rsa.pub public key
+	#
+	# Place the root password for all nodes in ~/rootpassword, run this playbook,
+	# and it will put your public key on all the nodes.  Then delete rootpassword!
+	#
+	# You can also comment out the "vars" section and use --ask-pass on the command
+	# line.
+	#
+	# All ansible modules will fail if the host is not in the ssh known_hosts.
+	# Normally ansible just asks if the host key is acceptable.  BUT when using
+	# password instead of public key authentication it will not ask and will instead
+	# fail.
+	#
+	# You can solve this by running a meaningless play to first get the ssh host
+	# key, then lay down the public key. Something like:
+	#       ansible-playbook -i inventory ping.yml
+	# Then answer yes as you check the host keys.
+	#
+	# You also could set the environment variable ANSIBLE_HOST_KEY_CHECKING=False
+	# when running this playbook.  You would have to answer the host key questions
+	# the next time you run ansible.
+	# 
+	---
+	- hosts: all
+	  tasks:
+	          - name: Push rsa public key to all machines
+	            authorized_key: user={{ ansible_ssh_user }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 
-### 4.5 执行ansible-playbook命令停止所有机器的防火墙服务：
-```
-$ ansible-playbook -i hosts pre-setup/disablefirewalld.yml
+### 3.5 执行ansible-playbook命令停止所有机器的防火墙服务：
+	
+	$ ansible-playbook -i hosts pre-setup/disablefirewalld.yml
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.200]
+	ok: [192.168.1.201]
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [stop firewalld service] **************************************************
+	changed: [192.168.1.200]
+	changed: [192.168.1.201]
+	changed: [192.168.1.202]
+	changed: [192.168.1.203]
+	
+	TASK [disable firewalld service] ***********************************************
+	changed: [192.168.1.200]
+	changed: [192.168.1.201]
+	changed: [192.168.1.202]
+	changed: [192.168.1.203]
+	
+	PLAY RECAP *********************************************************************
+	192.168.1.200              : ok=2    changed=0    unreachable=0    failed=0   
+	192.168.1.201              : ok=3    changed=2    unreachable=0    failed=0   
+	192.168.1.202              : ok=3    changed=2    unreachable=0    failed=0   
+	192.168.1.203              : ok=3    changed=2    unreachable=0    failed=0   
 
-PLAY ***************************************************************************
-
-TASK [setup] *******************************************************************
-ok: [192.168.1.200]
-ok: [192.168.1.201]
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [stop firewalld service] **************************************************
-changed: [192.168.1.200]
-changed: [192.168.1.201]
-changed: [192.168.1.202]
-changed: [192.168.1.203]
-
-TASK [disable firewalld service] ***********************************************
-changed: [192.168.1.200]
-changed: [192.168.1.201]
-changed: [192.168.1.202]
-changed: [192.168.1.203]
-
-PLAY RECAP *********************************************************************
-192.168.1.200              : ok=2    changed=0    unreachable=0    failed=0   
-192.168.1.201              : ok=3    changed=2    unreachable=0    failed=0   
-192.168.1.202              : ok=3    changed=2    unreachable=0    failed=0   
-192.168.1.203              : ok=3    changed=2    unreachable=0    failed=0   
-```
 
 **disablefirewalld.yml文件内容如下：**
-```
----
-- hosts: all
-  tasks:
-    - name: stop firewalld service
-      command: systemctl stop firewalld
 
-    - name: disable firewalld service
-      command: systemctl disable firewalld
-```
+	---
+	- hosts: all
+	  tasks:
+	    - name: stop firewalld service
+	      command: systemctl stop firewalld
+	
+	    - name: disable firewalld service
+	      command: systemctl disable firewalld
 
 
-### 4.6 执行ansible-playbook命令为每台服务器添加docker registry服务器主机名与IP地址的host记录
+### 3.6 执行ansible-playbook命令为每台服务器添加docker registry服务器主机名与IP地址的host记录
 **`注：本文中安装的docker registry将使用主机名作为私库的地址，如果希望使用IP地址，请修改相应的配置文件`**
-```
-# ansible-playbook -i hosts pre-setup/add_docker_registry_host.yml 
 
-PLAY ***************************************************************************
+	# ansible-playbook -i hosts pre-setup/add_docker_registry_host.yml 
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.200]
+	ok: [192.168.1.201]
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [add host entry for docker private registry server] ***********************
+	changed: [192.168.1.200]
+	changed: [192.168.1.201]
+	changed: [192.168.1.202]
+	changed: [192.168.1.203]
+	
+	PLAY RECAP *********************************************************************
+	192.168.1.200              : ok=2    changed=1    unreachable=0    failed=0   
+	192.168.1.201              : ok=2    changed=1    unreachable=0    failed=0   
+	192.168.1.202              : ok=2    changed=1    unreachable=0    failed=0   
+	192.168.1.203              : ok=2    changed=1    unreachable=0    failed=0   
 
-TASK [setup] *******************************************************************
-ok: [192.168.1.200]
-ok: [192.168.1.201]
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [add host entry for docker private registry server] ***********************
-changed: [192.168.1.200]
-changed: [192.168.1.201]
-changed: [192.168.1.202]
-changed: [192.168.1.203]
-
-PLAY RECAP *********************************************************************
-192.168.1.200              : ok=2    changed=1    unreachable=0    failed=0   
-192.168.1.201              : ok=2    changed=1    unreachable=0    failed=0   
-192.168.1.202              : ok=2    changed=1    unreachable=0    failed=0   
-192.168.1.203              : ok=2    changed=1    unreachable=0    failed=0   
-```
 
 **add_docker_registry_host.yml文件内容如下：**
-```
----
-- hosts: all
-  tasks:
-    - name: add host entry for docker private registry server
-      shell: echo {{docker_registry_server_ip}} {{docker_registry_server_name}} >> /etc/hosts
-```
+
+	---
+	- hosts: all
+	  tasks:
+	    - name: add host entry for docker private registry server
+	      shell: echo {{docker_registry_server_ip}} {{docker_registry_server_name}} >> /etc/hosts
+
 其中参数 {{docker_registry_server_ip}} {{docker_registry_server_name}} 在 `group_vars/all.yml` 文件中进行配置。
 
-## 5. Kubernetes集群安装
-<font color=red size=5>注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见 [5.6 修改配置文件的内容](#kube_role_config) 一节的说明）</font>
-### 5.1 创建Role
-#### 在安装服务器的/root/ansible/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
+## 4. Kubernetes集群安装
+<font color=red size=5>注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见 [4.6 修改配置文件的内容](#4.6 修改配置文件的内容) 一节的说明）</font>
+### 4.1 创建Role
+#### 在安装服务器的/root/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
 * docker-registry
 * etcd
 * kube-master
 * kube-node
 
-### 5.2 在每个role下创建4个子目录：
+### 4.2 在每个role下创建4个子目录：
 defaults：存放变量的值，目录下main.yml文件将被ansible默认读取
 files：存放需安装（复制）的源文件
 tasks：ansible-playbook执行的任务脚本，目录下main.yml文件将被ansible默认读取
 templates：需修改参数的配置文件，其中参数由defaults目录中的值进行替换
 
-### 5.3 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建group_vars子目录存放全局变量
+### 4.3 在安装服务器的/root/kubernetes_cluster_setup目录中创建group_vars子目录存放全局变量
 默认文件为all.yml
 
-### 5.4 在安装服务器的/root/ansible/kubernetes_cluster_setup目录中创建setup.yml文件，内容为ansible-playbook在各host安装role的配置：
-```
----
-- hosts: docker-registry
-  roles:
-    - docker-registry
+### 4.4 在安装服务器的/root/kubernetes_cluster_setup目录中创建setup.yml文件，内容为ansible-playbook在各host安装role的配置：
 
-- hosts: etcd
-  roles:
-    - etcd
+	---
+	- hosts: docker-registry
+	  roles:
+	    - docker-registry
+	
+	- hosts: etcd
+	  roles:
+	    - etcd
+	
+	- hosts: kube-master
+	  roles:
+	    - kube-master
+	
+	- hosts: kube-node
+	  roles:
+	    - kube-node
 
-- hosts: kube-master
-  roles:
-    - kube-master
 
-- hosts: kube-node
-  roles:
-    - kube-node
-```
-
-
-### 5.5 准备最新版本的二进制文件
+### 4.5 准备最新版本的二进制文件
 所需修改的二进制文件列表：
-```
-kubernetes_cluster_setup
-│
-└─roles
-    ├─docker-registry
-    │  └─files
-    │         docker                      docker主程序
-    │         docker-registry.tar         docker registry 镜像文件
-    │         kubernetes_pause.tar        Kubernetes pause 镜像文件
-    │
-    ├─etcd
-    │  └─files
-    │         etcd                        etcd主程序
-    │         etcdctl                     etcdctl命令行工具
-    │
-    ├─kube-master
-    │  └─files
-    │         hyperkube                   Kubernetes相关文件
-    │         kube-apiserver
-    │         kube-controller-manager
-    │         kube-scheduler
-    │         kubectl
-    │
-    └─kube-node
-        └─files
-              docker                      docker主程序
-              georce_route_quagga.tar     quaggar docker 镜像文件
-              hyperkube                   Kubernetes相关文件
-              kube-proxy
-              kubectl
-              kubelet
-```
+
+	kubernetes_cluster_setup
+	│
+	└─roles
+	    ├─docker-registry
+	    │  └─files
+	    │         docker                      docker主程序
+	    │         docker-registry.tar         docker registry 镜像文件
+	    │         kubernetes_pause.tar        Kubernetes pause 镜像文件
+	    │
+	    ├─etcd
+	    │  └─files
+	    │         etcd                        etcd主程序
+	    │         etcdctl                     etcdctl命令行工具
+	    │
+	    ├─kube-master
+	    │  └─files
+	    │         hyperkube                   Kubernetes相关文件
+	    │         kube-apiserver
+	    │         kube-controller-manager
+	    │         kube-scheduler
+	    │         kubectl
+	    │
+	    └─kube-node
+	        └─files
+	              docker                      docker主程序
+	              georce_route_quagga.tar     quaggar docker 镜像文件
+	              hyperkube                   Kubernetes相关文件
+	              kube-proxy
+	              kubectl
+	              kubelet
+
 > 说明：
 - etcd 下载地址：https://github.com/coreos/etcd/releases
 - Kubernetes下载地址：https://github.com/kubernetes/kubernetes/releases
@@ -444,34 +431,33 @@ kubernetes_cluster_setup
 -- 导出镜像文件：docker save -o georce_route_quagga.tar index.alauda.cn/georce/router
 
 
-
-### 5.6 修改配置文件的内容
+### 4.6 修改配置文件的内容
 **安装Kubernetes集群所需修改的配置文件列表如下：**
-```
-kubernetes_cluster_setup
-│
-├─hosts                           主机列表、各主机个性化参数
-│
-├─group_vars
-│      all.yml                    全局参数
-│
-└─roles
-    ├─docker-registry
-    │  └─defaults
-    │         main.yml            docker registry相关参数
-    │
-    ├─etcd
-    │  └─defaults
-    │         main.yml            etcd相关参数
-    │
-    ├─kube-master
-    │  └─defaults
-    │         main.yml            master相关参数
-    │
-    └─kube-node
-        └─defaults
-                main.yml          node相关参数
-```
+
+	kubernetes_cluster_setup
+	│
+	├─hosts                           主机列表、各主机个性化参数
+	│
+	├─group_vars
+	│      all.yml                    全局参数
+	│
+	└─roles
+	    ├─docker-registry
+	    │  └─defaults
+	    │         main.yml            docker registry相关参数
+	    │
+	    ├─etcd
+	    │  └─defaults
+	    │         main.yml            etcd相关参数
+	    │
+	    ├─kube-master
+	    │  └─defaults
+	    │         main.yml            master相关参数
+	    │
+	    └─kube-node
+	        └─defaults
+	                main.yml          node相关参数
+
 
 <font color=red>**特别说明：**
 **需要仔细规划以下两组IP地址范围，它们都不能与物理机的IP地址范围重叠：**
@@ -552,407 +538,405 @@ kubernetes_cluster_setup
 通过修改 hosts 文件 和 setup.yml 文件的内容来实现在不同机器上安装不同软件的场景。
 - 一个主机组可以安装多个role的内容
 - 多个主机组可以安装同一个role的内容
-```
----
-- hosts: docker-registry
-  roles:
-    - docker-registry
 
-- hosts: etcd
-  roles:
-    - etcd
+	---
+	- hosts: docker-registry
+	  roles:
+	    - docker-registry
+	
+	- hosts: etcd
+	  roles:
+	    - etcd
+	
+	- hosts: kube-master
+	  roles:
+	    - kube-master
+	
+	- hosts: kube-node
+	  roles:
+	    - kube-node
 
-- hosts: kube-master
-  roles:
-    - kube-master
-
-- hosts: kube-node
-  roles:
-    - kube-node
-```
 
 ### 5.7 运行 ansible-playbook 完成集群的安装
-```
-$ ansible-playbook -i hosts setup.yml
 
-PLAY ***************************************************************************
+	$ ansible-playbook -i hosts setup.yml
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : copy docker to /usr/bin] *******************************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : copy config file docker to /etc/sysconfig] *************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : make docker runtime root directory /hadoop1/docker] ****
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : copy docker.socket to /usr/lib/systemd/system] *********
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : copy docker.service to /usr/lib/systemd/system] ********
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : systemctl daemon-reload] *******************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : restart docker.socket service] *************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : enable docker service] *********************************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : restart docker service] ********************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : check docker.socket service started ok] ****************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : check docker service started ok] ***********************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : check if registry image exists] ************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : copy registry image file to /tmp] **********************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : load registry image] ***********************************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : tag registry image] ************************************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : check if registry container exists] ********************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : start registry container] ******************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : create running script] *********************************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : start docker registry container] ***********************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : check docker registry started ok] **********************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : copy pause image file to /tmp] *************************
+	ok: [192.168.1.200]
+	
+	TASK [docker-registry : check if pause image exists] ***************************
+	changed: [192.168.1.200]
+	
+	TASK [docker-registry : load pause image] **************************************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : tag pause image] ***************************************
+	skipping: [192.168.1.200]
+	
+	TASK [docker-registry : push pause image to private registry] ******************
+	skipping: [192.168.1.200]
+	
+	PLAY RECAP *********************************************************************
+	192.168.1.200              : ok=18   changed=9    unreachable=0    failed=0  
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : copy etcd to /usr/bin] ********************************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : copy etcdctl to /usr/bin] *****************************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : make dir /etc/etcd] ***********************************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : copy config file etcd.conf to /etc/etcd] **************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : copy etcd.service to /usr/lib/systemd/system] *********************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : make dir /var/lib/etcd/ for etcd service] *************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : systemctl daemon-reload] ******************************************
+	changed: [192.168.1.201]
+	
+	TASK [etcd : enable etcd service] **********************************************
+	ok: [192.168.1.201]
+	
+	TASK [etcd : start etcd service] ***********************************************
+	changed: [192.168.1.201]
+	
+	TASK [etcd : test etcd started ok] *********************************************
+	changed: [192.168.1.201]
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-apiserver to /usr/bin] ***************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-controller-manager to /usr/bin] ******************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-scheduler to /usr/bin] ***************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kubectl to /usr/bin] **********************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy hyperkube to /usr/bin] ********************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : make dir /var/run/kubernetes] ******************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : create keys - ca.key] **************************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : create keys - ca.crt] **************************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : create keys - server.key] **********************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : create keys - server.csr] **********************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : create keys - server.crt] **********************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : make dir /etc/kubernetes] **********************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy config file apiserver to /etc/kubernetes] *************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy config file config to /etc/kubernetes] ****************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy config file controller-manager to /etc/kubernetes] ****
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy config file scheduler to /etc/kubernetes] *************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-apiserver.service to /usr/lib/systemd/system] ****
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-controller-manager.service to /usr/lib/systemd/system] ***
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : copy kube-scheduler.service to /usr/lib/systemd/system] ****
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : systemctl daemon-reload] ***********************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : make dir /var/log/kubernetes] ******************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : enable kube-apiserver service] *****************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : start kube-apiserver service] ******************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : enable kube-controller-manager service] ********************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : start kube-controller-manager service] *********************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : enable kube-scheduler service] *****************************
+	ok: [192.168.1.201]
+	
+	TASK [kube-master : start kube-scheduler service] ******************************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : check kube-apiserver service started ok] *******************
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : check kube-controller-manager service started ok] **********
+	changed: [192.168.1.201]
+	
+	TASK [kube-master : check kube-scheduler service started ok] *******************
+	changed: [192.168.1.201]
+	
+	PLAY ***************************************************************************
+	
+	TASK [setup] *******************************************************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy docker to /usr/bin] *************************************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : copy config file docker to /etc/sysconfig] *******************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : make docker runtime root directory /hadoop1/docker] **********
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy docker.socket to /usr/lib/systemd/system] ***************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy docker.service to /usr/lib/systemd/system] **************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : systemctl daemon-reload] *************************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : start docker.socket service] *********************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : enable docker service] ***************************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : start docker service] ****************************************
+	changed: [192.168.1.202]
+	changed: [192.168.1.203]
+	
+	TASK [kube-node : check docker.socket service started ok] **********************
+	changed: [192.168.1.202]
+	changed: [192.168.1.203]
+	
+	TASK [kube-node : check docker service started ok] *****************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : install_quagga_router - delete all docker containers] ********
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : install_quagga_router - delete all docker images] ************
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : install_quagga_router - copy Quagga image to /tmp] ***********
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : install_quagga_router - load Quagga image] *******************
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : install_quagga_router - tag Quagga image] ********************
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : install_quagga_router - start Quagga container] **************
+	skipping: [192.168.1.202]
+	skipping: [192.168.1.203]
+	
+	TASK [kube-node : copy kubelet to /usr/bin] ************************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy kube-proxy to /usr/bin] *********************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy kubectl to /usr/bin] ************************************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : copy hyperkube to /usr/bin] **********************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : make dir /var/run/kubernetes] ********************************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : make dir /etc/kubernetes] ************************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy config file kubelet to /etc/kubernetes] *****************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy config file config to /etc/kubernetes] ******************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : copy config file proxy to /etc/kubernetes] *******************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : copy kubelet.service to /usr/lib/systemd/system] *************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : copy kube-proxy.service to /usr/lib/systemd/system] **********
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : make dir /var/lib/kubelet] ***********************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : systemctl daemon-reload] *************************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : make dir /var/log/kubernetes] ********************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : enable kubelet service] **************************************
+	ok: [192.168.1.203]
+	ok: [192.168.1.202]
+	
+	TASK [kube-node : start kubelet service] ***************************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : enable kube-proxy service] ***********************************
+	ok: [192.168.1.202]
+	ok: [192.168.1.203]
+	
+	TASK [kube-node : start kube-proxy service] ************************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : check kubelet service started ok] ****************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	TASK [kube-node : check kube-proxy service started ok] *************************
+	changed: [192.168.1.203]
+	changed: [192.168.1.202]
+	
+	PLAY RECAP *********************************************************************
+	192.168.1.201              : ok=42   changed=15   unreachable=0    failed=0   
+	192.168.1.202              : ok=32   changed=10   unreachable=0    failed=0   
+	192.168.1.203              : ok=32   changed=10   unreachable=0    failed=0   
 
-TASK [setup] *******************************************************************
-ok: [192.168.1.200]
-
-TASK [docker-registry : copy docker to /usr/bin] *******************************
-ok: [192.168.1.200]
-
-TASK [docker-registry : copy config file docker to /etc/sysconfig] *************
-ok: [192.168.1.200]
-
-TASK [docker-registry : make docker runtime root directory /hadoop1/docker] ****
-ok: [192.168.1.200]
-
-TASK [docker-registry : copy docker.socket to /usr/lib/systemd/system] *********
-ok: [192.168.1.200]
-
-TASK [docker-registry : copy docker.service to /usr/lib/systemd/system] ********
-ok: [192.168.1.200]
-
-TASK [docker-registry : systemctl daemon-reload] *******************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : restart docker.socket service] *************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : enable docker service] *********************************
-ok: [192.168.1.200]
-
-TASK [docker-registry : restart docker service] ********************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : check docker.socket service started ok] ****************
-changed: [192.168.1.200]
-
-TASK [docker-registry : check docker service started ok] ***********************
-changed: [192.168.1.200]
-
-TASK [docker-registry : check if registry image exists] ************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : copy registry image file to /tmp] **********************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : load registry image] ***********************************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : tag registry image] ************************************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : check if registry container exists] ********************
-changed: [192.168.1.200]
-
-TASK [docker-registry : start registry container] ******************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : create running script] *********************************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : start docker registry container] ***********************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : check docker registry started ok] **********************
-ok: [192.168.1.200]
-
-TASK [docker-registry : copy pause image file to /tmp] *************************
-ok: [192.168.1.200]
-
-TASK [docker-registry : check if pause image exists] ***************************
-changed: [192.168.1.200]
-
-TASK [docker-registry : load pause image] **************************************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : tag pause image] ***************************************
-skipping: [192.168.1.200]
-
-TASK [docker-registry : push pause image to private registry] ******************
-skipping: [192.168.1.200]
-
-PLAY RECAP *********************************************************************
-192.168.1.200              : ok=18   changed=9    unreachable=0    failed=0  
-
-PLAY ***************************************************************************
-
-TASK [setup] *******************************************************************
-ok: [192.168.1.201]
-
-TASK [etcd : copy etcd to /usr/bin] ********************************************
-ok: [192.168.1.201]
-
-TASK [etcd : copy etcdctl to /usr/bin] *****************************************
-ok: [192.168.1.201]
-
-TASK [etcd : make dir /etc/etcd] ***********************************************
-ok: [192.168.1.201]
-
-TASK [etcd : copy config file etcd.conf to /etc/etcd] **************************
-ok: [192.168.1.201]
-
-TASK [etcd : copy etcd.service to /usr/lib/systemd/system] *********************
-ok: [192.168.1.201]
-
-TASK [etcd : make dir /var/lib/etcd/ for etcd service] *************************
-ok: [192.168.1.201]
-
-TASK [etcd : systemctl daemon-reload] ******************************************
-changed: [192.168.1.201]
-
-TASK [etcd : enable etcd service] **********************************************
-ok: [192.168.1.201]
-
-TASK [etcd : start etcd service] ***********************************************
-changed: [192.168.1.201]
-
-TASK [etcd : test etcd started ok] *********************************************
-changed: [192.168.1.201]
-
-PLAY ***************************************************************************
-
-TASK [setup] *******************************************************************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-apiserver to /usr/bin] ***************************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-controller-manager to /usr/bin] ******************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-scheduler to /usr/bin] ***************************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kubectl to /usr/bin] **********************************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy hyperkube to /usr/bin] ********************************
-ok: [192.168.1.201]
-
-TASK [kube-master : make dir /var/run/kubernetes] ******************************
-ok: [192.168.1.201]
-
-TASK [kube-master : create keys - ca.key] **************************************
-changed: [192.168.1.201]
-
-TASK [kube-master : create keys - ca.crt] **************************************
-changed: [192.168.1.201]
-
-TASK [kube-master : create keys - server.key] **********************************
-changed: [192.168.1.201]
-
-TASK [kube-master : create keys - server.csr] **********************************
-changed: [192.168.1.201]
-
-TASK [kube-master : create keys - server.crt] **********************************
-changed: [192.168.1.201]
-
-TASK [kube-master : make dir /etc/kubernetes] **********************************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy config file apiserver to /etc/kubernetes] *************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy config file config to /etc/kubernetes] ****************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy config file controller-manager to /etc/kubernetes] ****
-ok: [192.168.1.201]
-
-TASK [kube-master : copy config file scheduler to /etc/kubernetes] *************
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-apiserver.service to /usr/lib/systemd/system] ****
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-controller-manager.service to /usr/lib/systemd/system] ***
-ok: [192.168.1.201]
-
-TASK [kube-master : copy kube-scheduler.service to /usr/lib/systemd/system] ****
-ok: [192.168.1.201]
-
-TASK [kube-master : systemctl daemon-reload] ***********************************
-changed: [192.168.1.201]
-
-TASK [kube-master : make dir /var/log/kubernetes] ******************************
-ok: [192.168.1.201]
-
-TASK [kube-master : enable kube-apiserver service] *****************************
-ok: [192.168.1.201]
-
-TASK [kube-master : start kube-apiserver service] ******************************
-changed: [192.168.1.201]
-
-TASK [kube-master : enable kube-controller-manager service] ********************
-ok: [192.168.1.201]
-
-TASK [kube-master : start kube-controller-manager service] *********************
-changed: [192.168.1.201]
-
-TASK [kube-master : enable kube-scheduler service] *****************************
-ok: [192.168.1.201]
-
-TASK [kube-master : start kube-scheduler service] ******************************
-changed: [192.168.1.201]
-
-TASK [kube-master : check kube-apiserver service started ok] *******************
-changed: [192.168.1.201]
-
-TASK [kube-master : check kube-controller-manager service started ok] **********
-changed: [192.168.1.201]
-
-TASK [kube-master : check kube-scheduler service started ok] *******************
-changed: [192.168.1.201]
-
-PLAY ***************************************************************************
-
-TASK [setup] *******************************************************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy docker to /usr/bin] *************************************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : copy config file docker to /etc/sysconfig] *******************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : make docker runtime root directory /hadoop1/docker] **********
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy docker.socket to /usr/lib/systemd/system] ***************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy docker.service to /usr/lib/systemd/system] **************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : systemctl daemon-reload] *************************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : start docker.socket service] *********************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : enable docker service] ***************************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : start docker service] ****************************************
-changed: [192.168.1.202]
-changed: [192.168.1.203]
-
-TASK [kube-node : check docker.socket service started ok] **********************
-changed: [192.168.1.202]
-changed: [192.168.1.203]
-
-TASK [kube-node : check docker service started ok] *****************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : install_quagga_router - delete all docker containers] ********
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : install_quagga_router - delete all docker images] ************
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : install_quagga_router - copy Quagga image to /tmp] ***********
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : install_quagga_router - load Quagga image] *******************
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : install_quagga_router - tag Quagga image] ********************
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : install_quagga_router - start Quagga container] **************
-skipping: [192.168.1.202]
-skipping: [192.168.1.203]
-
-TASK [kube-node : copy kubelet to /usr/bin] ************************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy kube-proxy to /usr/bin] *********************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy kubectl to /usr/bin] ************************************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : copy hyperkube to /usr/bin] **********************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : make dir /var/run/kubernetes] ********************************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : make dir /etc/kubernetes] ************************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy config file kubelet to /etc/kubernetes] *****************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy config file config to /etc/kubernetes] ******************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : copy config file proxy to /etc/kubernetes] *******************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : copy kubelet.service to /usr/lib/systemd/system] *************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : copy kube-proxy.service to /usr/lib/systemd/system] **********
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : make dir /var/lib/kubelet] ***********************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : systemctl daemon-reload] *************************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : make dir /var/log/kubernetes] ********************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : enable kubelet service] **************************************
-ok: [192.168.1.203]
-ok: [192.168.1.202]
-
-TASK [kube-node : start kubelet service] ***************************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : enable kube-proxy service] ***********************************
-ok: [192.168.1.202]
-ok: [192.168.1.203]
-
-TASK [kube-node : start kube-proxy service] ************************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : check kubelet service started ok] ****************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-TASK [kube-node : check kube-proxy service started ok] *************************
-changed: [192.168.1.203]
-changed: [192.168.1.202]
-
-PLAY RECAP *********************************************************************
-192.168.1.201              : ok=42   changed=15   unreachable=0    failed=0   
-192.168.1.202              : ok=32   changed=10   unreachable=0    failed=0   
-192.168.1.203              : ok=32   changed=10   unreachable=0    failed=0   
-
-```
 
 ### 5.8 登录master服务器，验证Kubernetes集群正常启动
-```
-$ kubectl get nodes
-NAME            LABELS                                 STATUS
-192.168.1.202   kubernetes.io/hostname=192.168.1.202   Ready
-192.168.1.203   kubernetes.io/hostname=192.168.1.203   Ready
-```
+
+	$ kubectl get nodes
+	NAME            LABELS                                 STATUS
+	192.168.1.202   kubernetes.io/hostname=192.168.1.202   Ready
+	192.168.1.203   kubernetes.io/hostname=192.168.1.203   Ready
