@@ -1,12 +1,13 @@
 package org.ku8eye.service.deploy;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,20 +20,78 @@ import org.springframework.stereotype.Service;
 @Service
 public class Ku8ClusterDeployService {
 
-	private TemplateUtil tmpUtil= new TemplateUtil();
-	
-	private ProcessCaller processCaller =new ProcessCaller();
+	@Autowired
+	private TemplateUtil tmpUtil;
+
+	private ProcessCaller processCaller = new ProcessCaller();
 
 	private final List<Ku8ClusterTemplate> allTemplates;
 
 	{
 		allTemplates = new LinkedList<Ku8ClusterTemplate>();
 		allTemplates.add(createAllInOneTemplate());
-		allTemplates.add(createDistributeTemplate());
+		allTemplates.add(createStandardTemplate());
 	}
 
 	public List<Ku8ClusterTemplate> getAllTemplates() {
 		return allTemplates;
+	}
+
+	private InstallNode findNodeHashRole(Ku8ClusterTemplate template, String role) {
+		for (InstallNode node : template.getNodes()) {
+			if (node.hasRole(role)) {
+				return node;
+			}
+		}
+		return null;
+	}
+
+	private void processTemplateAutoParams(Ku8ClusterTemplate template) {
+		//etcd param
+		Map<String, InstallParam> gloableParams = template.getAllGlobParameters();
+		InstallNode etcdNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_ETCD);
+		String ectdIP = etcdNode.getIp();
+		String etcdPort = judgeParam(gloableParams, "etcd_binding_port", etcdNode);
+		String etcd_servers = "http://" + ectdIP + ":" + etcdPort;
+		// update global param
+		gloableParams.get("etcd_servers").setValue(etcd_servers);
+		
+		//master param
+		InstallNode masterNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_MASTER);
+		String masterIp = masterNode.getIp();
+		String apiserver_insecure_port = judgeParam(gloableParams, "apiserver_insecure_port", masterNode);
+		String kube_master_url = "http://" + masterIp + ":" + apiserver_insecure_port;
+		// update global param
+		gloableParams.get("kube_master_url").setValue(kube_master_url);
+		gloableParams.get("server_key_CN").setValue(masterIp);
+		
+
+		// docker registry
+		InstallNode dockerRegNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_REGISTRY);
+		String dockerRegIP = dockerRegNode.getIp();
+		String docker_registry_server_name = dockerRegIP;
+		// update global param
+		gloableParams.get("docker_registry_server_name").setValue(docker_registry_server_name);
+		gloableParams.get("docker_registry_server_ip").setValue(dockerRegIP);
+		
+		//every node
+		List<InstallNode> k8sNodes=template.findAllK8sNodes();
+		for(InstallNode node:k8sNodes)
+		{
+			node.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_NODE, "kubelet_hostname_override", node.getIp());
+		}
+		
+		
+	}
+
+	private String judgeParam(Map<String, InstallParam> gloableParams, String paramName, InstallNode node) {
+		InstallParam param = gloableParams.get(paramName);
+		String paramVal = (param == null) ? null : param.getValue();
+		String nodeParamVal = node.getNodeParam(paramName);
+		if (nodeParamVal != null) {
+			paramVal = nodeParamVal;
+		}
+		return paramVal;
 	}
 
 	private Ku8ClusterTemplate createAllInOneTemplate() {
@@ -42,17 +101,6 @@ public class Ku8ClusterDeployService {
 		temp.setDescribe("All service in one server");
 		temp.setMinNodes(1);
 		temp.setMaxNodes(1);
-
-		InstallNode node = new InstallNode();
-		node.setDefautNode(true);
-		node.setHostId(1);
-		node.setHostName("Etcd");
-		node.setIp("192.168.1.2");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
-		temp.getNodes().add(node);
 		return temp;
 	}
 
@@ -64,6 +112,7 @@ public class Ku8ClusterDeployService {
 	}
 
 	public void createInstallScripts(Ku8ClusterTemplate template) throws Exception {
+		processTemplateAutoParams(template);
 		tmpUtil.createAnsibleFiles(template);
 	}
 
@@ -76,63 +125,15 @@ public class Ku8ClusterDeployService {
 		return null;
 	}
 
-	private List<InstallParam> initInstallParameter() {
-		List<InstallParam> list = new ArrayList<InstallParam>();
-		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
-		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
-		return list;
-	}
-
-	private Ku8ClusterTemplate createDistributeTemplate() {
+	private Ku8ClusterTemplate createStandardTemplate() {
 
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
 		temp.setId(1);
-		temp.setName("Distribute Cluster");
+		temp.setName("Standard Cluster");
 		temp.setTemplateType(1);
-		temp.setDescribe("Distribute server");
+		temp.setDescribe("Standard server");
 		temp.setMinNodes(3);
 		temp.setMaxNodes(20);
-
-		InstallNode etcd_node = new InstallNode();
-		etcd_node.setDefautNode(true);
-		etcd_node.setHostId(2);
-		etcd_node.setHostName("Etcd");
-		etcd_node.setIp("192.168.1.2");
-		etcd_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
-
-		InstallNode master_node = new InstallNode();
-		master_node.setDefautNode(true);
-		master_node.setHostId(3);
-		master_node.setHostName("Kuber Master");
-		master_node.setIp("192.168.1.3");
-		master_node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-
-		InstallNode nodes_node1 = new InstallNode();
-		nodes_node1.setDefautNode(true);
-		nodes_node1.setHostId(4);
-		nodes_node1.setHostName("Kuber Node 1");
-		nodes_node1.setIp("192.168.1.4");
-		nodes_node1.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
-
-		InstallNode nodes_node2 = new InstallNode();
-		nodes_node2.setDefautNode(false);
-		nodes_node2.setHostId(5);
-		nodes_node2.setHostName("Kuber Node 2");
-		nodes_node2.setIp("192.168.1.5");
-		nodes_node2.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
-
-		InstallNode resistry = new InstallNode();
-		resistry.setDefautNode(true);
-		resistry.setHostId(5);
-		resistry.setHostName("Kuber Node 2");
-		resistry.setIp("192.168.1.5");
-		resistry.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
-
-		temp.getNodes().add(etcd_node);
-		temp.getNodes().add(master_node);
-		temp.getNodes().add(nodes_node1);
-		temp.getNodes().add(nodes_node2);
-		temp.getNodes().add(resistry);
 
 		return temp;
 	}
@@ -144,18 +145,14 @@ public class Ku8ClusterDeployService {
 		processCaller.asnyCall("ansible-playbook -i hosts setup.ym");
 	}
 
-	
-	public void deployKeyFiles()
-	{
+	public void deployKeyFiles() {
 		processCaller.asnyCall("ansible-playbook -i hosts pre-setup/keys.yml");
 	}
-	
-	public void disableFirewalld()
-	{
+
+	public void disableFirewalld() {
 		processCaller.asnyCall("ansible-playbook -i hosts pre-setup/disablefirewalld.yml");
 	}
-	
-	
+
 	public List<String> deployResult() throws Exception {
 		return processCaller.getOutputs();
 	}

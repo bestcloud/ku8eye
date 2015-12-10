@@ -67,7 +67,7 @@ public class HostController {
 			}
 		}
 		
-		temp.addNewNode("kube-master");
+		//temp.addNewNode("kube-master");
 		return nodes;
 	}
 	

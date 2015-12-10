@@ -2,7 +2,7 @@ package org.ku8eye.service.deploy;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +16,14 @@ import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
 @Component
 @ConfigurationProperties(prefix = "deploy.ansible.root")
 public class TemplateUtil {
 
 	private String tmpFileYML;
 	private String hostsFile;
-	
+	private String scriptRoot;
 
 	public void setTmpFileYML(String tmpFileStr) {
 		this.tmpFileYML = tmpFileStr;
@@ -32,42 +33,40 @@ public class TemplateUtil {
 		this.hostsFile = hostsFile;
 	}
 
-
+	public void setScriptRoot(String scriptRoot) {
+		this.scriptRoot = scriptRoot;
+	}
 
 	public void createAnsibleFiles(Ku8ClusterTemplate tmp) throws Exception {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-
+		Map<String,InstallParam>  globalParams=tmp.getAllGlobParameters();
 		// creatYml file
 		String[] files = tmpFileYML.split(",");
 		for (String fileline : files) {
 			String[] fpara = fileline.split(":");
-			creatParameterFile(tmp.getGlobParameterByRole(fpara[0]), gt,
-					fpara[1], fpara[2]);
+			creatParameterFile(globalParams, gt, fpara[1], fpara[2]);
 		}
 		// creat hosts file
 		String[] hostsLine = hostsFile.split(":");
 		creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0], hostsLine[1]);
 		// creat password file
 
-	
-
 	}
 
-	void creatParameterFile(List<InstallParam> l, GroupTemplate gt,
-			String temlate, String outFile) throws Exception {
+	void creatParameterFile(Map<String,InstallParam> l, GroupTemplate gt, String temlate, String outFile) throws Exception {
 
 		Template t = gt.getTemplate(temlate);
-		for (InstallParam para : l) {
+		for (InstallParam para : l.values()) {
 			t.binding(para.getName(), para.getValue());
 		}
 
 		writeFile(t.render(), outFile);
 	}
 
-	void creatHostsParameterFile(List<InstallNode> l, GroupTemplate gt,
-			String temlate, String outFile) throws Exception {
+	void creatHostsParameterFile(List<InstallNode> l, GroupTemplate gt, String temlate, String outFile)
+			throws Exception {
 
 		Template t = gt.getTemplate(temlate);
 		HashMap<String, List<InstallParam>> registry_list = new HashMap<String, List<InstallParam>>();
@@ -81,22 +80,18 @@ public class TemplateUtil {
 			Map<String, List<InstallParam>> hm = node.getNodeRoleParams();
 
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD) != null) {
-				etde_list.put(node.getIp(),
-						hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD));
+				etde_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER) != null) {
-				master_list.put(node.getIp(),
-						hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER));
+				master_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY) != null) {
-				registry_list.put(node.getIp(),
-						hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
+				registry_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
 
 			}
 			if (hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE) != null) {
-				nodes_list.put(node.getIp(),
-						hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE));
+				nodes_list.put(node.getIp(), hm.get(Ku8ClusterTemplate.NODE_ROLE_NODE));
 			}
 		}
 		t.binding("master", master_list);
@@ -111,9 +106,11 @@ public class TemplateUtil {
 		FileOutputStream out = null;
 		try {
 
-			File file = new File(outFile);
+			File file = new File(scriptRoot, outFile);
 			if (!file.exists())
-				file.createNewFile();
+			{
+				file.getParentFile().mkdirs();
+			}
 			out = new FileOutputStream(file, false);
 			out.write(fileInfo.getBytes("utf-8"));
 
@@ -124,7 +121,7 @@ public class TemplateUtil {
 
 	}
 
-//	public static void main(String[] args) throws IOException {
-//		// createAnsibleFiles();
-//	}
+	// public static void main(String[] args) throws IOException {
+	// // createAnsibleFiles();
+	// }
 }
