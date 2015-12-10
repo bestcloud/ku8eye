@@ -1,23 +1,24 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-链接：http://pan.baidu.com/s/1i3RoOkP 密码：1h6t
+链接：http://pan.baidu.com/s/1dDZ4Acx 密码：l1mi
 
-文件名为：ku8eye-web-0.2.tar.gz
-用gunzip解压缩后，得到文件ku8eye-web-0.2.tar
+文件名为：ku8eye-web-0.3.tar.gz
+用gunzip解压缩后，得到文件ku8eye-web-0.3.tar
 
 导入docker镜像：
-`# docker load -i ku8eye-web-0.2.tar`
+`# docker load -i ku8eye-web-0.3.tar`
 
 给该镜像打上tag：
-`# docker tag fc08f40019a5 ku8eye-web:0.2`
+`# docker tag 9746e5caec50 ku8eye-web:0.3`
 
 运行开发环境：
-`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
+`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.3`
 其中 3306 为 mysql 服务端口，8080 为 tomcat 服务端口，均需要映射到宿主机上
+如需映射sshd的22端口，可添加一个 -p 参数，例如 `-p 2222:22`
 
 容器启动成功后，需等待15秒左右，等待mysql数据库与web应用启动完成。
-打开浏览器，地址输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
+打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
 
 
 # - 容器内包含的软件
@@ -146,7 +147,7 @@ supervisord.conf文件内容为：
 
 
 ### 9. 运行docker build完成镜像的创建
-`# docker build -t="ku8eye-web:0.2" --rm .`
+`# docker build -t="ku8eye-web:0.3" --rm .`
 
 
 
@@ -184,7 +185,7 @@ Docker：推荐 v1.9.0 及以上版本
 ## 3. Kubernetes集群安装前的准备工作
 
 ### 3.1 启动容器，进入容器
-`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.2`
+`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.3`
 `$ docker exec -ti ku8eye-web bash`
 
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
