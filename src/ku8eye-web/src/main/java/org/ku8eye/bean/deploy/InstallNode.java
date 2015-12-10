@@ -16,8 +16,10 @@ public class InstallNode implements Cloneable {
 	private int hostId;
 	private String ip;
 	private String hostName;
+	private String rootPassword;
 	// node role ,for example etcd 、master、 node ,docker registry
-	// node specific params,key is node Role,values is related role's InstallParam
+	// node specific params,key is node Role,values is related role's
+	// InstallParam
 	private Map<String, List<InstallParam>> nodeRoleParams = new HashMap<String, List<InstallParam>>();
 	// if it's a default node from template,if true ,it can't be deleted
 	private boolean defautNode;
@@ -46,9 +48,16 @@ public class InstallNode implements Cloneable {
 		this.hostName = hostName;
 	}
 
-	
 	public boolean isDefautNode() {
 		return defautNode;
+	}
+
+	public String getRootPassword() {
+		return rootPassword;
+	}
+
+	public void setRootPassword(String rootPassword) {
+		this.rootPassword = rootPassword;
 	}
 
 	public void setDefautNode(boolean defautNode) {
@@ -59,8 +68,36 @@ public class InstallNode implements Cloneable {
 		return nodeRoleParams;
 	}
 
+	public void setRoleParam(String role, String paramName, String paramValue) {
+		List<InstallParam> params = this.nodeRoleParams.get(role);
+		for (InstallParam param : params) {
+			if (param.getName().equalsIgnoreCase(paramName)) {
+				param.setValue(paramValue);
+				return;
+			}
+		}
+		// not found ,create
+		InstallParam param = new InstallParam(paramName, paramValue, "");
+		params.add(param);
+	}
+
+	public String getNodeParam(String paramName) {
+		for (List<InstallParam> roleParams : nodeRoleParams.values()) {
+			for (InstallParam param : roleParams) {
+				if (param.getName().equalsIgnoreCase(paramName)) {
+					return param.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
 	public void setNodeRoleParams(Map<String, List<InstallParam>> nodeRoleParams) {
 		this.nodeRoleParams = nodeRoleParams;
+	}
+
+	public boolean hasRole(String role) {
+		return nodeRoleParams.keySet().contains(role);
 	}
 
 	public InstallNode clone() {
@@ -68,12 +105,11 @@ public class InstallNode implements Cloneable {
 			InstallNode newNode = (InstallNode) super.clone();
 			Map<String, List<InstallParam>> nodeParams = new LinkedHashMap<String, List<InstallParam>>();
 			for (Map.Entry<String, List<InstallParam>> entry : this.getNodeRoleParams().entrySet()) {
-				List<InstallParam> roleParams=new LinkedList<InstallParam>();
-				for(InstallParam param:entry.getValue())
-				{
+				List<InstallParam> roleParams = new LinkedList<InstallParam>();
+				for (InstallParam param : entry.getValue()) {
 					roleParams.add(param.clone());
 				}
-				nodeParams.put(entry.getKey(),roleParams);
+				nodeParams.put(entry.getKey(), roleParams);
 			}
 			newNode.setNodeRoleParams(nodeParams);
 			return newNode;
