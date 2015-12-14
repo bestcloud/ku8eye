@@ -1,0 +1,8 @@
+# machines list in group
+[all]
+<%
+ for(host in hosts){
+  print(host.ip);
+  println(" ansible_ssh_user=root ansible_ssh_pass="+host.rootPassword);
+ }
+%>

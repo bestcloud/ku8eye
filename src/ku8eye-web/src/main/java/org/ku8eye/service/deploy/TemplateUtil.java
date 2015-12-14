@@ -2,7 +2,6 @@ package org.ku8eye.service.deploy;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Map;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
-import org.beetl.core.exception.BeetlException;
 import org.beetl.core.resource.ClasspathResourceLoader;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
