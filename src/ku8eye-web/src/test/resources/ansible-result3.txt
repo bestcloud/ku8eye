@@ -1,0 +1,16 @@
+PLAY [all] ******************************************************************** 
+
+GATHERING FACTS *************************************************************** 
+fatal: [192.168.18.134] => SSH Error: ssh: connect to host 192.168.18.134 port 22: No route to host
+    while connecting to 192.168.18.134:22
+It is sometimes useful to re-run the command using -vvvv, which prints SSH debug output to help diagnose the issue.
+ok: [192.168.18.133]
+
+TASK: [Push rsa public key to all machines] *********************************** 
+ok: [192.168.18.133]
+
+PLAY RECAP ******************************************************************** 
+           to retry, use: --limit @/root/keys.retry
+
+192.168.18.133             : ok=2    changed=0    unreachable=0    failed=0   
+192.168.18.134             : ok=0    changed=0    unreachable=1    failed=0   
