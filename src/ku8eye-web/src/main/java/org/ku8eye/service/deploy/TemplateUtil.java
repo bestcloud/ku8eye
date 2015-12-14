@@ -10,6 +10,7 @@ import java.util.Map;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
+import org.beetl.core.exception.BeetlException;
 import org.beetl.core.resource.ClasspathResourceLoader;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
@@ -22,8 +23,13 @@ import org.springframework.stereotype.Component;
 public class TemplateUtil {
 
 	private String tmpFileYML;
+	private String sshKeyHostsFile;
 	private String hostsFile;
 	private String scriptRoot;
+
+	public void setSshKeyHostsFile(String sshKeyHostsFile) {
+		this.sshKeyHostsFile = sshKeyHostsFile;
+	}
 
 	public void setTmpFileYML(String tmpFileStr) {
 		this.tmpFileYML = tmpFileStr;
@@ -41,21 +47,33 @@ public class TemplateUtil {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-		Map<String,InstallParam>  globalParams=tmp.getAllGlobParameters();
+		Map<String, InstallParam> globalParams = tmp.getAllGlobParameters();
 		// creatYml file
 		String[] files = tmpFileYML.split(",");
 		for (String fileline : files) {
 			String[] fpara = fileline.split(":");
 			creatParameterFile(globalParams, gt, fpara[1], fpara[2]);
 		}
+		// creat ssh key hosts file
+		String[] hostsLine = sshKeyHostsFile.split(":");
+		creatHostsSSHKeyFile(tmp.getNodes(), gt, hostsLine[0], hostsLine[1]);
 		// creat hosts file
-		String[] hostsLine = hostsFile.split(":");
+		hostsLine = hostsFile.split(":");
 		creatHostsParameterFile(tmp.getNodes(), gt, hostsLine[0], hostsLine[1]);
-		// creat password file
 
 	}
 
-	void creatParameterFile(Map<String,InstallParam> l, GroupTemplate gt, String temlate, String outFile) throws Exception {
+	private void creatHostsSSHKeyFile(List<InstallNode> nodes, GroupTemplate gt, String temlate, String outFile)
+			throws Exception {
+		Template t = gt.getTemplate(temlate);
+		t.binding("hosts", nodes);
+
+		writeFile(t.render(), outFile);
+
+	}
+
+	void creatParameterFile(Map<String, InstallParam> l, GroupTemplate gt, String temlate, String outFile)
+			throws Exception {
 
 		Template t = gt.getTemplate(temlate);
 		for (InstallParam para : l.values()) {
@@ -107,8 +125,7 @@ public class TemplateUtil {
 		try {
 
 			File file = new File(scriptRoot, outFile);
-			if (!file.exists())
-			{
+			if (!file.exists()) {
 				file.getParentFile().mkdirs();
 			}
 			out = new FileOutputStream(file, false);
