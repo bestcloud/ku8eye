@@ -2,6 +2,10 @@
 # for kubelet, kube-proxy
 kube_master_url: http://192.168.1.201:8080
 
+# for docker
+docker_runtime_root_dir: /hadoop1/docker
+
 # quagga router docker image info
+install_quagga_router: true
 quagga_router_image_id: f96cfe685533
 quagga_router_image_tag: index.alauda.cn/georce/router

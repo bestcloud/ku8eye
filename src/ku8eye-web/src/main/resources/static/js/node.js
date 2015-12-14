@@ -470,9 +470,9 @@
 				
 				var _templateString="";
 	        	_templateString+=$("#multiIp").html()+","+$("#multiName").html()+","+root_passwd+";";
-
-	        	$( '#multiNodes' ).find( 'td').each(function(i,item){
-//	        		
+	        	alert("sdf");
+	        	$( '#multiNodes' ).find( 'tr td').each(function(i,item){
+	        		alert(this.html());
 	        	});
 	        	
 	        	

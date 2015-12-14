@@ -76,7 +76,7 @@ public class HostController {
 				nodes.add(node);
 			}
 		}
-		
+
 		return nodes;
 	}
 	

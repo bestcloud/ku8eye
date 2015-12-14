@@ -1,17 +1,17 @@
 # machines list in group
 
 [docker-registry]
-192.168.1.202
+192.168.1.202 ansible_ssh_user=root ansible_ssh_pass=123456
 
 [etcd]
-192.168.1.201
+192.168.1.201 ansible_ssh_user=root ansible_ssh_pass=123456
 
 [kube-master]
-192.168.1.201
+192.168.1.201 ansible_ssh_user=root ansible_ssh_pass=123456
 
 # for docker, different docker0's IP on different node
 # and kubelet, kube-proxy
 [kube-node]
-192.168.1.202 docker0_ip=172.17.1.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.202 install_quagga_router=true
-#192.168.1.202 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=true
+192.168.1.202 ansible_ssh_user=root ansible_ssh_pass=123456 docker0_ip=172.17.1.1/24  kubelet_hostname_override=192.168.1.202
+#192.168.1.202 ansible_ssh_user=root ansible_ssh_pass=123456 docker0_ip=172.17.2.1/24 kubelet_hostname_override=192.168.1.203 
 #......
