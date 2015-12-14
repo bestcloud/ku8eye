@@ -76,6 +76,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>org.ku8eye.App</mainClass>
+					<!-- org.ku8eye.service.deploy.Ku8InstallTool -->
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -84,6 +88,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 </project>
