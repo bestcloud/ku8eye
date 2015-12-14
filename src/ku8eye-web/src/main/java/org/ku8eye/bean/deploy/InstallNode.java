@@ -21,6 +21,8 @@ public class InstallNode implements Cloneable {
 	private Map<String, List<InstallParam>> nodeRoleParams = new HashMap<String, List<InstallParam>>();
 	// if it's a default node from template,if true ,it can't be deleted
 	private boolean defautNode;
+	private String rootPassword;
+	
 
 	public int getHostId() {
 		return hostId;
@@ -57,6 +59,16 @@ public class InstallNode implements Cloneable {
 
 	public Map<String, List<InstallParam>> getNodeRoleParams() {
 		return nodeRoleParams;
+	}
+
+	
+
+	public String getRootPassword() {
+		return rootPassword;
+	}
+
+	public void setRootPassword(String rootPassword) {
+		this.rootPassword = rootPassword;
 	}
 
 	public void setNodeRoleParams(Map<String, List<InstallParam>> nodeRoleParams) {

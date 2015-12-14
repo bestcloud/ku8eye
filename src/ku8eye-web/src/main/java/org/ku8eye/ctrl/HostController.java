@@ -14,60 +14,69 @@ import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
-import org.ku8eye.domain.User;
 import org.ku8eye.service.HostService;
 import org.ku8eye.service.deploy.Ku8ClusterDeployService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 
 @RestController
+@SessionAttributes("ku8template")
 public class HostController {
 
 	@Autowired
 	private HostService hostService;
 	private Ku8ClusterDeployService deployService;
-	ModelMap model;
 	private Logger log = Logger.getLogger(this.toString());
 	
 	@RequestMapping(value = "/addlist/{zoneId}")
 	public GridData getProjects(@PathVariable("zoneId") int zoneId) {
 		GridData grid = new GridData();
 		List<Host> pros = hostService.getHostsByZoneId(zoneId);
-		log.info("进入了！！！");
 		grid.setData(pros);
 		return grid;
 	}
 	
 	
-	@RequestMapping(value = "/hostlist/{IdString}")
-	public List<InstallNode> getProjects(@PathVariable("IdString") String zoneId) {
-		
-		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
+	@RequestMapping(value = "/nodelist/{status}")
+	public InstallNode getNode(@PathVariable("status") String status) {
+		InstallNode nodes;
+		Ku8ClusterTemplate temp=new Ku8ClusterTemplate();
+		if(status.equals("singleNode")){
+			nodes=temp.getStandardAllIneOneNode();
+		}else if(status.equals("multiNode")){
+			nodes=temp.getStandardMasterWithEtcdNode();
+		}else{
+			nodes=temp.getStandardK8sNode();
+		}
+		return nodes;
+	}
+	
+	@RequestMapping(value = "/getNode/{id}")
+	public List<InstallNode> listNode(@PathVariable("id") String id) {
 		List<InstallNode> nodes = new LinkedList<InstallNode>();
-		InstallNode node = new InstallNode();
-		String strList[]=zoneId.split(",");
+		Ku8ClusterTemplate temp=new Ku8ClusterTemplate();
+		String strList[]=id.split(",");
 		for(String s:strList)
 		{
 			if(!s.isEmpty())
 			{
+				InstallNode node = new InstallNode();
 				Host pros = hostService.getHostsByZoneString(Integer.parseInt(s));
 				node.setDefautNode(true);
 				node.setHostId(pros.getId());
 				node.setHostName(pros.getHostName());
 				node.setIp(pros.getIp());
-				node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-				temp.getNodes().add(node);
+				node.setRootPassword(pros.getRootPasswd());	
+				node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
 				nodes.add(node);
 			}
 		}
 		
-		temp.addNewNode("kube-master");
 		return nodes;
 	}
 	

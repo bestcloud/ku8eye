@@ -49,26 +49,50 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return logoImage;
 	}
 
-	// add a "pre paramed" node of specified nodeRole
-	public InstallNode addNewNode(String nodeRole) {
-		for (InstallNode node : nodes) {
-			List<InstallParam> roleParams = node.getNodeRoleParams().get(nodeRole);
-			if (roleParams != null) {
-				InstallNode newNode = node.clone();
-				newNode.getNodeRoleParams().clear();
-				List<InstallParam> newRoleParams = new LinkedList<InstallParam>();
-				for (InstallParam roleParam : roleParams) {
-					newRoleParams.add(roleParam.clone());
-				}
-				newNode.getNodeRoleParams().put(nodeRole, newRoleParams);
-				newNode.setIp(null);
-				newNode.setHostId(0);
-				newNode.setHostName(null);
-				nodes.add(newNode);
-				return newNode;
-			}
-		}
-		throw new RuntimeException("no exists node of role find " + nodeRole);
+	public InstallNode getStandardMasterWithEtcdNode() {
+		InstallNode node = new InstallNode();
+		node.setDefautNode(true);
+		node.setHostId(1);
+		node.setHostName("Not Selected");
+		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
+		return node.clone();
+	}
+
+	public InstallNode getStandardAllIneOneNode() {
+		InstallNode node = new InstallNode();
+		node.setDefautNode(true);
+		node.setHostId(1);
+		node.setHostName("Not Selected");
+		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
+		return node.clone();
+	}
+
+	public InstallNode getStandardK8sNode() {
+		InstallNode node = new InstallNode();
+		node.setDefautNode(true);
+		node.setHostId(1);
+		node.setHostName("Not Selected");
+		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
+		return node.clone();
+	}
+
+	private List<InstallParam> initInstallParameter() {
+		List<InstallParam> list = new ArrayList<InstallParam>();
+		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
+		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
+		return list;
+	}
+
+	public void addNewNode(InstallNode node) {
+		nodes.add(node);
 
 	}
 
@@ -87,7 +111,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public void setDetailPageUrl(String detailPageUrl) {
 		this.detailPageUrl = detailPageUrl;
 	}
-	
 
 	public String getName() {
 		return name;
@@ -231,5 +254,10 @@ public class Ku8ClusterTemplate implements Cloneable {
 		kuberNdoeParams.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router",
 				"index.alauda.cn/georce/router quagga router 镜像tag"));
 		globalParams.put(NODE_ROLE_NODE, kuberNdoeParams);
+	}
+
+	public List<InstallNode> findAllK8sNodes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
