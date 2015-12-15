@@ -4,9 +4,9 @@
 		w = $(window).width(),
 		u = {
 			'cluster': '/deploycluster/listtemplates',
-			'singleNode':'/nodelist/singleNode',
-			'multiNode':'/nodelist/multiNode',
-			'multiAddNode':'/nodelist/addNode',
+			'singleNode':'/deploycluster/getnodemodal/singleNode',
+			'multiNode':'/deploycluster/getnodemodal/multiNode',
+			'multiAddNode':'/deploycluster/getnodemodal/addNode',
 			'addlist':'/addlist/1'
 		},
         par={},
@@ -432,7 +432,7 @@
 							de += eleDom.value + ",";
 						});
 						$.ajax({
-					        url:"/getNode/"+de,
+					        url:"/deploycluster/addk8snodes/"+de,
 					        type: "GET",
 					        dataType:"json",
 					        success: function(data){
