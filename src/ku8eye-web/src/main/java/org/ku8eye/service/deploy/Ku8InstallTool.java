@@ -78,9 +78,9 @@ public class Ku8InstallTool {
 		if (!caller.isFinished()) {
 			caller.shutdownCaller();
 		}
-		 AnsibleCallResult parseResult=AnsibleResultParser.parseResult(totalOutResults);
-		 System.out.println("____________________________Report______________________________");
-		 parseResult.printInfo();
+		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
+		System.out.println("____________________________Report______________________________");
+		parseResult.printInfo();
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -103,6 +103,10 @@ public class Ku8InstallTool {
 		options.addOption(opt);
 		opt = new Option("p", "rootpass", true, "root password of all hosts ,must be the same !");
 		opt.setRequired(true);
+		options.addOption(opt);
+
+		opt = new Option("o", "output", true, "only output Ansible script files");
+		opt.setRequired(false);
 		options.addOption(opt);
 		CommandLineParser parser = new DefaultParser();
 
@@ -130,7 +134,11 @@ public class Ku8InstallTool {
 				return;
 			}
 		}
+		System.out.println("creat ansible script files ........");
 		tool.deployService.createInstallScripts(template);
+		if (commandLine.hasOption('o')) {
+			return;
+		}
 		System.out.println("generate ssh key  ........");
 		tool.deployService.deployKeyFiles();
 		ProcessCaller caller = tool.deployService.getProcessCaller();
