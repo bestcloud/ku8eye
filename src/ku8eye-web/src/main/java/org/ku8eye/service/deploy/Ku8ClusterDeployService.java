@@ -1,6 +1,7 @@
 package org.ku8eye.service.deploy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,30 +62,43 @@ public class Ku8ClusterDeployService {
 	private void processTemplateAutoParams(Ku8ClusterTemplate template) {
 		// etcd param
 		Map<String, InstallParam> gloableParams = template.getAllGlobParameters();
+		HashMap<String, String> autoParams = template.getAutoComputedGlobalParams();
 		InstallNode etcdNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_ETCD);
 		String ectdIP = etcdNode.getIp();
-		String etcdPort = judgeParam(gloableParams, "etcd_binding_port", etcdNode);
+		String etcdPort = etcdNode.getNodeParam("etcd_binding_port");
 		String etcd_servers = "http://" + ectdIP + ":" + etcdPort;
 		// update global param
-		gloableParams.get("etcd_servers").setValue(etcd_servers);
+
+		autoParams.put("etcd_servers", etcd_servers);
 
 		// master param
 		InstallNode masterNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_MASTER);
 		String masterIp = masterNode.getIp();
-		String apiserver_insecure_port = judgeParam(gloableParams, "apiserver_insecure_port", masterNode);
+		String apiserver_insecure_port = masterNode.getNodeParam("apiserver_insecure_port");
 		String kube_master_url = "http://" + masterIp + ":" + apiserver_insecure_port;
 		// update global param
-		gloableParams.get("kube_master_url").setValue(kube_master_url);
-		gloableParams.get("server_key_CN").setValue(masterIp);
-
+		autoParams.put("kube_master_url", kube_master_url);
+		autoParams.put("server_key_CN", masterIp);
+		autoParams.put("apiserver_insecure_port", apiserver_insecure_port);
+		autoParams.put("apiserver_service_cluster_ip_range",  masterNode.getNodeParam("apiserver_service_cluster_ip_range"));
+		autoParams.put("apiserver_service_node_port_range",  masterNode.getNodeParam("apiserver_service_node_port_range"));
+		autoParams.put("kube_node_sync_period",  masterNode.getNodeParam("kube_node_sync_period"));
+		
+		
+		
 		// docker registry
 		InstallNode dockerRegNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_REGISTRY);
 		String dockerRegIP = dockerRegNode.getIp();
 		String docker_registry_server_name = dockerRegIP;
+		String docker0_ip = dockerRegNode.getNodeParam("docker0_ip");
+		autoParams.put("docker0_ip",docker0_ip);
+		
 		// update global param
-		gloableParams.get("docker_registry_server_name").setValue(docker_registry_server_name);
-		gloableParams.get("docker_registry_server_ip").setValue(dockerRegIP);
-
+		autoParams.put("docker_registry_server_name", docker_registry_server_name);
+		autoParams.put("docker_registry_server_ip", dockerRegIP);
+		autoParams.put("docker_registry_root_dir", dockerRegNode.getNodeParam("docker_registry_root_dir"));
+		autoParams.put("docker_registry_image_id", dockerRegNode.getNodeParam("docker_registry_image_id"));
+		autoParams.put("docker_registry_image_tag", dockerRegNode.getNodeParam("docker_registry_image_tag"));
 		String clusterDocker0IPAdd = gloableParams.get(Constants.k8sparam_cluster_docker0_ip_srange).getValue();
 		List<String> docker0IpList = get24maskChildNetIP(clusterDocker0IPAdd);
 		// every k8s node ,calc params
@@ -115,16 +129,6 @@ public class Ku8ClusterDeployService {
 		}
 		return targetList;
 
-	}
-
-	private String judgeParam(Map<String, InstallParam> gloableParams, String paramName, InstallNode node) {
-		InstallParam param = gloableParams.get(paramName);
-		String paramVal = (param == null) ? null : param.getValue();
-		String nodeParamVal = node.getNodeParam(paramName);
-		if (nodeParamVal != null) {
-			paramVal = nodeParamVal;
-		}
-		return paramVal;
 	}
 
 	private Ku8ClusterTemplate createAllInOneTemplate() {
@@ -188,7 +192,7 @@ public class Ku8ClusterDeployService {
 		if (!processCaller.isFinished()) {
 			throw new RuntimeException(" Ku8Cluser deploy is running...");
 		}
-//		processCaller.reset();
+		// processCaller.reset();
 	}
 
 	public void installK8s() {
