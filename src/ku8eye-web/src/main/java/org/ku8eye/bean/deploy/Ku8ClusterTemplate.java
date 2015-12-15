@@ -59,9 +59,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
@@ -74,10 +71,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
@@ -91,17 +84,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
-		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
-		return node.clone();
-	}
-
-	private List<InstallParam> initInstallParameter() {
-		List<InstallParam> list = new ArrayList<InstallParam>();
-		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
-		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
-		return list;
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_NODE));
-
 		return node.clone();
 	}
 
@@ -281,12 +264,12 @@ public class Ku8ClusterTemplate implements Cloneable {
 		kuberMasterParams.add(
 				new InstallParam("apiserver_service_node_port_range", "1000-5000", "NodePort 类型的 Service 可用端口范围，含两端"));
 		kuberMasterParams.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
-		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ecip.hp.com", ""));
+		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
 		kuberMasterParams.add(new InstallParam("server_key_CN", "192.168.1.201", ""));
 		globalParams.put(NODE_ROLE_MASTER, kuberMasterParams);
 		// docker reg
 		List<InstallParam> dockerRegistryParams = new ArrayList<InstallParam>();
-		dockerRegistryParams.add(new InstallParam("docker0_ip", "192.168.1.1/240", "docker0网桥的IP地址"));
+		dockerRegistryParams.add(new InstallParam("docker0_ip", " 172.17.42.1/24", "docker0网桥的IP地址"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_server_name", "", "docker registry 主机名"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_server_ip", "", "docker registry 主机IP地址"));
 		dockerRegistryParams
