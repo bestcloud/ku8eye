@@ -45,7 +45,8 @@ public class TemplateUtil {
 		ClasspathResourceLoader resourceLoader = new ClasspathResourceLoader();
 		Configuration cfg = Configuration.defaultConfiguration();
 		GroupTemplate gt = new GroupTemplate(resourceLoader, cfg);
-		Map<String, InstallParam> globalParams = tmp.getAllGlobParameters();
+		Map<String, String> globalParams = tmp.getCombinedGlobalParams();
+
 		// creatYml file
 		String[] files = tmpFileYML.split(",");
 		for (String fileline : files) {
@@ -70,12 +71,11 @@ public class TemplateUtil {
 
 	}
 
-	void creatParameterFile(Map<String, InstallParam> l, GroupTemplate gt, String temlate, String outFile)
-			throws Exception {
+	void creatParameterFile(Map<String, String> l, GroupTemplate gt, String temlate, String outFile) throws Exception {
 
 		Template t = gt.getTemplate(temlate);
-		for (InstallParam para : l.values()) {
-			t.binding(para.getName(), para.getValue());
+		for (Map.Entry<String, String> para : l.entrySet()) {
+			t.binding(para.getKey(), para.getValue());
 		}
 
 		writeFile(t.render(), outFile);

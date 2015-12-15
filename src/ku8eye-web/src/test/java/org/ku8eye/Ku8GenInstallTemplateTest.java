@@ -1,5 +1,6 @@
 package org.ku8eye;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;

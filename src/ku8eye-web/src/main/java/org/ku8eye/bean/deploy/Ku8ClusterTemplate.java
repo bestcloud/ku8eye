@@ -43,8 +43,10 @@ public class Ku8ClusterTemplate implements Cloneable {
 	private int maxNodes;
 	// template type to distinct different templates
 	private int templateType;
-	// global insall params,key is param's name
+	// global insall params,key is role,value is params with this role
 	private HashMap<String, List<InstallParam>> globalParams;
+	// 自动计算的全局参数
+	private HashMap<String, String> autoComputedGlobalParams = new HashMap<String, String>();
 	// nodes to install
 	private List<InstallNode> nodes = new ArrayList<InstallNode>();
 	private List<String> allowedNewRoles = new ArrayList<String>();
@@ -100,13 +102,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 			list.add(new InstallParam("apiserver_service_node_port_range", "1000-5000",
 					"NodePort 类型的 Service 可用端口范围，含两端"));
 			list.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
-		}else if(NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
+		} else if (NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
 
 		{
 			list.add(new InstallParam("docker0_ip", " 172.17.42.1/24", "docker0网桥的IP地址"));
 			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
 			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
 			list.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
+		} else if (NODE_ROLE_ETCD.equalsIgnoreCase(role)) {
+			list.add(new InstallParam("etcd_binding_port", "4001", "etcd binding (linsten) port "));
 		}
 		paramMap.put(role, list);
 		return paramMap;
@@ -125,11 +129,24 @@ public class Ku8ClusterTemplate implements Cloneable {
 		Map<String, InstallParam> allParms = new HashMap<String, InstallParam>();
 		for (Collection<InstallParam> params : globalParams.values()) {
 			for (InstallParam param : params) {
-				allParms.putIfAbsent(param.getName(), param);
+				allParms.put(param.getName(), param);
 			}
 
 		}
 		return allParms;
+	}
+
+	public Map<String, String> getCombinedGlobalParams() {
+		Map<String, String> allParams = new HashMap<String, String>();
+		for (Map.Entry<String, InstallParam> entry : getAllGlobParameters().entrySet()) {
+			allParams.put(entry.getKey(), entry.getValue().getValue());
+		}
+		allParams.putAll(this.autoComputedGlobalParams);
+		return allParams;
+	}
+
+	public HashMap<String, String> getAutoComputedGlobalParams() {
+		return autoComputedGlobalParams;
 	}
 
 	public List<InstallNode> findAllK8sNodes() {
@@ -266,21 +283,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 		List<InstallParam> etcdParams = new ArrayList<InstallParam>();
 		etcdParams.add(new InstallParam("etcd_data_dir", " /var/lib/etcd/etcd_data", "etcd数据存储目录"));
 		etcdParams.add(new InstallParam("peer_ip", " 192.168.1.201", ""));
-		etcdParams.add(new InstallParam("etcd_binding_port", "4001", "etcd binding (linsten) port "));
 		globalParams.put(NODE_ROLE_ETCD, etcdParams);
 		// kub master
 		List<InstallParam> kuberMasterParams = new ArrayList<InstallParam>();
-		kuberMasterParams
-				.add(new InstallParam("etcd_servers", "http://192.168.1.2:4001", "kube-apiserver所需etcd服务的URL"));
 		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
-		kuberMasterParams.add(new InstallParam("server_key_CN", "192.168.1.201", ""));
 		globalParams.put(NODE_ROLE_MASTER, kuberMasterParams);
 		// docker reg
 		List<InstallParam> dockerRegistryParams = new ArrayList<InstallParam>();
-
-		dockerRegistryParams.add(new InstallParam("docker_registry_server_name", "", "docker registry 主机名"));
-		dockerRegistryParams.add(new InstallParam("docker_registry_server_ip", "", "docker registry 主机IP地址"));
-
+		globalParams.put(NODE_ROLE_REGISTRY, dockerRegistryParams);
 		// kubnode
 		List<InstallParam> kuberNdoeParams = new ArrayList<InstallParam>();
 		globalParams.put(NODE_ROLE_NODE, kuberNdoeParams);
