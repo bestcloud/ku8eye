@@ -41,25 +41,9 @@ public class HostController {
 		return grid;
 	}
 	
-	
-	@RequestMapping(value = "/nodelist/{status}")
-	public InstallNode getNode(@PathVariable("status") String status) {
-		InstallNode nodes;
-		Ku8ClusterTemplate temp=new Ku8ClusterTemplate();
-		if(status.equals("singleNode")){
-			nodes=temp.getStandardAllIneOneNode();
-		}else if(status.equals("multiNode")){
-			nodes=temp.getStandardMasterWithEtcdNode();
-		}else{
-			nodes=temp.getStandardK8sNode();
-		}
-		return nodes;
-	}
-	
 	@RequestMapping(value = "/getNode/{id}")
 	public List<InstallNode> listNode(@PathVariable("id") String id) {
 		List<InstallNode> nodes = new LinkedList<InstallNode>();
-		Ku8ClusterTemplate temp=new Ku8ClusterTemplate();
 		String strList[]=id.split(",");
 		for(String s:strList)
 		{
@@ -86,46 +70,5 @@ public class HostController {
 		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
 		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
 		return list;
-	}
-
-
-	/**
-	 * add host
-	 * 
-	 * 
-	 *
-	 *
-	 */
-	@RequestMapping(value = "/hostl")
-	public int checkLogin(HttpServletRequest request,
-			@RequestParam("zone_id") String zone_id,
-			@RequestParam("host_name") String host_name,
-			@RequestParam("ip") String ip,
-			@RequestParam("root_passwd") String root_passwd,
-			@RequestParam("location") String location,
-			@RequestParam("note") String note,
-			@RequestParam("cores") String cores,
-			@RequestParam("memory") String memory,
-			@RequestParam("usage_flag") String usage_flag,
-			@RequestParam("ssh_login") String ssh_login,
-			@RequestParam("cluster_id") String cluster_id) {
-		Host host = new Host();
-
-		host.setZoneId(Integer.parseInt(zone_id));
-		host.setHostName(host_name);
-		host.setIp(ip);
-		host.setRootPasswd(root_passwd);
-		host.setLocation(location);
-		host.setNote(note);
-		host.setCores(new Byte(cores));
-		host.setMemory(Integer.parseInt(memory));
-		host.setUsageFlag(new Byte(usage_flag));
-		host.setSshLogin(new Byte(ssh_login));
-		host.setClusterId(Integer.parseInt(cluster_id));
-		SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-    	Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-    	host.setLastUpdated(curDate);
-		int a = hostService.setHostNode(host);
-		return a;
 	}
 }

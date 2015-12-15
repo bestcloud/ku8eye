@@ -77,12 +77,6 @@ public class Ku8ClusterDeployController {
 			return node;
 
 		}else{
-//			192.168.1.6,mynode_4,123456,
-//			192.168.1.6,123456,123456,root,root,
-//			192.168.1.3,mynode_1,123456,root,root,
-//			192.168.1.4,mynode_2,123456,root,root,
-//			192.168.1.5,mynode_3,123456,root,root,
-//			192.168.1.6,mynode_4,123456,root,root
 			InstallNode  node = template.getStandardMasterWithEtcdNode();
 			node.setIp(arr[0]);
 			node.setHostName(arr[1]);
@@ -107,6 +101,22 @@ public class Ku8ClusterDeployController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/nodelist/{status}", method = RequestMethod.GET)
+	public InstallNode getNode(@PathVariable("status") String status, ModelMap model) {
+		InstallNode nodes;
+		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0).clone();
+		if(status.equals("singleNode")){
+			nodes=template.getStandardAllIneOneNode();
+		}else if(status.equals("multiNode")){
+			nodes=template.getStandardMasterWithEtcdNode();
+		}else{
+			nodes=template.getStandardK8sNode();
+		}
+		return nodes;
+
+	}
+	
 
 	private List<InstallParam> initInstallParameter(String user,String pass) {
 		List<InstallParam> list = new ArrayList<InstallParam>();
