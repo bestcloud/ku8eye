@@ -253,12 +253,36 @@
 				var _templateString="";
 		
 	        	_templateString+=$("#nodeIp").html()+","+$("#nodeName").html()+","+root_passwd;
-				$.each(d.singleNode.nodeRoleParams,function(i,item){
-	        		$("#"+i+1).val();
-	        		$("#"+i+2).val();
-	        		_templateString+=","+i+","+$("#"+i+1).val()+","+$("#"+i+2).val();
-	        	});
+	        	
+//				$.each(d.singleNode.nodeRoleParams,function(i,item){
+//	        		$("#"+i+1).val();
+//	        		$("#"+i+2).val();
+//	        		_templateString+=","+i+","+$("#"+i+1).val()+","+$("#"+i+2).val();
+//	        	});
 				
+	        	$( '#example' ).find( 'tr td').each(function(i,item){
+	        		if((i)%4==0){
+	        			_templateString+=","+$(this).text();
+//	        			$(tditem).val()
+//	        			if((i+2)%3==0){
+//	        				var _arr=$(this).text().split(";");
+//	        				for(var j=0;j<_arr.length-1;j++){
+//	        					var arr=_arr[j].split("=");
+//	        					_templateString+=","+arr[1];
+//	        				}
+//	        			}else{
+//	        				_templateString+=","+$(this).text();
+//	        			}
+	        			
+	        		}
+	        	});
+	        	
+	        	$( '#example' ).find( 'tr input').each(function(i,item){
+	        			
+	        			_templateString+=","+$(item).val();    		
+	        	});
+	        	alert(_templateString);
+	        	
 	        	$.ajax({
 			        url:"/deploycluster/modifytemplate/0",
 			        data:{
@@ -398,7 +422,7 @@
 						$.each(b,function(c,d){
 							RoleParam+=d.name+"="+d.value+";";
 						});
-		        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' c='"+d.multiAddNode.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+		        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
 		        	});
 					//添加节点按钮事件
 					$("#addSaveBtn").click(function(){
@@ -415,6 +439,7 @@
 					        	var setcount=0;
 					        	$.each(data,function(i,item){
 					        	    RoleParam="";
+					        	    
 					        		$.each(item.nodeRoleParams,function(m,n){
 					        			
 					        			$.each(n,function(m1,n1){
@@ -422,7 +447,7 @@
 					        			});
 					        		});
 					        		setcount++;
-					        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+					        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
 					        		
 					        	});
 					        	
@@ -433,6 +458,7 @@
 									var dialogip=$( this ).attr('c');
 									var dialogpasswd=$( this ).attr('passwd');
 									var modifyId=$( this ).attr('count');
+									var hostName=$( this ).attr('host');
 									var arrname=dialogValue.split(";");
 									var i;
 									var li="";
@@ -469,21 +495,23 @@
 			$("#nextStep").click(function(){
 				
 				var _templateString="";
-	        	_templateString+=$("#multiIp").html()+","+$("#multiName").html()+","+root_passwd+";";
-	        	alert("sdf");
-	        	$( '#multiNodes' ).find( 'tr td').each(function(i,item){
-	        		alert(this.html());
+	        	_templateString+=$("#multiIp").html()+","+$("#multiName").html()+","+root_passwd;
+	        	
+	        	$( '#multiNodes' ).find( 'tr .set').each(function(i,item){
+	        		var dialogValue=$( this ).attr('value');
+					var dialogip=$( this ).attr('c');
+					var dialogpasswd=$( this ).attr('passwd');
+					var hostName=$( this ).attr('host');
+					var arrname=dialogValue.split(";");
+					_templateString+=","+dialogip+","+hostName+","+dialogpasswd;
+					for(var i=0;i<arrname.length-1;i++){
+						var arrValue=arrname[i].split("=");
+						_templateString+=","+arrValue[1];
+					}
 	        	});
 	        	
-	        	
-//				$.each(d.singleNode.nodeRoleParams,function(i,item){
-//	        		$("#"+i+1).val();
-//	        		$("#"+i+2).val();
-//	        		_templateString+=","+i+","+$("#"+i+1).val()+","+$("#"+i+2).val();
-//	        	});
-				
 	        	$.ajax({
-			        url:"/deploycluster/modifytemplate/0",
+			        url:"/deploycluster/modifytemplate/1",
 			        data:{
 			        	'templateString':_templateString
 			        },
