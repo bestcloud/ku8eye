@@ -1,29 +1,58 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-链接：http://pan.baidu.com/s/1dDZ4Acx 密码：l1mi
+链接：http://pan.baidu.com/s/1gezjw6B 密码：rluo
 
-文件名为：ku8eye-web-0.3.tar.gz
-用gunzip解压缩后，得到文件ku8eye-web-0.3.tar
+文件名为：ku8eye-web-0.4.tar.gz
+用gunzip解压缩后，得到文件ku8eye-web-0.4.tar
 
 导入docker镜像：
-`# docker load -i ku8eye-web-0.3.tar`
+`# docker load -i ku8eye-web-0.4.tar`
 
 给该镜像打上tag：
-`# docker tag 9746e5caec50 ku8eye-web:0.3`
+`# docker tag 6f46b1372b52 ku8eye-web:0.4`
 
 运行开发环境：
-`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.3`
+`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.4`
 其中 3306 为 mysql 服务端口，8080 为 tomcat 服务端口，均需要映射到宿主机上
 如需映射sshd的22端口，可添加一个 -p 参数，例如 `-p 2222:22`
 
 容器启动成功后，需等待15秒左右，等待mysql数据库与web应用启动完成。
+
+### ku8eye-web的使用方式：
+#### 1. 命令行方式
+
+使用 java 命令完成一键安装Kubernetes集群，脚本为：
+
+`/root/ku8eye-startup.sh`
+
+脚本的内容为：
+
+`java -jar ku8eye-web-0.0.1-SNAPSHOT.jar org.ku8eye.App tool -n $1 -cluster-docker0-ip $2 -rootpass $3`
+
+**需要输入的3个参数为：**
+
+**$1: 待安装主机IP地址列表，以逗号分隔。第一台主机将作为Kubernetes Master。例如：192.168.1.2,192.168.1.3**
+
+**$2: docker0的B类IP地址，系统自动为每台主机设置docker0的C类地址，例如，输入 172.0.0.0/16，在两台机器上将分别设置docker0的地址为 172.0.1.0/24 和 172.0.2.0/24**
+
+**$3: root用户的密码，目前仅支持所有主机相同的密码，例如：123456**
+
+一个完整的命令行如下：
+`java -jar ku8eye-web-0.0.1-SNAPSHOT.jar org.ku8eye.App tool -n "192.168.1.2,192.168.1.3" -cluster-docker0-ip "172.0.0.0/16" -rootpass "123456"`
+> 注：每个参数需用双引号引起来
+
+然后即可观察输出结果。
+
+#### 2. 网页方式
 打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
+> 待完善
 
 
-# - 容器内包含的软件
+
+# ---- 容器内包含的软件 ----
 ## 1. Ansible安装环境，以及安装Kubernetes所需的全部软件
-**Ansible的使用方法详见下文的[Ansible安装Kubernetes集群说明](#Ansible安装Kubernetes集群说明)**
+**Ansible的使用方法详见下文“Ansible安装Kubernetes集群说明”**
 ## 2. JRE1.8
 **环境变量 JAVA_HOME=/root/jre1.8.0_65**
 ## 3. MySQL 5.7.9
@@ -32,7 +61,8 @@
 ## 4. ku8eye-web 应用（jar包）
 
 
-# - ku8eye-web镜像的Dockerfile说明
+
+# ---- ku8eye-web镜像的Dockerfile说明 ----
 
 **完整的Dockerfile：**
 
@@ -45,44 +75,52 @@
 	# set http proxy if needed
 	# ENV http_proxy="http://<ip>:<port>" https_proxy="http://<ip>:<port>"
 	
-	# 1. install ansible
+	# 1. install ansible (from Internet)
 	RUN yum clean all && \
 	    yum -y install epel-release && \
 	    yum -y install PyYAML python-jinja2 python-httplib2 python-keyczar python-paramiko python-setuptools git python-pip
 	RUN mkdir /etc/ansible/ && echo -e '[local]\nlocalhost' > /etc/ansible/hosts
 	RUN pip install ansible
 	
-	# 2. install sshpass, and generate ssh keys
+	# 2. install sshpass, and generate ssh keys (from Internet)
 	RUN yum -y install sshpass
 	RUN ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
 	# make ansible not do key checking from ~/.ssh/known_hosts file
 	ENV ANSIBLE_HOST_KEY_CHECKING false
 	
-	# 3. add ku8eye-ansible binary and config files
-	COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
-	
-	# 4. install MariaDB (mysql)
+	# 3. install MariaDB (mysql) (from Internet)
 	COPY MariaDB.repo /etc/yum.repos.d/MariaDB.repo
 	RUN yum -y install MariaDB-server MariaDB-client
-	COPY mariadb_create_ku8eye_db_and_user.sql /root/mariadb_create_ku8eye_db_and_user.sql
-	COPY initsql.sql /root/initsql.sql
+	
+	# 4. install supervisor (from Internet)
+	RUN pip install supervisor
 	
 	# 5. add JRE1.8
 	COPY jre1.8.0_65 /root/jre1.8.0_65
 	ENV JAVA_HOME="/root/jre1.8.0_65" PATH="$PATH:/root/jre1.8.0_65/bin"
 	RUN chmod +x /root/jre1.8.0_65/bin/*
 	
-	# 6. install supervisor
-	RUN pip install supervisor
-	COPY supervisord.conf /etc/supervisord.conf
+	# 6. install openssh
+	RUN yum install -y openssh openssh-server
+	RUN mkdir -p /var/run/sshd && echo "root:root" | chpasswd
+	RUN /usr/sbin/sshd-keygen
+	RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
 	
-	# 7. start mariadb, init db data, and start ku8eye-web app
+	# 7. add ku8eye-ansible binary and config files
+	COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
+	
+	# 8. copy init scripts, web app
 	COPY ku8eye-web-0.0.1-SNAPSHOT.jar /root/ku8eye-web-0.0.1-SNAPSHOT.jar
-	COPY run.sh /root/run.sh
-	COPY run_mysqld.sh /root/run_mysqld.sh
-	COPY run_tomcat.sh /root/run_tomcat.sh
-	RUN chmod +x /root/*.sh
+	COPY db_scripts /root/db_scripts
+	COPY shell_scripts /root/shell_scripts
+	RUN chmod +x /root/shell_scripts/*.sh
+	
+	# 9. start mariadb, init db data, and start ku8eye-web app
+	COPY supervisord.conf /etc/supervisord.conf
+	COPY ku8eye-startup.sh /root/ku8eye-startup.sh
+	RUN chmod +x /root/ku8eye-startup.sh
 	ENTRYPOINT /usr/bin/supervisord
+
 
 **基础镜像为CentOS官方最新版：centos:latest**
 
@@ -90,8 +128,7 @@
 ### 1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
 **注：`设置环境变量 ANSIBLE_HOST_KEY_CHECKING=false` 表示ansible在ssh登录其他机器时，不执行基于known_hosts文件的 key checking 操作，这样能够跳过首次ssh连接需要输入yes的操作。**
 ### 2. 为ansible安装 sshpass，并执行 `ssh-keygen` 生成密钥
-### 3. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
-### 4. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
+### 3. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
 MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseurl地址`）
 
 	[mariadb]
@@ -100,24 +137,32 @@ MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseur
 	gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 	gpgcheck=0
 
+### 4. 安装 supervisor (pip install)
 ### 5. 复制 JRE1.8 到容器的 `/root/jre1.8.0_65` 目录，并设置环境变量 JAVA_HOME 和 PATH
-
-### 6. 执行pip安装supervisor，并复制配置文件 supervisord.conf 到容器的 `/etc` 目录
+### 6. 安装openssh
+### 7. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
+### 8. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
+### 9. 复制配置文件 supervisord.conf 到容器的 `/etc` 目录
 supervisord.conf文件内容为：
-其中，设置nodaemon为true表示 supervisord 将在前台运行
+其中，设置nodaemon为true 表示 supervisord 将在前台运行
+启动了两个程序：sshd 和 一个脚本 run.sh
 
 	[supervisord]
 	nodaemon = true
 	
-	[program:ku8eye-web]
-	command = /root/run.sh
-	autorestart = false
+	[program:sshd]
+	command = /usr/sbin/sshd -D
 	autostart = true
+	autorestart = false
 	redirect_stderr = true
-	startretries = 0
-	startsecs = 10
+	
+	[program:ku8eye-web]
+	command = /root/shell_scripts/run.sh
+	autostart = true
+	autorestart = false
+	redirect_stderr = true
 
-/root/run.sh文件的内容包括启动mysql服务，创建数据库/用户，初始化数据，最后启动web服务，内容为：
+其中，/root/run.sh文件的内容包括启动mysql服务，创建数据库/用户，初始化数据，最后启动web服务，内容为：
 
 	#!/bin/sh
 	
@@ -141,17 +186,15 @@ supervisord.conf文件内容为：
 	/root/run_tomcat.sh
 	echo "====== start ku8eye-web done."
 
-### 7. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
-
-### 8. 最后，设置启动命令为 `/usr/bin/supervisord`
+最后，设置启动命令为 `/usr/bin/supervisord`
 
 
-### 9. 运行docker build完成镜像的创建
-`# docker build -t="ku8eye-web:0.3" --rm .`
+### 运行docker build完成镜像的创建
+	# docker build -t="ku8eye-web:0.4" --rm .
 
 
 
-# Ansible安装Kubernetes集群说明
+# ---- Ansible安装Kubernetes集群说明 ----
 
 **Ansible**是一款基于Python开发的自动化运维工具，本文通过使用 **ansible-playbook** 完成Kubernetes集群的一键安装。
 
@@ -185,7 +228,7 @@ Docker：推荐 v1.9.0 及以上版本
 ## 3. Kubernetes集群安装前的准备工作
 
 ### 3.1 启动容器，进入容器
-`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.3`
+`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.4`
 `$ docker exec -ti ku8eye-web bash`
 
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：

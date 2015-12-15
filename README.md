@@ -1,5 +1,9 @@
 ![ImageLoadFailed](./res/ku8eye.png)
 
+2015-12-15 更新 ku8eye-web 0.4版，实现java命令行一键安装Kubernetes集群。
+下载地址为：
+链接：http://pan.baidu.com/s/1gezjw6B 密码：rluo 
+
 2015-12-10 更新 ku8eye-web 0.3版，增加openssh server，便于习惯ssh的用户登录到容器。容器的IP地址用 `docker inspect <containerid> | grep IPAddress` 命令查询出来，再用ssh <ip>登录。用户名密码均为root。
 或在启动容器时将sshd使用的22端口映射到物理机的某个端口号上。
 下载地址为：
