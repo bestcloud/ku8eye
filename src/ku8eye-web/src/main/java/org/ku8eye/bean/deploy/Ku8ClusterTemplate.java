@@ -59,6 +59,9 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
@@ -71,6 +74,10 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_ETCD, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_MASTER, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_REGISTRY, initInstallParameter());
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
@@ -84,6 +91,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
+		node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter());
+		return node.clone();
+	}
+
+	private List<InstallParam> initInstallParameter() {
+		List<InstallParam> list = new ArrayList<InstallParam>();
+		list.add(new InstallParam("ansible_ssh_user", "root", "login uername"));
+		list.add(new InstallParam("ansible_ssh_pass", "root", "login pass"));
+		return list;
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_NODE));
 
 		return node.clone();

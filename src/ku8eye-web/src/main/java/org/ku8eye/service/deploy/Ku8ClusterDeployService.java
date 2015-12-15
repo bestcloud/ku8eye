@@ -188,7 +188,7 @@ public class Ku8ClusterDeployService {
 		if (!processCaller.isFinished()) {
 			throw new RuntimeException(" Ku8Cluser deploy is running...");
 		}
-		processCaller.reset();
+//		processCaller.reset();
 	}
 
 	public void installK8s() {
