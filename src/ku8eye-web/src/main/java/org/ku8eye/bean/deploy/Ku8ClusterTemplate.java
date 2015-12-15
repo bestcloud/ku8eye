@@ -93,6 +93,20 @@ public class Ku8ClusterTemplate implements Cloneable {
 		List<InstallParam> list = new ArrayList<InstallParam>();
 		if (NODE_ROLE_NODE.equalsIgnoreCase(role)) {
 			list.add(new InstallParam("docker0_ip", "172.17.2.1/24", "docker0 ip range"));
+		} else if (NODE_ROLE_MASTER.equalsIgnoreCase(role)) {
+			list.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
+			list.add(new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16",
+					"Kubernetes Services可分配IP地址池"));
+			list.add(new InstallParam("apiserver_service_node_port_range", "1000-5000",
+					"NodePort 类型的 Service 可用端口范围，含两端"));
+			list.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
+		}else if(NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
+
+		{
+			list.add(new InstallParam("docker0_ip", " 172.17.42.1/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
+			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
+			list.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
 		}
 		paramMap.put(role, list);
 		return paramMap;
@@ -258,26 +272,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 		List<InstallParam> kuberMasterParams = new ArrayList<InstallParam>();
 		kuberMasterParams
 				.add(new InstallParam("etcd_servers", "http://192.168.1.2:4001", "kube-apiserver所需etcd服务的URL"));
-		kuberMasterParams.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
-		kuberMasterParams.add(
-				new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16", "Kubernetes Services可分配IP地址池"));
-		kuberMasterParams.add(
-				new InstallParam("apiserver_service_node_port_range", "1000-5000", "NodePort 类型的 Service 可用端口范围，含两端"));
-		kuberMasterParams.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
 		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
 		kuberMasterParams.add(new InstallParam("server_key_CN", "192.168.1.201", ""));
 		globalParams.put(NODE_ROLE_MASTER, kuberMasterParams);
 		// docker reg
 		List<InstallParam> dockerRegistryParams = new ArrayList<InstallParam>();
-		dockerRegistryParams.add(new InstallParam("docker0_ip", " 172.17.42.1/24", "docker0网桥的IP地址"));
+
 		dockerRegistryParams.add(new InstallParam("docker_registry_server_name", "", "docker registry 主机名"));
 		dockerRegistryParams.add(new InstallParam("docker_registry_server_ip", "", "docker registry 主机IP地址"));
-		dockerRegistryParams
-				.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
-		dockerRegistryParams.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
-		dockerRegistryParams
-				.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
-		globalParams.put(NODE_ROLE_REGISTRY, dockerRegistryParams);
 
 		// kubnode
 		List<InstallParam> kuberNdoeParams = new ArrayList<InstallParam>();
