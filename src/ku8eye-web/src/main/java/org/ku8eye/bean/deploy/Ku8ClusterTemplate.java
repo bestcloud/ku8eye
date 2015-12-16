@@ -97,6 +97,9 @@ public class Ku8ClusterTemplate implements Cloneable {
 			list.add(new InstallParam("docker0_ip", "172.17.2.1/24", "docker0 ip range"));
 		} else if (NODE_ROLE_MASTER.equalsIgnoreCase(role)) {
 			list.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
+			list.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
+			list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "172.0.0.1/16",
+					"Kubernetes集群里的Node节点所用IP地址范围"));
 			list.add(new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16",
 					"Kubernetes Services可分配IP地址池"));
 			list.add(new InstallParam("apiserver_service_node_port_range", "1000-5000",
@@ -263,14 +266,12 @@ public class Ku8ClusterTemplate implements Cloneable {
 		globalParams = new HashMap<String, List<InstallParam>>();
 		// def
 		List<InstallParam> def_list = new ArrayList<InstallParam>();
-		def_list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "172.0.0.1/16",
-				"Kubernetes集群里的Node节点所用IP地址范围"));
+
 		def_list.add(new InstallParam("install_quagga_router", "true", "是否安装Quagga路由"));
 		def_list.add(new InstallParam("quagga_router_image_id", "f96cfe685533", "quagga router 镜像ID"));
 		def_list.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router",
 				"index.alauda.cn/georce/router quagga router 镜像tag"));
 		def_list.add(new InstallParam("docker_runtime_root_dir", "/var/lib/docker", "docker运行根目录"));
-		def_list.add(new InstallParam("kube_master_url", "192.168.1.2:8080", " kube-apiserver服务URL"));
 		def_list.add(new InstallParam("cluster_domain_name", "cluster.local", "kube-dns服务设置的domain名"));
 		def_list.add(new InstallParam("cluster_dns_ip", "20.1.0.100", "kube-dns服务IP地址"));
 		def_list.add(new InstallParam("push_pause_image", "true", "是否将 Kubernetes pause 镜像push到 docker registry"));
@@ -283,10 +284,10 @@ public class Ku8ClusterTemplate implements Cloneable {
 		List<InstallParam> etcdParams = new ArrayList<InstallParam>();
 		etcdParams.add(new InstallParam("etcd_data_dir", " /var/lib/etcd/etcd_data", "etcd数据存储目录"));
 		etcdParams.add(new InstallParam("peer_ip", " 192.168.1.201", ""));
+		etcdParams.add(new InstallParam("etcd_servers", "http://192.168.1.2:4001", "kube-apiserver所需etcd服务的URL"));
 		globalParams.put(NODE_ROLE_ETCD, etcdParams);
 		// kub master
 		List<InstallParam> kuberMasterParams = new ArrayList<InstallParam>();
-		kuberMasterParams.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
 		globalParams.put(NODE_ROLE_MASTER, kuberMasterParams);
 		// docker reg
 		List<InstallParam> dockerRegistryParams = new ArrayList<InstallParam>();

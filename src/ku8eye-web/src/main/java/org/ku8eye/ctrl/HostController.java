@@ -67,10 +67,10 @@ public class HostController {
 		host.setUsageFlag(new Byte(usage_flag));
 		host.setSshLogin(new Byte(ssh_login));
 		host.setClusterId(Integer.parseInt(cluster_id));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
 		host.setLastUpdated(curDate);
 		int a = hostService.setHostNode(host);
 		return a;
 	}
+
 }

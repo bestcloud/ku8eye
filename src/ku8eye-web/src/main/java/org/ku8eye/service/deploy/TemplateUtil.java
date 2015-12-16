@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.beetl.core.Configuration;
-import org.beetl.core.GroupTemplate;
+import org.beetl.core.GroupTemplate;  
 import org.beetl.core.Template;
 import org.beetl.core.resource.ClasspathResourceLoader;
 import org.ku8eye.bean.deploy.InstallNode;
@@ -89,7 +89,7 @@ public class TemplateUtil {
 		HashMap<String, List<InstallParam>> etde_list = new HashMap<String, List<InstallParam>>();
 		HashMap<String, List<InstallParam>> master_list = new HashMap<String, List<InstallParam>>();
 		HashMap<String, List<InstallParam>> nodes_list = new HashMap<String, List<InstallParam>>();
-		// gt.registerFormat("ShowParameter",new showParameter());
+//		 gt.registerFormat("ShowParameter",new showParameter());
 
 		for (InstallNode node : l) {
 

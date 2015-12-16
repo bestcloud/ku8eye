@@ -1,16 +1,12 @@
 package org.ku8eye.ctrl.deploy;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.ku8eye.bean.deploy.InstallNode;
-import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
 import org.ku8eye.service.HostService;
@@ -29,8 +25,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 public class Ku8ClusterDeployController {
 
 	@Autowired
-	private Ku8ClusterDeployService deployService;
 	private HostService hostService;
+	@Autowired
+	private Ku8ClusterDeployService deployService;
 	private Logger log = Logger.getLogger(this.toString());
 
 	@RequestMapping(value = "/deploycluster/listtemplates")
@@ -60,7 +57,8 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/getnodemodal/{status}")
-	public InstallNode getNodemodal(@PathVariable("status") String status, ModelMap model) {
+	public InstallNode getNodemodal(HttpServletRequest request, @RequestParam("addnode") String addnode,
+			@PathVariable("status") String status, ModelMap model) {
 		InstallNode node;
 		// session中获取当前模板对象
 		Ku8ClusterTemplate template = getCurTemplate(model);
@@ -71,15 +69,23 @@ public class Ku8ClusterDeployController {
 		} else {
 			node = template.getStandardK8sNode();
 		}
+		String arr[] = addnode.split(",");
+		for (int i = 0; i < arr.length; i = i + 4) {
+			node.setIp(arr[i]);
+			node.setHostId(Integer.parseInt(arr[i + 1]));
+			node.setHostName(arr[i + 2]);
+			node.setRootPassword(arr[i + 3]);
+			template.addNewNode(node);
+		}
+
 		return node;
 	}
 
 	@RequestMapping(value = "/deploycluster/addk8snodes/{id}")
 	public List<InstallNode> addk8snodes(@PathVariable("id") String id, ModelMap model) {
 		// session中获取当前模板对象
-				Ku8ClusterTemplate template = getCurTemplate(model);
+		Ku8ClusterTemplate template = getCurTemplate(model);
 		List<InstallNode> nodes = new LinkedList<InstallNode>();
-
 		String strList[] = id.split(",");
 		for (String s : strList) {
 			if (!s.isEmpty()) {
@@ -94,27 +100,24 @@ public class Ku8ClusterDeployController {
 				nodes.add(node);
 			}
 		}
-
 		return nodes;
 	}
 
 	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
 	public InstallNode modifyTemplate(HttpServletRequest request, @RequestParam("templateString") String templateString,
 			@PathVariable("id") int templateId, ModelMap model) {
-		log.info("modifyTemplate " + templateId + "    " + templateString);
 		String arr[] = templateString.split(",");
 		// session中获取当前模板对象
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		if (template.getId() == 0) {
 			// all in one节点模板
 			System.out.println("todo .........modifyTemplate ");
-		     return null;
+			return null;
 
 		} else {
-			if(true)
-			{
+			if (true) {
 				System.out.println("todo .........modifyTemplate ,muti nodes ");
-			     return null;
+				return null;
 
 			}
 			// 192.168.1.6,mynode_4,123456,
@@ -126,12 +129,12 @@ public class Ku8ClusterDeployController {
 
 			List<InstallNode> k8sNodes = template.findAllK8sNodes();
 			for (InstallNode nodes : k8sNodes) {
-				log.info(nodes);
 				nodes.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_NODE, "kubelet_hostname_override", nodes.getIp());
 			}
 
 			for (int i = 3; i < arr.length; i = i + 5) {
 				log.info(i);
+
 				node = template.getStandardK8sNode();
 				node.setIp(arr[i]);
 				node.setHostName(arr[i + 2]);
@@ -140,7 +143,6 @@ public class Ku8ClusterDeployController {
 			}
 			return node;
 		}
-
 	}
 
 	@RequestMapping(value = "/deploycluster/getcurtemplate", method = RequestMethod.GET)

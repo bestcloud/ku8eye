@@ -47,6 +47,7 @@ public class InstallParam implements Cloneable {
 		this.describe = describe;
 	}
 
+	@Override
 	public InstallParam clone() {
 		try {
 			return (InstallParam) super.clone();

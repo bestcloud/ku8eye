@@ -106,6 +106,7 @@ public class InstallNode implements Cloneable {
 		return nodeRoleParams.keySet().contains(role);
 	}
 
+	@Override
 	public InstallNode clone() {
 		try {
 			InstallNode newNode = (InstallNode) super.clone();
