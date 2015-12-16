@@ -47,6 +47,36 @@
 </div>
 <!-- /.row -->
 <script>
-$.dailyInit();
-</script>
+//$.dailyInit();
+	  $.ajax({
+	        url:"/deploycluster/listtemplates",
+	        type: "GET",
+	        dataType:"json",
+	        success: function(data){
+	        	var count=1;
+				var tableList="";
+	            $.each(data,function(i,item){
+	            	tableList += [
+	                     count%2==1?'<tr>':'',
+	                     count%2==1?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul class="Mode"><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
+	                     count%2==0?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
+	                     count%2==0?'</tr>':''
+	                ].join('');
+	               
+	                count++;
+	            }); 
+	           
+	            $("#example1").html(tableList);  
+	            
+	            $( '#example1' ).find('th').bind('click',function(){
+	            	if($( this ).attr('c')==1){
+	            		$(".content").load("singleNode.html");
+	            	}else{
+	            		$(".content").load("multiNode.html");
+	            	}
+	            	
+				});
+	        }
+	    });
 
+</script>
