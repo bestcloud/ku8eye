@@ -14,10 +14,13 @@ import org.apache.commons.cli.Options;
 import org.ku8eye.Constants;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Ku8InstallTool {
 
 	private Ku8ClusterDeployService deployService;
+	private static Logger LOGGER = LoggerFactory.getLogger(Ku8InstallTool.class);
 
 	public Ku8InstallTool() {
 		deployService = new Ku8ClusterDeployService();
@@ -58,7 +61,7 @@ public class Ku8InstallTool {
 		return template;
 	}
 
-	public void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds) {
+	public static void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds) {
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		List<String> totalOutResults = new LinkedList<String>();
 		while (System.currentTimeMillis() < timeOutMillis && !caller.isFinished()) {
@@ -72,7 +75,7 @@ public class Ku8InstallTool {
 				}
 
 				for (String line : results) {
-					System.out.println(line);
+					LOGGER.info(line);
 				}
 
 			} catch (InterruptedException e) {
@@ -85,8 +88,10 @@ public class Ku8InstallTool {
 		}
 
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
-		System.out.println("____________________________Report______________________________");
-		parseResult.printInfo();
+		if (!caller.isNormalExit()) {
+			parseResult.setTaskResult("INIT", "INIT", false, caller.getErrorMsg());
+		}
+		LOGGER.info("____________________________Report______________________________\r\n" + parseResult.printInfo());
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -144,9 +149,9 @@ public class Ku8InstallTool {
 			return;
 		}
 		System.out.println("generate ssh key  ........");
-		tool.deployService.deployKeyFiles();
+		tool.deployService.deployKeyFiles(0);
 		ProcessCaller caller = tool.deployService.getProcessCaller();
-		tool.waitAnsibleCallFinish(caller, 120);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -154,9 +159,9 @@ public class Ku8InstallTool {
 		}
 		// 关闭防火墙的测试
 		System.out.println("close Firewalld ........");
-		tool.deployService.disableFirewalld();
+		tool.deployService.disableFirewalld(0);
 		caller = tool.deployService.getProcessCaller();
-		tool.waitAnsibleCallFinish(caller, 120);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -165,9 +170,9 @@ public class Ku8InstallTool {
 
 		// 安装kubernetes集群
 		System.out.println("install kubernetes .......");
-		tool.deployService.installK8s();
+		tool.deployService.installK8s(0);
 		caller = tool.deployService.getProcessCaller();
-		tool.waitAnsibleCallFinish(caller, 300);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 300);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");

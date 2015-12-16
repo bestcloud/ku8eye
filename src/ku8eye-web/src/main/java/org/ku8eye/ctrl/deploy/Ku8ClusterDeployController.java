@@ -1,5 +1,6 @@
 package org.ku8eye.ctrl.deploy;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +11,10 @@ import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
 import org.ku8eye.service.HostService;
+import org.ku8eye.service.deploy.AnsibleCallResult;
+import org.ku8eye.service.deploy.AnsibleResultParser;
 import org.ku8eye.service.deploy.Ku8ClusterDeployService;
+import org.ku8eye.service.deploy.ProcessCaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +50,78 @@ public class Ku8ClusterDeployController {
 			simpleTemplates.add(simple);
 		}
 		return simpleTemplates;
+	}
+
+	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
+	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
+		return deployService.createInstallScripts(getCurTemplate(model));
+	}
+
+	@RequestMapping(value = "/deploycluster/check-nodestatus", method = RequestMethod.GET)
+	public String checkNodestatus(ModelMap model) {
+		try {
+
+			deployService.shutdownProcessCallerIfRunning();
+			deployService.deployKeyFiles(10 * 60);
+			return "SUCCESS:";
+		} catch (Exception e) {
+			return "ERROR:" + e.toString();
+		}
+	}
+
+	@RequestMapping(value = "/deploycluster/disble-firewall", method = RequestMethod.GET)
+	public String disableFirewall(ModelMap model) {
+		try {
+
+			deployService.shutdownProcessCallerIfRunning();
+			deployService.disableFirewalld(10 * 60);
+			return "SUCCESS:";
+		} catch (Exception e) {
+			return "ERROR:" + e.toString();
+		}
+	}
+
+	@RequestMapping(value = "/deploycluster/install-k8s", method = RequestMethod.GET)
+	public String installK8s(ModelMap model) {
+		try {
+
+			deployService.shutdownProcessCallerIfRunning();
+			deployService.installK8s(30 * 60);
+			return "SUCCESS:";
+		} catch (Exception e) {
+			return "ERROR:" + e.toString();
+		}
+	}
+
+	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
+	public AnsibleCallResult fetchAnsilbeResult(ModelMap model) {
+
+		ProcessCaller curCaller = deployService.getProcessCaller();
+		boolean finished = curCaller.isFinished();
+		String errmsg = curCaller.getErrorMsg();
+		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
+		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(results);
+		parseResult.setAnsibleFinished(finished);
+		if (finished && results.isEmpty()) {
+			parseResult.setTaskResult("INIT", "INIT", false, errmsg);
+		}
+		return parseResult;
+
+	}
+
+	@RequestMapping(value = "/deploycluster/fetch-ansilbe-rawout", method = RequestMethod.GET)
+	public ArrayList<String> fetchAnsilbeRawOut(ModelMap model) {
+		ProcessCaller curCaller = deployService.getProcessCaller();
+		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
+		return results;
+
+	}
+
+	@RequestMapping(value = "/deploycluster/ansible-job-finished", method = RequestMethod.GET)
+	public boolean curAnsibleJobFinished(ModelMap model) {
+		ProcessCaller curCaller = deployService.getProcessCaller();
+		return curCaller.isFinished();
+
 	}
 
 	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
