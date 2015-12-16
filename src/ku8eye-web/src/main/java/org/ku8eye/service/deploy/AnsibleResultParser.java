@@ -50,13 +50,21 @@ public class AnsibleResultParser {
 		String groupName = null;
 		String taskName = null;
 		String taskErrMsg = null;
+		int lineIndx=0;
 		for (String line : ansibleOut) {
-
+			if(lineIndx==0&& line.startsWith("ERROR: "))
+			{//param error ,so ansible exits
+				String errmsg=line.substring("ERROR: ".length());
+				result.setTaskResult("INIT", "init", false, errmsg);
+				return result;
+			}
+			lineIndx++;
 			if (line.startsWith(playPrex)) {
 				groupName = getToken(line, playPrex, ']');
 				groupBegin = true;
 				playRecapBegin = false;
 			}
+             
 			if (groupBegin) {
 				if (line.startsWith(taskPrex)) {
 					taskName = getToken(line, taskPrex, ']');

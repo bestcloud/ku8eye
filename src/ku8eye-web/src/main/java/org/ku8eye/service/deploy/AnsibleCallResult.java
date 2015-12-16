@@ -47,7 +47,6 @@ public class AnsibleCallResult {
 	}
 
 	public void setTaskResult(String groupName, String taskName, boolean success, String errmsg) {
-		System.out.println("group:" + groupName + ",task:" + taskName + " " + success);
 		findTaskResult(groupName, taskName).setResult(success, errmsg);
 
 	}
