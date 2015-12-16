@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @SessionAttributes("ku8template")
 public class Ku8ClusterDeployController {
 
-	
+	@Autowired
+	private HostService hostService;
 	@Autowired
 	private Ku8ClusterDeployService deployService;
-	private HostService hostService;
 	private Logger log = Logger.getLogger(this.toString());
-	
+
 	@RequestMapping(value = "/deploycluster/listtemplates")
 	public List<Ku8ClusterTemplate> listTemplates() {
 		List<Ku8ClusterTemplate> templates = deployService.getAllTemplates();
@@ -59,70 +59,94 @@ public class Ku8ClusterDeployController {
 		return template;
 
 	}
-	
-	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
-	public InstallNode modifyTemplate(HttpServletRequest request,
-			@RequestParam("templateString") String templateString,@PathVariable("id") int templateId, ModelMap model) {
-		log.info(""+templateId+"    "+templateString);
-		String arr[]=templateString.split(",");
-		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0).clone();
-		if(templateId==0){	
-			InstallNode node = template.getStandardAllIneOneNode();
-			node.setIp(arr[0]);
-			node.setHostName(arr[1]);
-			node.setRootPassword(arr[2]);
-			for(int i=3;i<arr.length;i=i+2){
-				node.getNodeRoleParams().put(arr[i], initInstallParameter(arr[i+1],arr[i+1]));
-			}
-			return node;
 
-		}else{
-			InstallNode  node = template.getStandardMasterWithEtcdNode();
+	@RequestMapping(value = "/deploycluster/getnodemodal/{status}")
+	public InstallNode getNodemodal(HttpServletRequest request, @RequestParam("addnode") String addnode,
+			@PathVariable("status") String status, ModelMap model) {
+		InstallNode node;
+		// session中获取当前模板对象
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		if (status.equals("singleNode")) {
+			node = template.getStandardAllIneOneNode();
+		} else if (status.equals("multiNode")) {
+			node = template.getStandardMasterWithEtcdNode();
+		} else {
+			node = template.getStandardK8sNode();
+		}
+		String arr[]=addnode.split(",");
+		for(int i=0;i<arr.length;i=i+4){
+			node.setIp(arr[i]);
+			node.setHostId(Integer.parseInt(arr[i+1]));
+			node.setHostName(arr[i + 2]);
+			node.setRootPassword(arr[i + 3]);
+			template.addNewNode(node);
+		}
+		
+		return node;
+	}
+
+	@RequestMapping(value = "/deploycluster/addk8snodes/{id}")
+	public List<InstallNode> addk8snodes(@PathVariable("id") String id, ModelMap model) {
+		// session中获取当前模板对象
+				Ku8ClusterTemplate template = getCurTemplate(model);
+		List<InstallNode> nodes = new LinkedList<InstallNode>();
+		
+		String strList[] = id.split(",");
+		for (String s : strList) {
+			if (!s.isEmpty()) {
+				InstallNode node = template.getStandardK8sNode();
+				Host pros = hostService.getHostsByZoneString(Integer.parseInt(s));
+				node.setDefautNode(true);
+				node.setHostId(pros.getId());
+				node.setHostName(pros.getHostName());
+				node.setIp(pros.getIp());
+				node.setRootPassword(pros.getRootPasswd());
+				template.addNewNode(node);
+				nodes.add(node);
+			}
+		}
+		return nodes;
+	}
+
+	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
+	public InstallNode modifyTemplate(HttpServletRequest request, @RequestParam("templateString") String templateString,
+			@PathVariable("id") int templateId, ModelMap model) {
+		String arr[] = templateString.split(",");
+		// session中获取当前模板对象
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		if (template.getId() == 0) {
+			// all in one节点模板
+			System.out.println("todo .........modifyTemplate ");
+		     return null;
+
+		} else {
+			if(true)
+			{
+				System.out.println("todo .........modifyTemplate ,muti nodes ");
+			     return null;
+
+			}
+			// 192.168.1.6,mynode_4,123456,
+			// 192.168.1.6,123456,123456,root,root,
+			InstallNode node = template.getStandardMasterWithEtcdNode();
 			node.setIp(arr[0]);
 			node.setHostName(arr[1]);
 			node.setRootPassword(arr[2]);
-			
+
 			List<InstallNode> k8sNodes = template.findAllK8sNodes();
 			for (InstallNode nodes : k8sNodes) {
-				log.info(nodes);
 				nodes.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_NODE, "kubelet_hostname_override", nodes.getIp());
 			}
 
-			for (int i = 3; i < arr.length; i=i+5) {
-				log.info(i);
+			for (int i = 3; i < arr.length; i = i + 5) {
 				node = template.getStandardK8sNode();
 				node.setIp(arr[i]);
-				node.setHostName(arr[i+2]);
-				node.setRootPassword(arr[i+3]);	
-				node.getNodeRoleParams().put(Ku8ClusterTemplate.NODE_ROLE_NODE, initInstallParameter(arr[i+4],arr[i+5]));
+				node.setHostName(arr[i + 2]);
+				node.setRootPassword(arr[i + 3]);
 				template.addNewNode(node);
 			}
 			return node;
 		}
-
-	}
-	
-	@RequestMapping(value = "/nodelist/{status}", method = RequestMethod.GET)
-	public InstallNode getNode(@PathVariable("status") String status, ModelMap model) {
-		InstallNode nodes;
-		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0).clone();
-		if(status.equals("singleNode")){
-			nodes=template.getStandardAllIneOneNode();
-		}else if(status.equals("multiNode")){
-			nodes=template.getStandardMasterWithEtcdNode();
-		}else{
-			nodes=template.getStandardK8sNode();
-		}
-		return nodes;
-
-	}
-	
-
-	private List<InstallParam> initInstallParameter(String user,String pass) {
-		List<InstallParam> list = new ArrayList<InstallParam>();
-		list.add(new InstallParam("ansible_ssh_user", user, "login uername"));
-		list.add(new InstallParam("ansible_ssh_pass", pass, "login pass"));
-		return list;
 	}
 	
 	@RequestMapping(value = "/deploycluster/getcurtemplate", method = RequestMethod.GET)

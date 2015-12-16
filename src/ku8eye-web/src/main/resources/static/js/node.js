@@ -4,9 +4,6 @@
 		w = $(window).width(),
 		u = {
 			'cluster': '/deploycluster/listtemplates',
-			'singleNode':'/nodelist/singleNode',
-			'multiNode':'/nodelist/multiNode',
-			'multiAddNode':'/nodelist/addNode',
 			'addlist':'/addlist/1'
 		},
         par={},
@@ -55,8 +52,8 @@
 //					alert(i+"="+data);
 					 d[ i ] = data;
                      dataCount = dataCount + 1;
-                     $('.load-img').html( dataCount * 20 + '%' );
-                     if( dataCount == 5 ){
+                     $('.load-img').html( dataCount * 50 + '%' );
+                     if( dataCount == 2 ){
                          $( '#page' ).data('status', 'success');
                          settings.onSuccess.call( this );
                      }; 
@@ -109,7 +106,7 @@
 					case "multiNode":
 						pageDetail();
 						break;
-                    case "installProgress":
+                    case "modeNext":
                         progress();
                         break;
 				};
@@ -183,7 +180,6 @@
 		//单节点的js
 		function pageRate(){
 			var itemId = $( '.content' ).data( 'itemId' );
-			var root_passwd="";
 			//要添加的节点对话框的值
 			$('#example1').DataTable({
 		        "ajax":"/addlist/1",
@@ -208,8 +204,7 @@
 		       		              }
 		       		          }
 		       		      ]
-		    });
-			
+		    });			
 			
 			//模版默认的值显示
 			$.ajax({
@@ -217,13 +212,11 @@
 		        type: "GET",
 		        dataType:"json",
 		        success: function(data){
-//		        	d.node=data;
 		        	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
-
-		        	$("#nodeIp").html(d.singleNode.ip);
-		        	$("#nodeName").html(d.singleNode.hostName);
+		        	$("#nodeIp").html(data.standardAllIneOneNode.ip);
+		        	$("#nodeName").html(data.standardAllIneOneNode.hostName);
 		        	
-		        	$.each(d.singleNode.nodeRoleParams,function(i,item){
+		        	$.each(data.standardAllIneOneNode.nodeRoleParams,function(i,item){
 		        		var count=0;
 		        		$.each(item,function(m,n){
 		        			count++;
@@ -242,81 +235,40 @@
 				td = $(td).next("td");
 				var nodeip = jQuery.trim($(td).text());
 				td = $(td).next("td");
-				root_passwd = jQuery.trim($(td).text());
+				var root_passwd = jQuery.trim($(td).text());
+				var nodeid=$(".chkbox:checked").val();
+				var _addnode=nodeip+","+nodeid+","+nodename+","+root_passwd;
+				
+				$.ajax({
+			        url:"/deploycluster/getnodemodal/singleNode",
+			        data:{
+			        	'addnode':_addnode
+			        },
+			        type: "GET",
+			        dataType:"json",
+			        success: function(data){
+			        	d.singleNode=data;
+			        }
+			    });
+				
 				$("#nodeIp").html(nodeip);
 	        	$("#nodeName").html(nodename);
 	        	        	
 		    });
 			
-			$("#nextStep").click(function(){
-				
-				var _templateString="";
-		
-	        	_templateString+=$("#nodeIp").html()+","+$("#nodeName").html()+","+root_passwd;
-	        	
-//				$.each(d.singleNode.nodeRoleParams,function(i,item){
-//	        		$("#"+i+1).val();
-//	        		$("#"+i+2).val();
-//	        		_templateString+=","+i+","+$("#"+i+1).val()+","+$("#"+i+2).val();
-//	        	});
-				
-	        	$( '#example' ).find( 'tr td').each(function(i,item){
-	        		if((i)%4==0){
-	        			_templateString+=","+$(this).text();
-//	        			$(tditem).val()
-//	        			if((i+2)%3==0){
-//	        				var _arr=$(this).text().split(";");
-//	        				for(var j=0;j<_arr.length-1;j++){
-//	        					var arr=_arr[j].split("=");
-//	        					_templateString+=","+arr[1];
-//	        				}
-//	        			}else{
-//	        				_templateString+=","+$(this).text();
-//	        			}
-	        			
-	        		}
-	        	});
-	        	
-	        	$( '#example' ).find( 'tr input').each(function(i,item){
-	        			
-	        			_templateString+=","+$(item).val();    		
-	        	});
-	        	alert(_templateString);
-	        	
-	        	$.ajax({
-			        url:"/deploycluster/modifytemplate/0",
-			        data:{
-			        	'templateString':_templateString
-			        },
-			        type: "GET",
-			        dataType:"text",
-			        success: function(data){
-			        	alert(data);
-			        }
-			    });
-				
-//				var de="";
-//				$(":checkbox:checked").closest("#example tr").find(":checkbox").each(function(i, eleDom) {
-//					// 遍历每个被选中的复选框所在行的文本框的值
-//					de += eleDom.value + ",";
-//				});
-//				
-//				$( '.content' ).data({
-//					'zoneId': de
-//				});
-				
-//				$( '.content' ).pageControl({
-//					page: "installProgress"
-//				});
-				
-			});
 			
-
+			//保存修改的参数
+			$("#nextStep").click(function(){
+				$( '.content' ).pageControl({
+					page: "modeNext"
+				});
+		
+//	        	$( '#example' ).find( 'tr td').each(function(i,item){        		
+//	        			_templateString+=","+$(this).text();		}
+//	        	});
+			});
 		}
-		
-		
-		
-		
+
 		//多节点的js
 		function pageDetail(){
 			var itemId = $( '.content' ).data( 'itemId' );
@@ -326,7 +278,6 @@
 		        "columns": [
 		        			{ "data": "id", render: function ( data, type, row ) {
 		                		// Combine the first and last names into a single table field
-		        				
 		                			return "<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>";
 		            		} },
 		        			{ "data": "hostName" },
@@ -373,125 +324,161 @@
 		       		      ]
 		    });
 			
+			
+			//模版默认的值显示
+			$.ajax({
+		        url:"/deploycluster/selecttemplate/"+itemId,
+		        type: "GET",
+		        dataType:"json",
+		        success: function(data){
+		        	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
+		        }
+		    });
+			
 			//选择节点按钮事件
 			$("#selectSaveBtn").click(function(){
-					var td = $(".chkbox:checked").first().parent("td");
+		        	var td = $(".chkbox:checked").first().parent("td");
 					td = $(td).next("td");
 					var nodename = jQuery.trim($(td).text());
 					td = $(td).next("td");
 					var nodeip = jQuery.trim($(td).text());
 					td = $(td).next("td");
-					root_passwd= jQuery.trim($(td).text());
+					var root_passwd = jQuery.trim($(td).text());
+					var nodeid=$(".chkbox:checked").val();
+					var _addnode=nodeip+","+nodeid+","+nodename+","+root_passwd;
+					
 					$("#multiIp").html(nodeip);
 		        	$("#multiName").html(nodename);
-		        	//模版默认的值显示
+		        	
+		        	//master的数据
 					$.ajax({
-				        url:"/deploycluster/selecttemplate/"+itemId,
+				        url:"/deploycluster/getnodemodal/multiNode",
+				        data:{
+				        	'addnode':_addnode
+				        },
 				        type: "GET",
 				        dataType:"json",
 				        success: function(data){
-				        	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
+//				        	alert("返回的数据"+data);
+							//Master的值
+							var mastertable="";
+							$.each(data.nodeRoleParams,function(i,item){	
+								var masterName="",mastervalue="",masterDescribe="";
+				        		$.each(item,function(m,n){
+				        		    masterName+="\n"+n.name+";\n";
+				        			mastervalue+="\n"+n.value+";\n";
+				        			masterDescribe+="\n"+n.describe+";\n";
+				        		});
+				        		mastertable+=[
+				        			          '<tr>',
+				        			          '<td>'+i+'</td>',
+				        			          '<td>'+masterName+'</td>',
+				        			          '<td>'+mastervalue+'</td>',
+				        			          '<td>'+masterDescribe+'</td>',
+				        			          '</tr>'
+				        			          ].join('');
+				        	});
+							$("#multiMaster").html("<tr><th>角色</th><th>参数名</th><th>参数值</th><th>描述</th></tr>");
+							$("#multiMaster").append(mastertable);
 				        }
 				    });
-					
-				
-					//Master的值
-					var mastertable="";
-					$.each(d.multiNode.nodeRoleParams,function(i,item){	
-						var masterName="",mastervalue="",masterDescribe="";
-		        		$.each(item,function(m,n){
-		        		    masterName+=n.name+";";
-		        			mastervalue+=n.value+";";
-		        			masterDescribe+=n.describe+";";
-		        		});
-		        		mastertable+=[
-		        			          '<tr>',
-		        			          '<td>'+i+'</td>',
-		        			          '<td>'+masterName+'</td>',
-		        			          '<td>'+mastervalue+'</td>',
-		        			          '<td>'+masterDescribe+'</td>',
-		        			          '</tr>'
-		        			          ].join('');
-		        	});
-					$("#multiMaster").html("<tr><th>角色</th><th>参数名</th><th>参数值</th><th>描述</th></tr>");
-					$("#multiMaster").append(mastertable);
-					
-					//nodes的值
-					var RoleParam="";
-					$.each(d.multiAddNode.nodeRoleParams,function(a,b){ 
-						$.each(b,function(c,d){
-							RoleParam+=d.name+"="+d.value+";";
-						});
-		        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
-		        	});
-					//添加节点按钮事件
-					$("#addSaveBtn").click(function(){
-						var de="";
-						$(":checkbox:checked").closest("#example3 tr").find(":checkbox").each(function(i, eleDom) {
-							// 遍历每个被选中的复选框所在行的文本框的值
-							de += eleDom.value + ",";
-						});
-						$.ajax({
-					        url:"/getNode/"+de,
-					        type: "GET",
-					        dataType:"json",
-					        success: function(data){
-					        	var setcount=0;
-					        	$.each(data,function(i,item){
-					        	    RoleParam="";
-					        	    
-					        		$.each(item.nodeRoleParams,function(m,n){
-					        			
-					        			$.each(n,function(m1,n1){
-					        				RoleParam+=n1.name+"="+n1.value+";";
-					        			});
-					        		});
-					        		setcount++;
-					        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
-					        		
-					        	});
-					        	
-					        	//修改参数
-					        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
-					        		$("#setting").html("");
-									var dialogValue=$( this ).attr('value');
-									var dialogip=$( this ).attr('c');
-									var dialogpasswd=$( this ).attr('passwd');
-									var modifyId=$( this ).attr('count');
-									var hostName=$( this ).attr('host');
-									var arrname=dialogValue.split(";");
-									var i;
-									var li="";
-									for(i=0;i<arrname.length-1;i++){
-										var arrValue=arrname[i].split("=");
-										li +=[
-										      '<div class="form-group">',
-										      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
-										      '<div class="col-sm-10">',
-										      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
-										      '</div>',
-										      '</div>'
-										      ].join('');
-									}
-									$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
-									
-									$("#setSaveBtn").click(function(){
-										$(this).unbind('click');
-										$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
-									});
-								});
 
-					        	//删除行
-								$( '#multiNodes' ).find( 'tr .del' ).click(function() {
-									var j=this.parentNode.parentNode.rowIndex;
-									document.getElementById('multiNodes').deleteRow(j);
+					//nodes的数据
+		        	$.ajax({
+				        url:"/deploycluster/getnodemodal/multiaddNode",
+				        data:{
+				        	'addnode':_addnode
+				        },
+				        type: "GET",
+				        dataType:"json",
+				        success: function(data){
+//				        	alert("返回的数据"+data);
+							//nodes的值
+							var RoleParam="";
+							$.each(data.nodeRoleParams,function(a,b){ 
+								$.each(b,function(c,d){
+									RoleParam+=d.name+"="+d.value+";";
 								});
+				        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+				        	});
+				        }
+				    });
 
-					        }  
-					    });						
-					});
- 	
 			});
+			
+			//添加节点按钮事件
+			$("#addSaveBtn").click(function(){
+				
+				var de="";
+				$(":checkbox:checked").closest("#example3 tr").find(":checkbox").each(function(i, eleDom) {
+					// 遍历每个被选中的复选框所在行的文本框的值
+					de += eleDom.value + ",";
+				});
+				$.ajax({
+			        url:"/deploycluster/addk8snodes/"+de,
+			        type: "GET",
+			        dataType:"json",
+			        success: function(data){
+//			        	alert(data);
+			        	var setcount=0;
+			        	$.each(data,function(i,item){
+			        	    RoleParam="";
+			        	    
+			        		$.each(item.nodeRoleParams,function(m,n){
+			        			
+			        			$.each(n,function(m1,n1){
+			        				RoleParam+=n1.name+"="+n1.value+";";
+			        			});
+			        		});
+			        		setcount++;
+			        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+			        		
+			        	});
+			        	
+			        	//修改参数
+			        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
+			        		$("#setting").html("");
+							var dialogValue=$( this ).attr('value');
+							var dialogip=$( this ).attr('c');
+							var dialogpasswd=$( this ).attr('passwd');
+							var modifyId=$( this ).attr('count');
+							var hostName=$( this ).attr('host');
+							var arrname=dialogValue.split(";");
+							var i;
+							var li="";
+							for(i=0;i<arrname.length-1;i++){
+								var arrValue=arrname[i].split("=");
+								li +=[
+								      '<div class="form-group">',
+								      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
+								      '<div class="col-sm-10">',
+								      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
+								      '</div>',
+								      '</div>'
+								      ].join('');
+							}
+							$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
+							
+							$("#setSaveBtn").click(function(){
+								$(this).unbind('click');
+								$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+							});
+						});
+
+			        	//删除行
+						$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+							var j=this.parentNode.parentNode.rowIndex;
+							document.getElementById('multiNodes').deleteRow(j);
+						});
+
+			        }  
+			    });						
+			});
+			
+			
+			
+			
+			
 			$("#nextStep").click(function(){
 				
 				var _templateString="";
@@ -533,7 +520,27 @@
 		}
 		
 		function progress(){
+			alert(d.singleNode);
+			$.ajax({
+		        url:"/deploycluster/GlobParameters",
+		        data:{
+		        	'templateString':_templateString
+		        },
+		        type: "GET",
+		        dataType:"text",
+		        success: function(data){
+		        	alert(data);
+		        }
+		    });
 			
+			
+//			$.each(d.singleNode.nodeRoleParams,function(i,item){
+//        		var count=0;
+//        		$.each(item,function(m,n){
+//        			count++;
+//        			$("#example1").append("<tr><td>"+n.name+"</td><td>"+n.value+"</td><td>"+n.describe+"</td></tr>");
+//        		});
+//        	});
 		}
 		
 	};
