@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
 import org.ku8eye.bean.deploy.InstallNode;
 import org.ku8eye.bean.deploy.InstallParam;
@@ -25,8 +26,8 @@ public class Ku8ClusterDeployService {
 
 	@Autowired
 	private TemplateUtil tmpUtil;
-
-	private ProcessCaller processCaller = new ProcessCaller();
+	private Logger LOGGER = Logger.getLogger(Ku8ClusterDeployService.class);
+	private ProcessCaller processCaller =new ProcessCaller();
 
 	private String ansibleWorkDir = "/root/kubernetes_cluster_setup/";
 
@@ -188,26 +189,34 @@ public class Ku8ClusterDeployService {
 		return temp;
 	}
 
-	public void deployKeyFiles() {
+	public void deployKeyFiles(int forceTimeOutSeconds) {
 		checkProcessFinished();
 		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "ssh-hosts", "pre-setup/keys.yml");
+		if (forceTimeOutSeconds > 0) {
+			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+		}
 	}
 
-	public void disableFirewalld() {
+	public void disableFirewalld(int forceTimeOutSeconds) {
 		checkProcessFinished();
 		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "ssh-hosts", "pre-setup/disablefirewalld.yml");
+		if (forceTimeOutSeconds > 0) {
+			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+		}
+	}
+
+	public void installK8s(int forceTimeOutSeconds) {
+		checkProcessFinished();
+		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "hosts", "setup.yml");
+		if (forceTimeOutSeconds > 0) {
+			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+		}
 	}
 
 	private void checkProcessFinished() {
 		if (!processCaller.isFinished()) {
 			throw new RuntimeException(" Ku8Cluser deploy is running...");
 		}
-		// processCaller.reset();
-	}
-
-	public void installK8s() {
-		checkProcessFinished();
-		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "hosts", "setup.yml");
 	}
 
 	public List<String> deployResult() throws Exception {
@@ -220,6 +229,13 @@ public class Ku8ClusterDeployService {
 
 	public ProcessCaller getProcessCaller() {
 		return processCaller;
+	}
+
+	public void shutdownProcessCallerIfRunning() {
+		if (!processCaller.isFinished()) {
+			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
+			processCaller.shutdownCaller();
+		}
 	}
 
 	public String deployHasError() throws Exception {

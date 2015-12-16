@@ -6,19 +6,54 @@ import java.util.Map;
 
 public class AnsibleCallResult {
 	private Map<String, Map<String, AnsibleTaskResult>> hostTaskResultMap = new HashMap<String, Map<String, AnsibleTaskResult>>();
-	private Map<String, String> nodeTotalSumaryMap = new LinkedHashMap<String, String>();
+	private Map<String, AnsibleNodeSum> nodeTotalSumaryMap = new LinkedHashMap<String, AnsibleNodeSum>();
+	private boolean ansibleFinished = false;
 
 	public void addTaskSumary(String groupName, String taskName, String node, String summary) {
 
 		findTaskResult(groupName, taskName).andNodeSumary(node, summary);
 	}
 
+	/**
+	 * 是否ansible结果完成，如果否，表示还没结束，当前是部分解析结果
+	 * 
+	 * @return
+	 */
+	public boolean isAnsibleFinished() {
+		return ansibleFinished;
+	}
+
+	public void setAnsibleFinished(boolean ansibleFinished) {
+		this.ansibleFinished = ansibleFinished;
+	}
+
 	public void addTotalSumary(String node, String summary) {
-		nodeTotalSumaryMap.put(node, summary);
+		String[] items = summary.split("\\s");
+		int ok = 0;
+		int changed = 0;
+		int unreachable = 0;
+		int failed = 0;
+		for (String item : items) {
+			if (item.startsWith("ok")) {
+				ok =getValue(item); 
+			} else if (item.startsWith("changed")) {
+				changed = getValue(item);
+			} else if (item.startsWith("unreachable")) {
+				unreachable =getValue(item);
+			} else if (item.startsWith("failed")) {
+				failed = getValue(item);
+			}
+		}
+		nodeTotalSumaryMap.put(node, new AnsibleNodeSum(ok, changed, unreachable, failed));
 
 	}
 
-	public Map<String, String> getNodeTotalSumaryMap() {
+	private  static int getValue(String item)
+	{
+	return Integer.parseInt(item.substring(item.indexOf("=")+1));	
+	}
+
+	public Map<String, AnsibleNodeSum> getNodeTotalSumaryMap() {
 		return nodeTotalSumaryMap;
 	}
 
@@ -63,25 +98,30 @@ public class AnsibleCallResult {
 		return true;
 	}
 
-	public void printInfo() {
-		System.out.println("Ansible job " + (this.isSuccess() ? " SUCCESS " : " FAILED "));
+	public String printInfo() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Ansible job " + (this.isSuccess() ? " SUCCESS " : " FAILED \r\n"));
 		for (Map.Entry<String, Map<String, AnsibleTaskResult>> groupTasks : hostTaskResultMap.entrySet()) {
 			System.out.println("group " + groupTasks.getKey());
 			for (AnsibleTaskResult taskResult : groupTasks.getValue().values()) {
-				System.out.println("   task " + taskResult.getTaskName()
-						+ (taskResult.isSuccess() ? " SUCCESS " :(taskResult.getFailMsg()==null)?"": " FAILED :" +taskResult.getFailMsg() ));
+				sb.append("   task " + taskResult.getTaskName()
+						+ (taskResult.isSuccess() ? " SUCCESS "
+								: (taskResult.getFailMsg() == null) ? "" : " FAILED :" + taskResult.getFailMsg()))
+						.append("\r\n");
 				for (Map.Entry<String, String> taskSumerys : taskResult.getNodeSumarys().entrySet())
 
 				{
-					System.out.println("       node  " + taskSumerys.getKey() + " result:" + taskSumerys.getValue());
+					sb.append("       node  " + taskSumerys.getKey() + " result:" + taskSumerys.getValue())
+							.append("\r\n");
 				}
 			}
 		}
-		for (Map.Entry<String, String> taskSumerys : nodeTotalSumaryMap.entrySet())
+		for (Map.Entry<String, AnsibleNodeSum> taskSumerys : nodeTotalSumaryMap.entrySet())
 
 		{
-			System.out.println("node  " + taskSumerys.getKey() + " sumary:" + taskSumerys.getValue());
+			sb.append("node  " + taskSumerys.getKey() + " sumary:" + taskSumerys.getValue()).append("\r\n");
 		}
+		return sb.toString();
 	}
 
 	public void markSuccess() {

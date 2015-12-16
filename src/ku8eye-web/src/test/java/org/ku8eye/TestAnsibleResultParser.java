@@ -12,6 +12,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.ku8eye.service.deploy.AnsibleCallResult;
+import org.ku8eye.service.deploy.AnsibleNodeSum;
 import org.ku8eye.service.deploy.AnsibleResultParser;
 import org.ku8eye.service.deploy.AnsibleTaskResult;
 
@@ -48,6 +49,7 @@ public class TestAnsibleResultParser {
 		Assert.assertEquals(result.isSuccess(),true);
 		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
 		Assert.assertEquals(hostResultMap.size(),4);
+		Assert.assertEquals(result.getNodeTotalSumaryMap().get("192.168.18.133"),new AnsibleNodeSum(107,92,0,0));
 	}
 
 	@Test

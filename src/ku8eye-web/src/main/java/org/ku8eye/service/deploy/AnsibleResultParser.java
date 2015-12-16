@@ -55,6 +55,7 @@ public class AnsibleResultParser {
 			if(lineIndx==0&& line.startsWith("ERROR: "))
 			{//param error ,so ansible exits
 				String errmsg=line.substring("ERROR: ".length());
+				result.setAnsibleFinished(true);
 				result.setTaskResult("INIT", "init", false, errmsg);
 				return result;
 			}
