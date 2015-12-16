@@ -21,7 +21,7 @@ public class ProcessCaller {
 	private CopyOnWriteArrayList<String> outputs = new CopyOnWriteArrayList<String>();
 	private volatile boolean finished = true;
 	private volatile boolean normalExit = false;
-	private Logger LOGGER = LoggerFactory.getLogger(ProcessCaller.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(ProcessCaller.class);
 	// if not normal exit ,then set error message
 	private volatile String errorMsg;
 	private volatile Process curProcess;
@@ -66,7 +66,8 @@ public class ProcessCaller {
 	}
 
 	public boolean isFinished() {
-		return finished;
+		Process process = curProcess;
+		return finished || (process == null || (process != null && !process.isAlive()));
 	}
 
 	public void shutdownCaller() {
@@ -74,6 +75,9 @@ public class ProcessCaller {
 		if (process != null && process.isAlive()) {
 			process.destroyForcibly();
 		}
+		this.errorMsg = "killed by caller ";
+		curProcess = null;
+		finished = true;
 	}
 
 	public boolean isNormalExit() {
@@ -106,28 +110,30 @@ public class ProcessCaller {
 		processThread.start();
 	}
 
-	public void waitFinish(int timeOutSeconds) {
+	public void asnyWaitFinish(final int timeOutSeconds) {
+		final Process procss = this.curProcess;
+		Thread monitorThread = new Thread() {
+			public void run() {
+				waitFinish(procss, timeOutSeconds);
+			}
+		};
+		monitorThread.setDaemon(true);
+		monitorThread.start();
+	}
+
+	public void waitFinish(final Process process, int timeOutSeconds) {
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		while (System.currentTimeMillis() < timeOutMillis && !finished) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 
-			}  
+			}
 		}
-		if (curProcess != null && curProcess.isAlive()) {
-			curProcess.destroyForcibly();
+		if (process != null && process.isAlive()) {
+			shutdownCaller();
 
 		}
-	}
-
-	public void reset() {
-		this.finished = false;
-		errorMsg = null;
-		this.normalExit = true;
-		this.outputs.clear();
-		this.curProcess = null;
-
 	}
 
 	@Override

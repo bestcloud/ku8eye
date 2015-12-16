@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
+import org.ku8eye.service.deploy.ProcessCaller;
 
 /**
  * Template for Ku8 Cluster install
@@ -23,7 +24,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_NODE = "kube-node";
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 	public static String DEFAULT_GLOBAL = "default-global";
-	private Logger log = Logger.getLogger(this.toString());
+	
 
 	public Ku8ClusterTemplate() {
 
