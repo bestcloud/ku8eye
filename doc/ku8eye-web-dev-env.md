@@ -22,13 +22,9 @@
 ### ku8eye-web的使用方式：
 #### 1. 命令行方式
 
-使用 java 命令完成一键安装Kubernetes集群，脚本为：
+使用命令行完成一键安装Kubernetes集群，脚本为：
 
-`/root/ku8eye-startup.sh`
-
-脚本的内容为：
-
-`java -jar ku8eye-web-0.0.1-SNAPSHOT.jar org.ku8eye.App tool -n $1 -cluster-docker0-ip $2 -rootpass $3`
+`/root/ku8eye-startup.sh $1 $2 $3`
 
 **需要输入的3个参数为：**
 
@@ -39,7 +35,7 @@
 **$3: root用户的密码，目前仅支持所有主机相同的密码，例如：123456**
 
 一个完整的命令行如下：
-`java -jar ku8eye-web-0.0.1-SNAPSHOT.jar org.ku8eye.App tool -n "192.168.1.2,192.168.1.3" -cluster-docker0-ip "172.0.0.0/16" -rootpass "123456"`
+`/root/ku8eye-startup.sh "192.168.1.2,192.168.1.3" "172.0.0.0/16" "123456"`
 > 注：每个参数需用双引号引起来
 
 然后即可观察输出结果。
