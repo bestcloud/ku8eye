@@ -70,27 +70,26 @@
 	$("#Detection").hide();
 	$("#install").attr("disabled", true);
 	$.ajax({
-	    url:"/deploycluster/GlobParameter",
+	    url:"/deploycluster/global-params",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
 	    	$.each(data,function(i,item){
 	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"</td><td>"+item.describe+"</td></tr>");
-	    		
 	    	});
 	    	
 	    }
 	}); 
 	
 	$("#install").click(function(){
-		alert("ddddd");
+		alert("正在开发中！！！");
 	});
 	
 	$("#nodeDetection").click(function(){
 		$("#install").attr("disabled", false);
 		$("#Detection").show();
 		$.ajax({
-		    url:"/deploycluster/NodesList",
+		    url:"/deploycluster/nodeslist",
 		    type: "GET",
 		    dataType:"json",
 		    success: function(data){

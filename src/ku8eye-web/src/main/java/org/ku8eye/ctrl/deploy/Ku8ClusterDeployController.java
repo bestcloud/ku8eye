@@ -58,7 +58,7 @@ public class Ku8ClusterDeployController {
 
 	}
 	
-	@RequestMapping(value = "/deploycluster/GlobParameter", method = RequestMethod.GET)
+	@RequestMapping(value = "/deploycluster/global-params", method = RequestMethod.GET)
 	public Map<String, InstallParam> getGlobParameter(ModelMap model) {
 		Ku8ClusterTemplate template=getCurTemplate(model);
 		Map<String, InstallParam> Parameter=template.getAllGlobParameters();
@@ -67,7 +67,7 @@ public class Ku8ClusterDeployController {
 	}
 	
 	
-	@RequestMapping(value = "/deploycluster/NodesList", method = RequestMethod.GET)
+	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
 	public List<InstallNode> getNodesList(ModelMap model) {
 		Ku8ClusterTemplate template=getCurTemplate(model);
 		List<InstallNode> Parameter=template.getNodes();
