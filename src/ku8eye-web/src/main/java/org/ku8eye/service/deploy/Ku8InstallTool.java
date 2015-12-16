@@ -41,7 +41,8 @@ public class Ku8InstallTool {
 			// master node
 			InstallNode node = template.getStandardMasterWithEtcdNode();
 			node.setIp(hosts[0]);
-			node.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange, clusterDocker0Ip);
+			node.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange,
+					clusterDocker0Ip);
 			node.setRootPassword(rootPass);
 			template.addNewNode(node);
 			// minion nodes
@@ -76,9 +77,11 @@ public class Ku8InstallTool {
 
 			}
 		}
+
 		if (!caller.isFinished()) {
 			caller.shutdownCaller();
 		}
+
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
 		System.out.println("____________________________Report______________________________");
 		parseResult.printInfo();
