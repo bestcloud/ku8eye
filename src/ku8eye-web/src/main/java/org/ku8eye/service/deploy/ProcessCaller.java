@@ -87,6 +87,7 @@ public class ProcessCaller {
 	public void asnyCall(final String workDir, final String... execArgs) {
 		finished = false;
 		Thread processThread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					call(workDir, execArgs);
@@ -112,7 +113,7 @@ public class ProcessCaller {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 
-			}
+			}  
 		}
 		if (curProcess != null && curProcess.isAlive()) {
 			curProcess.destroyForcibly();

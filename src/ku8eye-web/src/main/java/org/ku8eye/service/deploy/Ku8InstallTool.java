@@ -75,9 +75,9 @@ public class Ku8InstallTool {
 
 			}
 		}
-		if (!caller.isFinished()) {
-			caller.shutdownCaller();
-		}
+//		if (!caller.isFinished()) {
+//			caller.shutdownCaller();
+//		}
 		 AnsibleCallResult parseResult=AnsibleResultParser.parseResult(totalOutResults);
 		 System.out.println("____________________________Report______________________________");
 		 parseResult.printInfo();
