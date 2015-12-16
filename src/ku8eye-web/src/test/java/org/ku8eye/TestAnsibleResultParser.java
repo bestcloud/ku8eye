@@ -58,7 +58,7 @@ public class TestAnsibleResultParser {
 		List<String> fileLines = readFromStream(inStream);
 		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
 		System.out.println("____________________________Report______________________________");
-		result.printInfo();
+		System.out.println(result.printInfo());
 		Assert.assertEquals(result.isSuccess(),false);
 		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
 		Assert.assertEquals(hostResultMap.size(),1);
@@ -70,7 +70,7 @@ public class TestAnsibleResultParser {
 		List<String> fileLines = readFromStream(inStream);
 		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
 		System.out.println("____________________________Report______________________________");
-		result.printInfo();
+		System.out.println(result.printInfo());
 		Assert.assertEquals(result.isSuccess(),false);
 		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
 		Assert.assertEquals(hostResultMap.size(),1);
@@ -81,7 +81,7 @@ public class TestAnsibleResultParser {
 		List<String> fileLines = readFromStream(inStream);
 		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
 		System.out.println("____________________________Report______________________________");
-		result.printInfo();
+		System.out.println(result.printInfo());
 		Assert.assertEquals(result.isSuccess(),false);
 		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
 		Assert.assertEquals(hostResultMap.size(),1);
