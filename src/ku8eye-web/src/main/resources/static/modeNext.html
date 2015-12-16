@@ -3,6 +3,10 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
+				<div style="padding-bottom: 5px;padding-top:15px">
+					<button id="nodeDetection"  class="btn btn-primary" data-dismiss="modal">检查参数</button>
+					<button id="install"  class="btn btn-primary" data-dismiss="modal">进行安装</button>	
+				</div>
 				<table id="example1" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
@@ -13,10 +17,7 @@
 						</tr>
 					</thead>
 				</table>
-				<div style="padding-bottom: 5px;padding-top:15px">
-					<a id="nodeDetection" class="btn btn-primary " data-toggle="modal">检测节点</a>
-					<a id="install" class="btn btn-primary " data-toggle="modal">进行安装</a>
-				</div>
+				
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -30,12 +31,12 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
-				<table id="example1" class="table table-bordered table-hover"
+				<table id="example2" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
 						<tr>
-							<th><input type='checkbox' class='chkbox' name='child' />
-							</th>
+							<!--<th><input type='checkbox' class='chkbox' name='child' />
+							</th>-->
 							<th>节点IP</th>
 							<th>节点角色</th>
 							<th>状态</th>
@@ -67,18 +68,46 @@
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
 	$("#Detection").hide();
-	$("#nodeDetection").click(function(){
-		
-		setTimeout(load,2000);
-		function load(){
-			$("#Detection").show();
-		}
-		
-	});
+	$("#install").attr("disabled", true);
+	$.ajax({
+	    url:"/deploycluster/GlobParameter",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"</td><td>"+item.describe+"</td></tr>");
+	    		
+	    	});
+	    	
+	    }
+	}); 
+	
 	$("#install").click(function(){
-		
-		$(".content").load('installProgress.html');
-		
+		alert("ddddd");
 	});
+	
+	$("#nodeDetection").click(function(){
+		$("#install").attr("disabled", false);
+		$("#Detection").show();
+		$.ajax({
+		    url:"/deploycluster/NodesList",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	$.each(data,function(i,item){
+		    		var nodeRole="";
+		    		$.each(item.nodeRoleParams,function(m,n){
+		    			nodeRole+=m+";";
+		    		});
+		    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td>待检测</td></tr>");
+		    		
+		    	});
+		    	
+		    }
+		}); 
+	});
+	
+	
+	
 	
 </script>
