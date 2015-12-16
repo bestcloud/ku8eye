@@ -1,5 +1,8 @@
 package org.ku8eye;
 
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.ku8eye.bean.deploy.InstallNode;
@@ -34,7 +37,10 @@ public class Ku8GenInstallTemplateTest {
 
 	@Test
 	public void createScripts() throws Exception {
-		deployService.createInstallScripts(getTemp());
+		Ku8ClusterTemplate template =getTemp();
+		List<String> errMsgs=deployService.createInstallScripts(template);
+		Assert.assertTrue(errMsgs.size()==0);
+		
 	}
 
 }

@@ -63,7 +63,8 @@ public class Ku8ClusterDeployController {
 	public InstallNode getNodemodal(@PathVariable("status") String status, ModelMap model) {
 		InstallNode node;
 		// session中获取当前模板对象
-		Ku8ClusterTemplate template = getCurTemplate(model);
+		//Ku8ClusterTemplate template = getCurTemplate(model);
+		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0);
 		if (status.equals("singleNode")) {
 			node = template.getStandardAllIneOneNode();
 		} else if (status.equals("multiNode")) {

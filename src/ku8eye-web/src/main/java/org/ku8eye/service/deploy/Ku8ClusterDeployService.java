@@ -75,31 +75,35 @@ public class Ku8ClusterDeployService {
 		InstallNode masterNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_MASTER);
 		String masterIp = masterNode.getIp();
 		String apiserver_insecure_port = masterNode.getNodeParam("apiserver_insecure_port");
+		String clusterDocker0IPAdd = masterNode.getNodeParam(Constants.k8sparam_cluster_docker0_ip_srange);
 		String kube_master_url = "http://" + masterIp + ":" + apiserver_insecure_port;
 		// update global param
 		autoParams.put("kube_master_url", kube_master_url);
 		autoParams.put("server_key_CN", masterIp);
+		autoParams.put("ca_crt_CN", masterNode.getNodeParam("ca_crt_CN"));
+
 		autoParams.put("apiserver_insecure_port", apiserver_insecure_port);
-		autoParams.put("apiserver_service_cluster_ip_range",  masterNode.getNodeParam("apiserver_service_cluster_ip_range"));
-		autoParams.put("apiserver_service_node_port_range",  masterNode.getNodeParam("apiserver_service_node_port_range"));
-		autoParams.put("kube_node_sync_period",  masterNode.getNodeParam("kube_node_sync_period"));
-		
-		
-		
+		autoParams.put(Constants.k8sparam_cluster_docker0_ip_srange, clusterDocker0IPAdd);
+		autoParams.put("apiserver_service_cluster_ip_range",
+				masterNode.getNodeParam("apiserver_service_cluster_ip_range"));
+		autoParams.put("apiserver_service_node_port_range",
+				masterNode.getNodeParam("apiserver_service_node_port_range"));
+		autoParams.put("kube_node_sync_period", masterNode.getNodeParam("kube_node_sync_period"));
+
 		// docker registry
 		InstallNode dockerRegNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_REGISTRY);
 		String dockerRegIP = dockerRegNode.getIp();
 		String docker_registry_server_name = dockerRegIP;
 		String docker0_ip = dockerRegNode.getNodeParam("docker0_ip");
-		autoParams.put("docker0_ip",docker0_ip);
-		
+		autoParams.put("docker0_ip", docker0_ip);
+
 		// update global param
 		autoParams.put("docker_registry_server_name", docker_registry_server_name);
 		autoParams.put("docker_registry_server_ip", dockerRegIP);
 		autoParams.put("docker_registry_root_dir", dockerRegNode.getNodeParam("docker_registry_root_dir"));
 		autoParams.put("docker_registry_image_id", dockerRegNode.getNodeParam("docker_registry_image_id"));
 		autoParams.put("docker_registry_image_tag", dockerRegNode.getNodeParam("docker_registry_image_tag"));
-		String clusterDocker0IPAdd = gloableParams.get(Constants.k8sparam_cluster_docker0_ip_srange).getValue();
+
 		List<String> docker0IpList = get24maskChildNetIP(clusterDocker0IPAdd);
 		// every k8s node ,calc params
 		List<InstallNode> k8sNodes = template.findAllK8sNodes();
@@ -133,6 +137,8 @@ public class Ku8ClusterDeployService {
 
 	private Ku8ClusterTemplate createAllInOneTemplate() {
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
+		temp.setId(0);
+		temp.getAllGlobParameters().get("install_quagga_router").setValue("false");
 		temp.setName("All In One Cluster");
 		temp.setTemplateType(1);
 		temp.setDescribe("All service in one server");
@@ -141,19 +147,23 @@ public class Ku8ClusterDeployService {
 		return temp;
 	}
 
-	public List<String> validateTemplate(Ku8ClusterTemplate template) {
-		Map<String, InstallParam> gloableParams = template.getAllGlobParameters();
+	private List<String> validateTemplate(Ku8ClusterTemplate template) {
+		Map<String, String> gloableParams = template.getCombinedGlobalParams();
 		List<String> errMsg = new LinkedList<String>();
-		String clusterDocker0IPAdd = gloableParams.get(Constants.k8sparam_cluster_docker0_ip_srange).getValue();
+		String clusterDocker0IPAdd = gloableParams.get(Constants.k8sparam_cluster_docker0_ip_srange);
 		if (!clusterDocker0IPAdd.endsWith("/16")) {
 			errMsg.add(Constants.k8sparam_cluster_docker0_ip_srange + " must be xxx.xxx.xxx.xxx/16 ");
 		}
 		return errMsg;
 	}
 
-	public void createInstallScripts(Ku8ClusterTemplate template) throws Exception {
+	public List<String> createInstallScripts(Ku8ClusterTemplate template) throws Exception {
 		processTemplateAutoParams(template);
-		tmpUtil.createAnsibleFiles(template);
+		List<String> errMsgs = validateTemplate(template);
+		if (errMsgs.isEmpty()) {
+			tmpUtil.createAnsibleFiles(template);
+		}
+		return errMsgs;
 	}
 
 	public Ku8ClusterTemplate getAndCloneTemplate(int templateId) {

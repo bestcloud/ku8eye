@@ -41,6 +41,7 @@ public class Ku8InstallTool {
 			// master node
 			InstallNode node = template.getStandardMasterWithEtcdNode();
 			node.setIp(hosts[0]);
+			node.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange, clusterDocker0Ip);
 			node.setRootPassword(rootPass);
 			template.addNewNode(node);
 			// minion nodes
@@ -125,8 +126,8 @@ public class Ku8InstallTool {
 		System.out.println("install on hosts " + Arrays.toString(hosts));
 		Ku8InstallTool tool = new Ku8InstallTool();
 		Ku8ClusterTemplate template = tool.getTemp(hosts, rootPasswd, clusterIPrange);
-		template.getAllGlobParameters().get(Constants.k8sparam_cluster_docker0_ip_srange).setValue(clusterIPrange);
-		List<String> errmsgs = tool.deployService.validateTemplate(template);
+		System.out.println("creat ansible script files ........");
+		List<String> errmsgs = tool.deployService.createInstallScripts(template);
 		if (errmsgs != null && !errmsgs.isEmpty()) {
 			System.out.println("there are some error params ,please check !");
 			for (String msg : errmsgs) {
@@ -134,8 +135,6 @@ public class Ku8InstallTool {
 				return;
 			}
 		}
-		System.out.println("creat ansible script files ........");
-		tool.deployService.createInstallScripts(template);
 		if (commandLine.hasOption('o')) {
 			return;
 		}
