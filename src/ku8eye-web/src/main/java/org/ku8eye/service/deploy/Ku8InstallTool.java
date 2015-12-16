@@ -33,11 +33,13 @@ public class Ku8InstallTool {
 	private Ku8ClusterTemplate getTemp(String[] hosts, String rootPass, String clusterDocker0Ip) throws Exception {
 		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0).clone();
 		if (hosts.length == 1) {
+			System.out.println("install all in one k8s env ....");
 			InstallNode node = template.getStandardAllIneOneNode();
 			node.setIp(hosts[0]);
 			node.setRootPassword(rootPass);
 			template.addNewNode(node);
 		} else {
+			System.out.println("install mutli nodes k8s env ....");
 			// master node
 			InstallNode node = template.getStandardMasterWithEtcdNode();
 			node.setIp(hosts[0]);

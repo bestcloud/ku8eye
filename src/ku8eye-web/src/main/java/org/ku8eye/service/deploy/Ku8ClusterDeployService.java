@@ -229,4 +229,8 @@ public class Ku8ClusterDeployService {
 			return "no error message..";
 	}
 
+	public TemplateUtil getTmpUtil() {
+		return tmpUtil;
+	}
+
 }

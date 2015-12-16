@@ -73,4 +73,15 @@ public class TestAnsibleResultParser {
 		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
 		Assert.assertEquals(hostResultMap.size(),1);
 	}
+	@Test
+	public void testAllInOneParseTest4() throws UnsupportedEncodingException {
+		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream("ansible-result4.txt");
+		List<String> fileLines = readFromStream(inStream);
+		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
+		System.out.println("____________________________Report______________________________");
+		result.printInfo();
+		Assert.assertEquals(result.isSuccess(),false);
+		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
+		Assert.assertEquals(hostResultMap.size(),1);
+	}
 }
