@@ -1,9 +1,3 @@
-<style>
-.td-wrap{
- word-wrap:break-word;
-}
-</style>
-
 <div class="row" id="myModal1">
 	<div class="col-xs-12">
 		<div class="box">
@@ -36,7 +30,7 @@
 				
 				<div style="padding: 10px 0px;">
 					<span>Kubernetes nodes&nbsp;&nbsp;&nbsp;&nbsp;</span>
-					<a id="addNode" class="btn btn-primary " data-toggle="modal" data-target="#myModal3">添加节点</a> 
+					<a id="addNode" class="btn btn-primary " data-toggle="modal" data-target="#myModal2">添加节点</a> 
 				</div>
 				
 				<table id="multiNodes" class="table table-bordered table-hover"
@@ -94,58 +88,14 @@
 			<div class="modal-footer">
 				<button  type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
 				</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="selectSaveBtn">保<span style="padding-left: 12px" />存
+				<button type="button" class="btn btn-primary" data-dismiss="modal"  id="selectSaveBtn">保<span style="padding-left: 12px" />存
+				</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal"  id="addSaveBtn">保<span style="padding-left: 12px" />存
 				</button>
 			</div>
 		</div>
 	</div>
 </div>
-
-<div class="modal fade" id="myModal3" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">添加节点</h4>
-			</div>
-			<div class="modal-body">
-				<!-- Horizontal Form -->
-		          <div class="box box-info" style="margin-bottom:0px;">
-		            <!-- form start -->
-		            <form class="form-horizontal">
-		              <table id="example3" class="table table-bordered table-hover" style="font-size: 12px;">
-						<thead>
-						<tr>
-							<th></th>
-							<th>host_name</th>
-							<th>ip</th>
-							<th>root_passwd</th>  
-							<th>last_update</th>
-							<th>cores</th>
-							<th>lacation</th>
-						</tr>
-						</thead>
-						</table>
-		              <!-- /.box-body -->
-		            </form>
-		          </div>
-		          <!-- /.box -->
-			</div>
-			<div class="modal-footer">
-				<button  type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
-				</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="addSaveBtn">保<span style="padding-left: 12px" />存
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-
 
 <div class="modal fade" id="myModal4" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel">
@@ -164,14 +114,7 @@
 		            <!-- form start -->
 		            <form class="form-horizontal">
 		              <div class="box-body" id="setting">
-		                <!--<div class="form-group">
-		                  <label for="name" class="col-sm-2 control-label">Name</label>
-		
-		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="name" >
-		                  </div>
-		                </div>  -->
-
+		                
 		              </div>
 		            </form>
 		          </div>
@@ -186,3 +129,197 @@
 		</div>
 	</div>
 </div>
+<script>
+var root_passwd="";
+var status="";
+$("#selectNode").click(function(){
+	$("#myModalLabel").html("选择节点");
+	$("#addSaveBtn").hide();
+	$("#selectSaveBtn").show();
+	selectOrAddNode("select");
+});
+$("#addNode").click(function(){
+	$("#myModalLabel").html("添加节点");
+	$("#selectSaveBtn").hide();
+	$("#addSaveBtn").show();
+	selectOrAddNode("add");
+});
+function selectOrAddNode(_type){
+	$('#example2').DataTable({
+	    "ajax":"/addlist/1",
+	    "columns": [
+	    			{ "data": "id", render: function ( data, type, row ) {
+	            		// Combine the first and last names into a single table field
+	            			return _type=="select"?"<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>":"<input type='checkbox' value='"+data+"' class='chkbox' name='child' checked='checked'/>";
+	        		} },
+	    			{ "data": "hostName" },
+	    			{ "data": "ip" },
+	    			{ "data": "rootPasswd" },
+	    			{ "data": "lastUpdated" },
+	    			{ "data": "cores" },
+	    			{ "data": "location" },
+	    			
+	       		],
+	   		"buttons": [
+	   		          {
+	   		              text: 'Reload',
+	   		              action: function ( e, dt, node, config ) {
+	   		                  dt.ajax.reload();
+	   		              }
+	   		          }
+	   		      ],
+	   		"bDestroy": true
+	});
+}
+
+//模版默认的值显示
+$.ajax({
+    url:"/deploycluster/selecttemplate/1",
+    type: "GET",
+    dataType:"json",
+    success: function(data){
+    	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
+    }
+});
+
+//选择节点按钮事件
+$("#selectSaveBtn").click(function(){
+		
+    	var td = $(".chkbox:checked").first().parent("td");
+		td = $(td).next("td");
+		var nodename = jQuery.trim($(td).text());
+		td = $(td).next("td");
+		var nodeip = jQuery.trim($(td).text());
+		td = $(td).next("td");
+		var root_passwd = jQuery.trim($(td).text());
+		var nodeid=$(".chkbox:checked").val();
+		var _addnode=nodeip+","+nodeid+","+nodename+","+root_passwd;
+		
+		$("#multiIp").html(nodeip);
+    	$("#multiName").html(nodename);
+    	
+    	//master的数据
+		$.ajax({
+	        url:"/deploycluster/getnodemodal/multiNode",
+	        data:{
+	        	'addnode':_addnode
+	        },
+	        type: "GET",
+	        dataType:"json",
+	        success: function(data){
+	        	//alert("返回的数据"+data);
+				//Master的值
+				var mastertable="";
+				$.each(data.nodeRoleParams,function(i,item){	
+					var masterName="",mastervalue="",masterDescribe="";
+	        		$.each(item,function(m,n){
+	        		    masterName+=n.name+";\n";
+	        			mastervalue+=n.value+";\n";
+	        			masterDescribe+=n.describe+";\n";
+	        		});
+	        		mastertable+=[
+	        			          '<tr>',
+	        			          '<td>'+i+'</td>',
+	        			          '<td>'+masterName+'</td>',
+	        			          '<td>'+mastervalue+'</td>',
+	        			          '<td>'+masterDescribe+'</td>',
+	        			          '</tr>'
+	        			          ].join('');
+	        	});
+				$("#multiMaster").html("<tr><th>角色</th><th>参数名</th><th>参数值</th><th>描述</th></tr>");
+				$("#multiMaster").append(mastertable);
+	        }
+	    });
+
+		//nodes的数据
+    	$.ajax({
+	        url:"/deploycluster/getnodemodal/multiaddNode",
+	        data:{
+	        	'addnode':_addnode
+	        },
+	        type: "GET",
+	        dataType:"json",
+	        success: function(data){
+//	        	alert("返回的数据"+data);
+				//nodes的值
+				var RoleParam="";
+				$.each(data.nodeRoleParams,function(a,b){ 
+					$.each(b,function(c,d){
+						RoleParam+=d.name+"="+d.value+";";
+					});
+	        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+	        	});
+	        }
+	    });
+
+});
+
+//添加节点按钮事件
+$("#addSaveBtn").click(function(){
+	var de="";
+	$(":checkbox:checked").closest("#example2 tr").find(":checkbox").each(function(i, eleDom) {
+		// 遍历每个被选中的复选框所在行的文本框的值
+		de += eleDom.value + ",";
+	});
+	$.ajax({
+        url:"/deploycluster/addk8snodes/"+de,
+        type: "GET",
+        dataType:"json",
+        success: function(data){
+//        	alert(data);
+        	var setcount=0;
+        	$.each(data,function(i,item){
+        	    RoleParam="";
+        	    
+        		$.each(item.nodeRoleParams,function(m,n){
+        			
+        			$.each(n,function(m1,n1){
+        				RoleParam+=n1.name+"="+n1.value+";";
+        			});
+        		});
+        		setcount++;
+        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+        		
+        	});
+        	
+        	//修改参数
+        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
+        		$("#setting").html("");
+				var dialogValue=$( this ).attr('value');
+				var dialogip=$( this ).attr('c');
+				var dialogpasswd=$( this ).attr('passwd');
+				var modifyId=$( this ).attr('count');
+				var hostName=$( this ).attr('host');
+				var arrname=dialogValue.split(";");
+				var i;
+				var li="";
+				for(i=0;i<arrname.length-1;i++){
+					var arrValue=arrname[i].split("=");
+					li +=[
+					      '<div class="form-group">',
+					      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
+					      '<div class="col-sm-10">',
+					      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
+					      '</div>',
+					      '</div>'
+					      ].join('');
+				}
+				$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
+				
+				$("#setSaveBtn").click(function(){
+					$(this).unbind('click');
+					$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+				});
+			});
+
+        	//删除行
+			$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+				var j=this.parentNode.parentNode.rowIndex;
+				document.getElementById('multiNodes').deleteRow(j);
+			});
+
+        }  
+    });						
+});
+
+</script>

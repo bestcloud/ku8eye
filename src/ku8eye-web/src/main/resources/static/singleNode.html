@@ -78,3 +78,93 @@
 		</div>
 	</div>
 </div>
+<script>
+//要添加的节点对话框的表格值
+$('#example1').DataTable({
+    "ajax":"/addlist/1",
+    "columns": [
+    			{ "data": "id", render: function ( data, type, row ) {
+            		// Combine the first and last names into a single table field
+            			return "<input type='radio' value='"+data+"'  class='chkbox' name='child' checked='checked'/>";
+        		} },
+    			{ "data": "hostName" },
+    			{ "data": "ip" },
+    			{ "data": "rootPasswd" },
+    			{ "data": "lastUpdated" },
+    			{ "data": "cores" },
+    			{ "data": "location" },
+    			  
+       		],
+   		"buttons": [
+   		          {
+   		              text: 'Reload',
+   		              action: function ( e, dt, node, config ) {
+   		                  dt.ajax.reload();
+   		              }
+   		          }
+   		      ]
+});	
+
+
+//模版默认的值显示
+$.ajax({
+    url:"/deploycluster/selecttemplate/0",
+    type: "GET",
+    dataType:"json",
+    success: function(data){
+    	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
+    	$("#nodeIp").html(data.standardAllIneOneNode.ip);
+    	$("#nodeName").html(data.standardAllIneOneNode.hostName);
+    	
+    	$.each(data.standardAllIneOneNode.nodeRoleParams,function(i,item){
+    		var count=0;
+    		$.each(item,function(m,n){
+    			count++;
+    			$("#example").append("<tr><td>"+i+"</td><td>"+n.name+"</td><td><input type='text'  id='"+i+count+"' value='"+n.value+"'/></td><td>"+n.describe+"</td></tr>");
+    		});
+    	});
+    	
+    }
+}); 
+
+//按保存，把数据添加到页面，同时保存到后台
+$("#save").click(function(){
+	var td = $(".chkbox:checked").first().parent("td");
+	td = $(td).next("td");
+	var nodename = jQuery.trim($(td).text());
+	td = $(td).next("td");
+	var nodeip = jQuery.trim($(td).text());
+	td = $(td).next("td");
+	var root_passwd = jQuery.trim($(td).text());
+	var nodeid=$(".chkbox:checked").val();
+	var _addnode=nodeip+","+nodeid+","+nodename+","+root_passwd;
+	
+	$.ajax({
+        url:"/deploycluster/getnodemodal/singleNode",
+        data:{
+        	'addnode':_addnode
+        },
+        type: "GET",
+        dataType:"json",
+        success: function(data){
+        	d.singleNode=data;
+        }
+    });
+	
+	$("#nodeIp").html(nodeip);
+	$("#nodeName").html(nodename);
+	        	
+});
+
+
+//保存修改的参数
+$("#nextStep").click(function(){
+	$( '.content' ).pageControl({
+		page: "modeNext"
+	});
+
+//	$( '#example' ).find( 'tr td').each(function(i,item){        		
+//			_templateString+=","+$(this).text();		}
+//	});
+});
+</script>
