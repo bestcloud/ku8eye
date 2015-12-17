@@ -56,11 +56,11 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
 	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
-		// return deployService.createInstallScripts(getCurTemplate(model));
-		List<String> strs = new ArrayList<String>();
-		strs.add("err  xxxx note provide ");
-		strs.add("err  yyyy note provide ");
-		return strs;
+		 return deployService.createInstallScripts(getCurTemplate(model));
+//		List<String> strs = new ArrayList<String>();
+//		strs.add("err  xxxx note provide ");
+//		strs.add("err  yyyy note provide ");
+//		return strs;
 	}
 
 	@RequestMapping(value = "/deploycluster/start-install", method = RequestMethod.GET)
