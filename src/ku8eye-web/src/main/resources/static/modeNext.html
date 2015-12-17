@@ -1,8 +1,19 @@
+
 <div class="row">
 	<div class="col-xs-12">
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
+				<div style="padding-bottom: 5px;padding-top:15px">
+					<button id="install"  class="btn btn-primary" data-dismiss="modal">开始安装</button>	
+				</div>
+				<div id="errorInformation" style="color:#D81E12;">
+					<h3>参数检测失败 ，请检查以下错误!!!</h3>
+					<ul style="list-style-type:none;margin-left:-20px;text-size:24px" id="errorLi">
+					</ul>
+				
+				</div>
+				
 				<table id="example1" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
@@ -13,10 +24,7 @@
 						</tr>
 					</thead>
 				</table>
-				<div style="padding-bottom: 5px;padding-top:15px">
-					<a id="nodeDetection" class="btn btn-primary " data-toggle="modal">检测节点</a>
-					<a id="install" class="btn btn-primary " data-toggle="modal">进行安装</a>
-				</div>
+				
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -30,30 +38,14 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
-				<table id="example1" class="table table-bordered table-hover"
+				<table id="example2" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
 						<tr>
-							<th><input type='checkbox' class='chkbox' name='child' />
-							</th>
 							<th>节点IP</th>
 							<th>节点角色</th>
 							<th>状态</th>
 						</tr>
-						<!--<tr>
-							<td><input type='checkbox' class='chkbox' name='child' />
-							</td>
-							<td>192.168.1.1</td>
-							<td>ku8 Master</td>
-							<td>检测OK</td>
-						</tr>
-						<tr>
-							<td><input type='checkbox' class='chkbox' name='child' />
-							</td>
-							<td>192.168.1.2</td>
-							<td>ku8 Node</td>
-							<td>检测OK</td>
-						</tr>-->
 					</thead>  
 				</table>
 			</div>
@@ -67,18 +59,67 @@
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
 	$("#Detection").hide();
-	$("#nodeDetection").click(function(){
-		
-		setTimeout(load,2000);
-		function load(){
-			$("#Detection").show();
-		}
-		
-	});
-	$("#install").click(function(){
-		
-		$(".content").load('installProgress.html');
-		
-	});
+	$("#errorInformation").hide();
+	//获取页面数据上
+	$.ajax({
+	    url:"/deploycluster/global-params",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"</td><td>"+item.describe+"</td></tr>");
+	    	});
+	    	
+	    }
+	}); 
 	
+	$("#install").click(function(){
+		$("#Detection").show();
+		$.ajax({
+		    url:"/deploycluster/nodeslist",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	$.each(data,function(i,item){
+		    		var nodeRole="";
+		    		$.each(item.nodeRoleParams,function(m,n){
+		    			nodeRole+=m+";";
+		    		});
+		    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>待检测</td></tr>");
+		    		
+		    	});
+		    	
+		    }
+		});
+		
+		$.ajax({
+		    url:"/deploycluster/create-ansible-scripts",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	if(data.length>1){
+		    		$("#errorInformation").show();
+		    		var li="";
+		    		$.each(data,function(i,item){
+		    			li+="<li>"+item+"</li>"
+		    		});
+		    		$("#errorLi").html(li);
+		    	}else{
+		    		
+		    		//$(".detected").html("检测成功");
+		    		$.ajax({
+		    		    url:"/deploycluster/check-nodestatus",
+		    		    type: "GET",
+		    		    dataType:"text",
+		    		    success: function(data){
+		    		    	if(data=="SUCCESS:"){
+		    		    		$(".content").load("k8s-ansible-install.html");
+		    		    	}
+		    		    }
+		    		});
+		    	}
+		    }
+		});
+	});
+
 </script>

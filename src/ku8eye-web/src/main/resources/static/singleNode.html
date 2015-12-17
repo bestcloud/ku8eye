@@ -159,9 +159,7 @@ $("#save").click(function(){
 
 //保存修改的参数
 $("#nextStep").click(function(){
-	$( '.content' ).pageControl({
-		page: "modeNext"
-	});
+	$(".content").load("modeNext.html");
 
 //	$( '#example' ).find( 'tr td').each(function(i,item){        		
 //			_templateString+=","+$(this).text();		}
