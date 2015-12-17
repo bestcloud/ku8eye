@@ -46,16 +46,8 @@
 </div>
 <script type="text/javascript">
 //setInterval(install, 100);
-function install(){
-	$.ajax({
-	    url:"/deploycluster/fetch-ansilbe-rawout",
-	    type: "GET",
-	    dataType:"text",
-	    success: function(data){
-	    	alert("左边结果="+data);
-	    }
-	});
-
+//function install(){
+	
 	$.ajax({
 	    url:"/deploycluster/fetch-ansilbe-result",
 	    type: "GET",
@@ -65,6 +57,6 @@ function install(){
 	    }
 	});
 	
-}
+//}
 
 </script>
