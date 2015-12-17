@@ -4,33 +4,22 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;padding-top:15px">
-					<h3>安装进行中！！！</h3>
+					<h3>正在为您安装kubernetes集群，请耐心等待。。。。</h3>
 				</div>
 				<table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
 					<thead>
 						<tr>
-							<th>
-							<div style="padding-bottom: 5px;height:350px;background-color:#000000">
-								<!-- <ul id="installData">
-									<li style="padding-top:10px;">
-						    			<div class="processb" style="margin-right:30px;margin:20px 10px 10px 10px"><span style="color:#ffffff;">鑺傜偣1姝ｅ湪瀹夎涓紝瀹屾垚杩涘害</span><span id="percent" style="color:#ffffff;"></span></div>
-										<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 400px; height: 25px; border: solid 1px #ccc;">
-										<div id="processbar" style="background-color: #90EE90; width: 0px; height: 22px;"></div>
-										</div>
-									</li>
-								</ul>-->
+							<th style="width:60%;">
+							<div style="padding-bottom: 5px;height:350px;color:#E9C340;background-color:#000000;OVERFLOW-Y: scroll">
+								<ul id="installData" style="list-style-type:none;">
+									
+								</ul>
 							</div>
 							</th>
-							<th><div style="padding-bottom: 5px;height:350px;background-color:#ffffff">
-								<!-- <ul id="installData">
-									<li style="padding-top:10px;">
-						    			<div class="processb" style="margin-right:30px;margin:20px 10px 10px 10px"><span style="color:#ffffff;">鑺傜偣1姝ｅ湪瀹夎涓紝瀹屾垚杩涘害</span><span id="percent" style="color:#ffffff;"></span></div>
-										<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 200px; height: 25px; border: solid 1px #ccc;">
-										<div id="processbar" style="background-color: #90EE90; width: 0px; height: 22px;"></div>
-										</div>
-									</li>
-						
-								</ul>-->
+							<th><div style="padding-bottom: 5px;height:350px;background-color:#ffffff;OVERFLOW-Y: scroll">
+								<ul id="installresult" style="list-style-type:none;">
+								
+								</ul>
 								</div>
 							</th>
 						</tr>
@@ -44,19 +33,91 @@
 	</div>
 	<!-- /.col -->
 </div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">安装结果</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Horizontal Form -->
+		          <div class="box box-info" style="margin-bottom:0px;">
+		            <!-- form start -->
+		            <form class="form-horizontal">
+		              <table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
+						<thead>
+						<tr>
+							<th rolspan="2">节点</th>
+							<th>安装汇总</th>
+						</tr>
+						</thead>
+						</table>
+		              <!-- /.box-body -->
+		            </form>
+		          </div>
+		          <!-- /.box -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="save">保<span style="padding-left: 12px" />存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
-//setInterval(install, 100);
-//function install(){
-	
+
+setTimeout(install, 200);
+function install(){
 	$.ajax({
-	    url:"/deploycluster/fetch-ansilbe-result",
+	    url:"/deploycluster/fetch-ansilbe-rawout?mock=true",
 	    type: "GET",
-	    dataType:"text",
+	    dataType:"json",
 	    success: function(data){
-	    	alert("右边结果="+data);
+	    	$.each(data,function(i,item){
+	    		$("#installData").append("<li>"+item+"</li>");
+	    	});
 	    }
 	});
 	
-//}
+	$.ajax({
+	    url:"/deploycluster/fetch-ansilbe-result?mock=true",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	if(data.success==true){
+	    		$.each(data,function(i,item){
+		    		$("#installresult").append("<li>"+i+"</li>");
+		    		alert(i+"  "+item);
+		    		//$.each(item,function(m,n){
+		    			/*$.each(n,function(a,b){
+		    				$("#installresult").append("<li>"+a+"</li>");
+		    				$.each(b,function(c,d){
+		    					$("#installresult").append("<li>"+c+"</li>");
+		    				});
+		    				
+		    			});
+		    			$("#installresult").append("<li>"+m+"</li>");*/
+		    		//});
+		    		
+		    	});
+	    		$("#myModal2").modal('show') 
+	    	}else{
+	    		//setTimeout(install, 200);
+	    		$("#myModal2").modal('show') 
+	    	}
+
+	    }
+	});
+
+}
 
 </script>
