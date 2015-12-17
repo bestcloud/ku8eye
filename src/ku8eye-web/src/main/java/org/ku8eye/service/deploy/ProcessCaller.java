@@ -20,7 +20,7 @@ public class ProcessCaller {
 	// save process's output streams
 	private CopyOnWriteArrayList<String> outputs = new CopyOnWriteArrayList<String>();
 	private volatile boolean finished = true;
-	private volatile boolean normalExit = false;
+	private volatile boolean normalExit = true;
 	private static Logger LOGGER = LoggerFactory.getLogger(ProcessCaller.class);
 	// if not normal exit ,then set error message
 	private volatile String errorMsg;
@@ -67,7 +67,7 @@ public class ProcessCaller {
 
 	public boolean isFinished() {
 		Process process = curProcess;
-		return finished || (process == null || (process != null && !process.isAlive()));
+		return (finished ||(process != null && !process.isAlive()));
 	}
 
 	public void shutdownCaller() {

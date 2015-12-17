@@ -88,7 +88,7 @@ public class Ku8InstallTool {
 		}
 
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
-		if (!caller.isNormalExit()) {
+		if (!caller.isNormalExit() && parseResult.isSuccess()) {
 			parseResult.setTaskResult("INIT", "INIT", false, caller.getErrorMsg());
 		}
 		LOGGER.info("____________________________Report______________________________\r\n" + parseResult.printInfo());
@@ -136,7 +136,7 @@ public class Ku8InstallTool {
 		System.out.println("install on hosts " + Arrays.toString(hosts));
 		Ku8InstallTool tool = new Ku8InstallTool();
 		Ku8ClusterTemplate template = tool.getTemp(hosts, rootPasswd, clusterIPrange);
-		System.out.println("creat ansible script files ........");
+		System.out.println("create ansible script files ........");
 		List<String> errmsgs = tool.deployService.createInstallScripts(template);
 		if (errmsgs != null && !errmsgs.isEmpty()) {
 			System.out.println("there are some error params ,please check !");
