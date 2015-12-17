@@ -103,7 +103,25 @@
 		    	});
 		    	
 		    }
-		}); 
+		});
+		
+		$.ajax({
+		    url:"/deploycluster/fetch-ansilbe-result",
+		    type: "GET",
+		    dataType:"text",
+		    success: function(data){
+		    	alert("参数检测"+data);
+		    	$.each(data,function(i,item){
+		    		var nodeRole="";
+		    		$.each(item.nodeRoleParams,function(m,n){
+		    			nodeRole+=m+";";
+		    		});
+		    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td>待检测</td></tr>");
+		    		
+		    	});
+		    	
+		    }
+		});
 	});
 	
 	
