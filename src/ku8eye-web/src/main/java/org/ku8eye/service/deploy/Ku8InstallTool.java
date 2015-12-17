@@ -61,7 +61,7 @@ public class Ku8InstallTool {
 		return template;
 	}
 
-	public static void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds) {
+	public static void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds,boolean clearOutputs) {
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		List<String> totalOutResults = new LinkedList<String>();
 		while (System.currentTimeMillis() < timeOutMillis && !caller.isFinished()) {
@@ -84,7 +84,7 @@ public class Ku8InstallTool {
 		}
 
 		if (!caller.isFinished()) {
-			caller.shutdownCaller();
+			caller.shutdownCaller(clearOutputs);
 		}
 
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
@@ -149,9 +149,9 @@ public class Ku8InstallTool {
 			return;
 		}
 		System.out.println("generate ssh key  ........");
-		tool.deployService.deployKeyFiles(0);
+		tool.deployService.deployKeyFiles(0,false);
 		ProcessCaller caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120,true);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -159,9 +159,9 @@ public class Ku8InstallTool {
 		}
 		// 关闭防火墙的测试
 		System.out.println("close Firewalld ........");
-		tool.deployService.disableFirewalld(0);
+		tool.deployService.disableFirewalld(0,false);
 		caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120,true);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -170,9 +170,9 @@ public class Ku8InstallTool {
 
 		// 安装kubernetes集群
 		System.out.println("install kubernetes .......");
-		tool.deployService.installK8s(0);
+		tool.deployService.installK8s(0,false);
 		caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 300);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 300,true);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
