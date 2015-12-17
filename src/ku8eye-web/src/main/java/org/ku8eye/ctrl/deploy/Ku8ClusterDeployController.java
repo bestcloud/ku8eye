@@ -3,11 +3,13 @@ package org.ku8eye.ctrl.deploy;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.ku8eye.bean.deploy.InstallNode;
+import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Host;
 import org.ku8eye.service.HostService;
@@ -131,6 +133,23 @@ public class Ku8ClusterDeployController {
 		Ku8ClusterTemplate template = deployService.getAndCloneTemplate(templateId);
 		model.addAttribute("ku8template", template);
 		return template;
+
+	}
+	
+	@RequestMapping(value = "/deploycluster/global-params", method = RequestMethod.GET)
+	public Map<String, InstallParam> getGlobParameter(ModelMap model) {
+		Ku8ClusterTemplate template=getCurTemplate(model);
+		Map<String, InstallParam> Parameter=template.getAllGlobParameters();
+		return Parameter;
+
+	}
+	
+	
+	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
+	public List<InstallNode> getNodesList(ModelMap model) {
+		Ku8ClusterTemplate template=getCurTemplate(model);
+		List<InstallNode> Parameter=template.getNodes();
+		return Parameter;
 
 	}
 

@@ -1,0 +1,70 @@
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div style="padding-bottom: 5px;padding-top:15px">
+					<h3>安装进行中！！！</h3>
+				</div>
+				<table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
+					<thead>
+						<tr>
+							<th>
+							<div style="padding-bottom: 5px;height:350px;background-color:#000000">
+								<!-- <ul id="installData">
+									<li style="padding-top:10px;">
+						    			<div class="processb" style="margin-right:30px;margin:20px 10px 10px 10px"><span style="color:#ffffff;">鑺傜偣1姝ｅ湪瀹夎涓紝瀹屾垚杩涘害</span><span id="percent" style="color:#ffffff;"></span></div>
+										<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 400px; height: 25px; border: solid 1px #ccc;">
+										<div id="processbar" style="background-color: #90EE90; width: 0px; height: 22px;"></div>
+										</div>
+									</li>
+								</ul>-->
+							</div>
+							</th>
+							<th><div style="padding-bottom: 5px;height:350px;background-color:#ffffff">
+								<!-- <ul id="installData">
+									<li style="padding-top:10px;">
+						    			<div class="processb" style="margin-right:30px;margin:20px 10px 10px 10px"><span style="color:#ffffff;">鑺傜偣1姝ｅ湪瀹夎涓紝瀹屾垚杩涘害</span><span id="percent" style="color:#ffffff;"></span></div>
+										<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 200px; height: 25px; border: solid 1px #ccc;">
+										<div id="processbar" style="background-color: #90EE90; width: 0px; height: 22px;"></div>
+										</div>
+									</li>
+						
+								</ul>-->
+								</div>
+							</th>
+						</tr>
+					</thead>
+				</table>
+				
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<script type="text/javascript">
+//setInterval(install, 100);
+function install(){
+	$.ajax({
+	    url:"/deploycluster/fetch-ansilbe-rawout",
+	    type: "GET",
+	    dataType:"text",
+	    success: function(data){
+	    	alert("左边结果="+data);
+	    }
+	});
+
+	$.ajax({
+	    url:"/deploycluster/fetch-ansilbe-result",
+	    type: "GET",
+	    dataType:"text",
+	    success: function(data){
+	    	alert("右边结果="+data);
+	    }
+	});
+	
+}
+
+</script>
