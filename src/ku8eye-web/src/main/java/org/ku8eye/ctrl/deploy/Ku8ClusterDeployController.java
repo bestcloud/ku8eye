@@ -54,39 +54,20 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
 	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
-		return deployService.createInstallScripts(getCurTemplate(model));
+		// return deployService.createInstallScripts(getCurTemplate(model));
+		List<String> strs = new ArrayList<String>();
+		strs.add("err  xxxx note provide ");
+		strs.add("err  yyyy note provide ");
+		return strs;
 	}
 
-	@RequestMapping(value = "/deploycluster/check-nodestatus", method = RequestMethod.GET)
-	public String checkNodestatus(ModelMap model) {
+	@RequestMapping(value = "/deploycluster/start-install", method = RequestMethod.GET)
+	public String startInstall(ModelMap model) {
 		try {
-
-			deployService.shutdownProcessCallerIfRunning();
-			deployService.deployKeyFiles(10 * 60);
-			return "SUCCESS:";
-		} catch (Exception e) {
-			return "ERROR:" + e.toString();
-		}
-	}
-
-	@RequestMapping(value = "/deploycluster/disble-firewall", method = RequestMethod.GET)
-	public String disableFirewall(ModelMap model) {
-		try {
-
-			deployService.shutdownProcessCallerIfRunning();
-			deployService.disableFirewalld(10 * 60);
-			return "SUCCESS:";
-		} catch (Exception e) {
-			return "ERROR:" + e.toString();
-		}
-	}
-
-	@RequestMapping(value = "/deploycluster/install-k8s", method = RequestMethod.GET)
-	public String installK8s(ModelMap model) {
-		try {
-
-			deployService.shutdownProcessCallerIfRunning();
-			deployService.installK8s(30 * 60);
+			deployService.shutdownProcessCallerIfRunning(true);
+			deployService.deployKeyFiles(10 * 60,false);
+			Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
+			curTemplate.setCurInstallStep("ssh-key-task");
 			return "SUCCESS:";
 		} catch (Exception e) {
 			return "ERROR:" + e.toString();
@@ -95,7 +76,7 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
 	public AnsibleCallResult fetchAnsilbeResult(ModelMap model) {
-
+		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
 		String errmsg = curCaller.getErrorMsg();
@@ -104,6 +85,27 @@ public class Ku8ClusterDeployController {
 		parseResult.setAnsibleFinished(finished);
 		if (finished && results.isEmpty()) {
 			parseResult.setTaskResult("INIT", "INIT", false, errmsg);
+		}
+		String curStepName = curTemplate.getCurInstallStep();
+		parseResult.setStepName(curStepName);
+		if (parseResult.isAnsibleFinished() && parseResult.isSuccess()) {
+			// begin next step
+			if (curStepName.equals("ssh-key-task")) {
+				deployService.shutdownProcessCallerIfRunning(true);
+				deployService.disableFirewalld(10 * 60,false);
+				// mark not finished
+				curStepName = "close-firewall-task";
+				curTemplate.setCurInstallStep(curStepName);
+				parseResult.setAnsibleFinished(false);
+
+			} else if (curStepName.equals("close-firewall-task")) {
+				deployService.shutdownProcessCallerIfRunning(true);
+				deployService.installK8s(30 * 60,false);
+				// mark not finished
+				curStepName = "install-kubernetes-task";
+				curTemplate.setCurInstallStep(curStepName);
+				parseResult.setAnsibleFinished(false);
+			}
 		}
 		return parseResult;
 

@@ -27,7 +27,7 @@ public class Ku8ClusterDeployService {
 	@Autowired
 	private TemplateUtil tmpUtil;
 	private Logger LOGGER = Logger.getLogger(Ku8ClusterDeployService.class);
-	private ProcessCaller processCaller =new ProcessCaller();
+	private ProcessCaller processCaller = new ProcessCaller();
 
 	private String ansibleWorkDir = "/root/kubernetes_cluster_setup/";
 
@@ -189,27 +189,27 @@ public class Ku8ClusterDeployService {
 		return temp;
 	}
 
-	public void deployKeyFiles(int forceTimeOutSeconds) {
+	public void deployKeyFiles(int forceTimeOutSeconds, boolean clearOutputs) {
 		checkProcessFinished();
 		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "ssh-hosts", "pre-setup/keys.yml");
 		if (forceTimeOutSeconds > 0) {
-			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+			processCaller.asnyWaitFinish(forceTimeOutSeconds, clearOutputs);
 		}
 	}
 
-	public void disableFirewalld(int forceTimeOutSeconds) {
+	public void disableFirewalld(int forceTimeOutSeconds, boolean clearOutputs) {
 		checkProcessFinished();
 		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "ssh-hosts", "pre-setup/disablefirewalld.yml");
 		if (forceTimeOutSeconds > 0) {
-			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+			processCaller.asnyWaitFinish(forceTimeOutSeconds, clearOutputs);
 		}
 	}
 
-	public void installK8s(int forceTimeOutSeconds) {
+	public void installK8s(int forceTimeOutSeconds, boolean clearOutputs) {
 		checkProcessFinished();
 		processCaller.asnyCall(ansibleWorkDir, "ansible-playbook", "-i", "hosts", "setup.yml");
 		if (forceTimeOutSeconds > 0) {
-			processCaller.asnyWaitFinish(forceTimeOutSeconds);
+			processCaller.asnyWaitFinish(forceTimeOutSeconds, clearOutputs);
 		}
 	}
 
@@ -231,10 +231,10 @@ public class Ku8ClusterDeployService {
 		return processCaller;
 	}
 
-	public void shutdownProcessCallerIfRunning() {
+	public void shutdownProcessCallerIfRunning(boolean clearOutputs) {
 		if (!processCaller.isFinished()) {
 			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
-			processCaller.shutdownCaller();
+			processCaller.shutdownCaller(clearOutputs);
 		}
 	}
 

@@ -70,7 +70,7 @@ public class ProcessCaller {
 		return (finished ||(process != null && !process.isAlive()));
 	}
 
-	public void shutdownCaller() {
+	public void shutdownCaller(boolean clearOutputs) {
 		Process process = curProcess;
 		if (process != null && process.isAlive()) {
 			process.destroyForcibly();
@@ -78,6 +78,10 @@ public class ProcessCaller {
 		this.errorMsg = "killed by caller ";
 		curProcess = null;
 		finished = true;
+		if(clearOutputs)
+		{
+			this.outputs.clear();
+		}
 	}
 
 	public boolean isNormalExit() {
@@ -110,18 +114,18 @@ public class ProcessCaller {
 		processThread.start();
 	}
 
-	public void asnyWaitFinish(final int timeOutSeconds) {
+	public void asnyWaitFinish(final int timeOutSeconds,final boolean clearOutputs) {
 		final Process procss = this.curProcess;
 		Thread monitorThread = new Thread() {
 			public void run() {
-				waitFinish(procss, timeOutSeconds);
+				waitFinish(procss, timeOutSeconds,clearOutputs);
 			}
 		};
 		monitorThread.setDaemon(true);
 		monitorThread.start();
 	}
 
-	public void waitFinish(final Process process, int timeOutSeconds) {
+	public void waitFinish(final Process process, int timeOutSeconds,boolean clearOutputs) {
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		while (System.currentTimeMillis() < timeOutMillis && !finished) {
 			try {
@@ -131,7 +135,7 @@ public class ProcessCaller {
 			}
 		}
 		if (process != null && process.isAlive()) {
-			shutdownCaller();
+			shutdownCaller(clearOutputs);
 
 		}
 	}

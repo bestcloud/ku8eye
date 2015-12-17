@@ -8,7 +8,7 @@ public class AnsibleCallResult {
 	private Map<String, Map<String, AnsibleTaskResult>> hostTaskResultMap = new HashMap<String, Map<String, AnsibleTaskResult>>();
 	private Map<String, AnsibleNodeSum> nodeTotalSumaryMap = new LinkedHashMap<String, AnsibleNodeSum>();
 	private boolean ansibleFinished = false;
-
+    private String stepName;
 	public void addTaskSumary(String groupName, String taskName, String node, String summary) {
 
 		findTaskResult(groupName, taskName).andNodeSumary(node, summary);
@@ -25,6 +25,14 @@ public class AnsibleCallResult {
 
 	public void setAnsibleFinished(boolean ansibleFinished) {
 		this.ansibleFinished = ansibleFinished;
+	}
+
+	public String getStepName() {
+		return stepName;
+	}
+
+	public void setStepName(String stepName) {
+		this.stepName = stepName;
 	}
 
 	public void addTotalSumary(String node, String summary) {

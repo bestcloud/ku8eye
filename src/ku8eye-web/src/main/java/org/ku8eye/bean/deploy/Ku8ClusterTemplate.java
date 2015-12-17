@@ -24,7 +24,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_NODE = "kube-node";
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 	public static String DEFAULT_GLOBAL = "default-global";
-	
+	private volatile String curInstallStep;
 
 	public Ku8ClusterTemplate() {
 
@@ -66,6 +66,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_MASTER));
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_REGISTRY));
 		return node.clone();
+	}
+
+	public String getCurInstallStep() {
+		return curInstallStep;
+	}
+
+	public void setCurInstallStep(String curInstallStep) {
+		this.curInstallStep = curInstallStep;
 	}
 
 	public InstallNode getStandardAllIneOneNode() {
