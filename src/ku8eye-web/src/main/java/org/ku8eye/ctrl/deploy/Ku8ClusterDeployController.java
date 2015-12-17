@@ -65,7 +65,7 @@ public class Ku8ClusterDeployController {
 	public String startInstall(ModelMap model) {
 		try {
 			deployService.shutdownProcessCallerIfRunning(true);
-			deployService.deployKeyFiles(10 * 60,false);
+			deployService.deployKeyFiles(10 * 60, false);
 			Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 			curTemplate.setCurInstallStep("ssh-key-task");
 			return "SUCCESS:";
@@ -75,7 +75,10 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
-	public AnsibleCallResult fetchAnsilbeResult(ModelMap model) {
+	public AnsibleCallResult fetchAnsilbeResult(ModelMap model,HttpServletRequest request) {
+		if ("true".equals(request.getParameter("mock"))) {
+			return DemoDataUtil.getFakeAnsibleResult();
+		}
 		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
@@ -92,7 +95,7 @@ public class Ku8ClusterDeployController {
 			// begin next step
 			if (curStepName.equals("ssh-key-task")) {
 				deployService.shutdownProcessCallerIfRunning(true);
-				deployService.disableFirewalld(10 * 60,false);
+				deployService.disableFirewalld(10 * 60, false);
 				// mark not finished
 				curStepName = "close-firewall-task";
 				curTemplate.setCurInstallStep(curStepName);
@@ -100,7 +103,7 @@ public class Ku8ClusterDeployController {
 
 			} else if (curStepName.equals("close-firewall-task")) {
 				deployService.shutdownProcessCallerIfRunning(true);
-				deployService.installK8s(30 * 60,false);
+				deployService.installK8s(30 * 60, false);
 				// mark not finished
 				curStepName = "install-kubernetes-task";
 				curTemplate.setCurInstallStep(curStepName);
@@ -112,7 +115,10 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-rawout", method = RequestMethod.GET)
-	public ArrayList<String> fetchAnsilbeRawOut(ModelMap model) {
+	public List<String> fetchAnsilbeRawOut(ModelMap model, HttpServletRequest request) {
+		if ("true".equals(request.getParameter("mock"))) {
+			return DemoDataUtil.getFakeAnsibleOutput();
+		}
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
 		return results;

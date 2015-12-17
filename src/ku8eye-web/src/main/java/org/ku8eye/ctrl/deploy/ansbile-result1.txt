@@ -1,0 +1,336 @@
+PLAY [docker-registry] ******************************************************** 
+
+GATHERING FACTS *************************************************************** 
+ok: [192.168.18.133]
+
+TASK: [docker-registry | copy docker to /usr/bin] ***************************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | copy config file docker to /etc/sysconfig] *********** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | make docker runtime root directory {{docker_runtime_root_dir}}] *** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | copy docker.socket to /usr/lib/systemd/system] ******* 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | copy docker.service to /usr/lib/systemd/system] ****** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | systemctl daemon-reload] ***************************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | restart docker.socket service] *********************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | enable docker service] ******************************* 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | restart docker service] ****************************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check docker.socket service started ok] ************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check docker service started ok] ********************* 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check if registry image exists] ********************** 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker images | grep 774242a00f13", "delta": "0:00:00.083560", "end": "2015-12-09 19:03:59.655200", "rc": 1, "start": "2015-12-09 19:03:59.571640", "warnings": []}
+...ignoring
+
+TASK: [docker-registry | copy registry image file to /tmp] ******************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | load registry image] ********************************* 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | tag registry image] ********************************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check if registry container exists] ****************** 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker ps | grep registry", "delta": "0:00:00.096519", "end": "2015-12-09 19:04:51.279671", "rc": 1, "start": "2015-12-09 19:04:51.183152", "warnings": []}
+...ignoring
+
+TASK: [docker-registry | registry container doesn't exist, create running script] *** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | registry container doesn't exist, start docker registry container] *** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check docker registry started ok] ******************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | check if pause image exists] ************************* 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker images | grep 6c4579af347b", "delta": "0:00:00.141627", "end": "2015-12-09 19:04:52.820011", "rc": 1, "start": "2015-12-09 19:04:52.678384", "warnings": []}
+...ignoring
+
+TASK: [docker-registry | copy pause image file to /tmp] *********************** 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | load pause image] ************************************ 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | tag pause image] ************************************* 
+changed: [192.168.18.133]
+
+TASK: [docker-registry | push pause image to private registry] **************** 
+changed: [192.168.18.133]
+
+PLAY [etcd] ******************************************************************* 
+
+GATHERING FACTS *************************************************************** 
+ok: [192.168.18.133]
+
+TASK: [etcd | copy etcd to /usr/bin] ****************************************** 
+changed: [192.168.18.133]
+
+TASK: [etcd | copy etcdctl to /usr/bin] *************************************** 
+changed: [192.168.18.133]
+
+TASK: [etcd | make dir /etc/etcd] ********************************************* 
+changed: [192.168.18.133]
+
+TASK: [etcd | copy config file etcd.conf to /etc/etcd] ************************ 
+changed: [192.168.18.133]
+
+TASK: [etcd | copy etcd.service to /usr/lib/systemd/system] ******************* 
+changed: [192.168.18.133]
+
+TASK: [etcd | make dir /var/lib/etcd/ for etcd service] *********************** 
+changed: [192.168.18.133]
+
+TASK: [etcd | systemctl daemon-reload] **************************************** 
+changed: [192.168.18.133]
+
+TASK: [etcd | enable etcd service] ******************************************** 
+changed: [192.168.18.133]
+
+TASK: [etcd | start etcd service] ********************************************* 
+changed: [192.168.18.133]
+
+TASK: [etcd | test etcd started ok] ******************************************* 
+changed: [192.168.18.133]
+
+PLAY [kube-master] ************************************************************ 
+
+GATHERING FACTS *************************************************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-master | copy kube-apiserver to /usr/bin] ************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kube-controller-manager to /usr/bin] **************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kube-scheduler to /usr/bin] ************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kubectl to /usr/bin] ******************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy hyperkube to /usr/bin] ****************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | make dir /var/run/kubernetes] **************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | create keys - ca.key] ************************************ 
+changed: [192.168.18.133]
+
+TASK: [kube-master | create keys - ca.crt] ************************************ 
+changed: [192.168.18.133]
+
+TASK: [kube-master | create keys - server.key] ******************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | create keys - server.csr] ******************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | create keys - server.crt] ******************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | make dir /etc/kubernetes] ******************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy config file apiserver to /etc/kubernetes] *********** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy config file config to /etc/kubernetes] ************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy config file controller-manager to /etc/kubernetes] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy config file scheduler to /etc/kubernetes] *********** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kube-apiserver.service to /usr/lib/systemd/system] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kube-controller-manager.service to /usr/lib/systemd/system] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | copy kube-scheduler.service to /usr/lib/systemd/system] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | systemctl daemon-reload] ********************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-master | make dir /var/log/kubernetes] **************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | enable kube-apiserver service] *************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | start kube-apiserver service] **************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | enable kube-controller-manager service] ****************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | start kube-controller-manager service] ******************* 
+changed: [192.168.18.133]
+
+TASK: [kube-master | enable kube-scheduler service] *************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | start kube-scheduler service] **************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | check kube-apiserver service started ok] ***************** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | check kube-controller-manager service started ok] ******** 
+changed: [192.168.18.133]
+
+TASK: [kube-master | check kube-scheduler service started ok] ***************** 
+changed: [192.168.18.133]
+
+PLAY [kube-node] ************************************************************** 
+
+GATHERING FACTS *************************************************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy docker to /usr/bin] *********************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy config file docker to /etc/sysconfig] ***************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | make docker runtime root directory {{docker_runtime_root_dir}}] *** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy docker.socket to /usr/lib/systemd/system] ************* 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy docker.service to /usr/lib/systemd/system] ************ 
+ok: [192.168.18.133]
+
+TASK: [kube-node | systemctl daemon-reload] *********************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | start docker.socket service] ******************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | enable docker service] ************************************* 
+ok: [192.168.18.133]
+
+TASK: [kube-node | start docker service] ************************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check docker.socket service started ok] ******************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check docker service started ok] *************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check if quagga_router image exists] *********************** 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker images | grep f96cfe685533", "delta": "0:00:00.081988", "end": "2015-12-09 19:05:31.776919", "rc": 1, "start": "2015-12-09 19:05:31.694931", "warnings": []}
+...ignoring
+
+TASK: [kube-node | install_quagga_router - copy Quagga image to /tmp] ********* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | install_quagga_router - load Quagga image] ***************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | install_quagga_router - tag Quagga image] ****************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check if quagga_router container exists] ******************* 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker ps | grep index.alauda.cn/georce/router", "delta": "0:00:00.056828", "end": "2015-12-09 19:06:02.906158", "rc": 1, "start": "2015-12-09 19:06:02.849330", "warnings": []}
+...ignoring
+
+TASK: [kube-node | quagga_router container doesn't exist, create running script] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | quagga_router container doesn't exist, start quagga_router container] *** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check quagga_router started ok] **************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy kubelet to /usr/bin] ********************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy kube-proxy to /usr/bin] ******************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy kubectl to /usr/bin] ********************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy hyperkube to /usr/bin] ******************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | make dir /var/run/kubernetes] ****************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | make dir /etc/kubernetes] ********************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | copy config file kubelet to /etc/kubernetes] *************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy config file config to /etc/kubernetes] **************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy config file proxy to /etc/kubernetes] ***************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy kubelet.service to /usr/lib/systemd/system] *********** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | copy kube-proxy.service to /usr/lib/systemd/system] ******** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | make dir /var/lib/kubelet] ********************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | systemctl daemon-reload] *********************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | make dir /var/log/kubernetes] ****************************** 
+ok: [192.168.18.133]
+
+TASK: [kube-node | enable kubelet service] ************************************ 
+changed: [192.168.18.133]
+
+TASK: [kube-node | start kubelet service] ************************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | enable kube-proxy service] ********************************* 
+changed: [192.168.18.133]
+
+TASK: [kube-node | start kube-proxy service] ********************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check kubelet service started ok] ************************** 
+changed: [192.168.18.133]
+
+TASK: [kube-node | check kube-proxy service started ok] *********************** 
+changed: [192.168.18.133]
+
+PLAY RECAP ******************************************************************** 
+192.168.18.133             : ok=107  changed=92   unreachable=0    failed=0   
