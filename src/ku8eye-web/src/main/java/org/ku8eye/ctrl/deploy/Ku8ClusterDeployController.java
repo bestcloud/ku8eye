@@ -110,6 +110,9 @@ public class Ku8ClusterDeployController {
 				curStepName = "install-kubernetes-task";
 				curTemplate.setCurInstallStep(curStepName);
 				parseResult.setAnsibleFinished(false);
+			}else
+			{//total finished 
+				curTemplate.setAnsibleResult(parseResult);
 			}
 		}
 		return parseResult;
@@ -127,11 +130,17 @@ public class Ku8ClusterDeployController {
 
 	}
 
-	@RequestMapping(value = "/deploycluster/ansible-job-finished", method = RequestMethod.GET)
-	public boolean curAnsibleJobFinished(ModelMap model) {
-		ProcessCaller curCaller = deployService.getProcessCaller();
-		return curCaller.isFinished();
-
+	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
+	public Object getAnsibleFinalResult(ModelMap model,@PathVariable("type") String type) {
+		Ku8ClusterTemplate template =getCurTemplate(model);
+		AnsibleCallResult result= template.getAnsibleResult();
+		if("sumary".equals(type))
+		{
+			return result.getNodeTotalSumaryMap();
+		}else
+		{
+			return result;
+		}
 	}
 
 	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
