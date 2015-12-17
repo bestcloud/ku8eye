@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
+import org.ku8eye.service.deploy.AnsibleCallResult;
 import org.ku8eye.service.deploy.ProcessCaller;
 
 /**
@@ -25,6 +26,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 	public static String DEFAULT_GLOBAL = "default-global";
 	private volatile String curInstallStep;
+	private volatile AnsibleCallResult ansibleResult;
 
 	public Ku8ClusterTemplate() {
 
@@ -54,6 +56,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 	public String getLogoImage() {
 		return logoImage;
+	}
+
+	public AnsibleCallResult getAnsibleResult() {
+		return ansibleResult;
+	}
+
+	public void setAnsibleResult(AnsibleCallResult ansibleResult) {
+		this.ansibleResult = ansibleResult;
 	}
 
 	public InstallNode getStandardMasterWithEtcdNode() {
