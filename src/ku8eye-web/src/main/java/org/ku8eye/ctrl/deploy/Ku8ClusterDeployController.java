@@ -56,11 +56,11 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
 	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
-		 return deployService.createInstallScripts(getCurTemplate(model));
-//		List<String> strs = new ArrayList<String>();
-//		strs.add("err  xxxx note provide ");
-//		strs.add("err  yyyy note provide ");
-//		return strs;
+		return deployService.createInstallScripts(getCurTemplate(model));
+		// List<String> strs = new ArrayList<String>();
+		// strs.add("err xxxx note provide ");
+		// strs.add("err yyyy note provide ");
+		// return strs;
 	}
 
 	@RequestMapping(value = "/deploycluster/start-install", method = RequestMethod.GET)
@@ -77,7 +77,7 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
-	public AnsibleCallResult fetchAnsilbeResult(ModelMap model,HttpServletRequest request) {
+	public AnsibleCallResult fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
 		if ("true".equals(request.getParameter("mock"))) {
 			return DemoDataUtil.getFakeAnsibleResult();
 		}
@@ -110,11 +110,9 @@ public class Ku8ClusterDeployController {
 				curStepName = "install-kubernetes-task";
 				curTemplate.setCurInstallStep(curStepName);
 				parseResult.setAnsibleFinished(false);
-			}else
-			{//total finished 
-				curTemplate.setAnsibleResult(parseResult);
 			}
 		}
+		curTemplate.setAnsibleResult(parseResult);
 		return parseResult;
 
 	}
@@ -131,14 +129,21 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
-	public Object getAnsibleFinalResult(ModelMap model,@PathVariable("type") String type) {
-		Ku8ClusterTemplate template =getCurTemplate(model);
-		AnsibleCallResult result= template.getAnsibleResult();
-		if("sumary".equals(type))
+	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
+		if(true)
 		{
+			if ("sumary".equals(type)) {
+			return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+			}else
+			{
+				return DemoDataUtil.getFakeAnsibleResult();
+			}
+		}
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		AnsibleCallResult result = template.getAnsibleResult();
+		if ("sumary".equals(type)) {
 			return result.getNodeTotalSumaryMap();
-		}else
-		{
+		} else {
 			return result;
 		}
 	}
@@ -150,20 +155,19 @@ public class Ku8ClusterDeployController {
 		return template;
 
 	}
-	
+
 	@RequestMapping(value = "/deploycluster/global-params", method = RequestMethod.GET)
 	public Map<String, InstallParam> getGlobParameter(ModelMap model) {
-		Ku8ClusterTemplate template=getCurTemplate(model);
-		Map<String, InstallParam> Parameter=template.getAllGlobParameters();
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		Map<String, InstallParam> Parameter = template.getAllGlobParameters();
 		return Parameter;
 
 	}
-	
-	
+
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
 	public List<InstallNode> getNodesList(ModelMap model) {
-		Ku8ClusterTemplate template=getCurTemplate(model);
-		List<InstallNode> Parameter=template.getNodes();
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		List<InstallNode> Parameter = template.getNodes();
 		return Parameter;
 
 	}

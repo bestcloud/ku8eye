@@ -61,10 +61,11 @@ public class Ku8InstallTool {
 		return template;
 	}
 
-	public static void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds,boolean clearOutputs) {
+	private static void waitAnsibleCallFinish(ProcessCaller caller, int timeOutSeconds) {
+
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		List<String> totalOutResults = new LinkedList<String>();
-		while (System.currentTimeMillis() < timeOutMillis && !caller.isFinished()) {
+		while (System.currentTimeMillis() < timeOutMillis) {
 			try {
 				Thread.sleep(1000);
 				ArrayList<String> results = new ArrayList<String>(caller.getOutputs());
@@ -81,13 +82,14 @@ public class Ku8InstallTool {
 			} catch (InterruptedException e) {
 
 			}
+			if (caller.isFinished()) {
+				break;
+			}
 		}
-
-		if (!caller.isFinished()) {
-			caller.shutdownCaller(clearOutputs);
-		}
-
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
+		if (!caller.isFinished()) {
+			caller.shutdownCaller(true);
+		}
 		if (!caller.isNormalExit() && parseResult.isSuccess()) {
 			parseResult.setTaskResult("INIT", "INIT", false, caller.getErrorMsg());
 		}
@@ -149,9 +151,9 @@ public class Ku8InstallTool {
 			return;
 		}
 		System.out.println("generate ssh key  ........");
-		tool.deployService.deployKeyFiles(0,false);
+		tool.deployService.deployKeyFiles(0, false);
 		ProcessCaller caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 120,true);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -159,9 +161,9 @@ public class Ku8InstallTool {
 		}
 		// 关闭防火墙的测试
 		System.out.println("close Firewalld ........");
-		tool.deployService.disableFirewalld(0,false);
+		tool.deployService.disableFirewalld(0, false);
 		caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 120,true);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 120);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
@@ -170,9 +172,9 @@ public class Ku8InstallTool {
 
 		// 安装kubernetes集群
 		System.out.println("install kubernetes .......");
-		tool.deployService.installK8s(0,false);
+		tool.deployService.installK8s(0, false);
 		caller = tool.deployService.getProcessCaller();
-		Ku8InstallTool.waitAnsibleCallFinish(caller, 300,true);
+		Ku8InstallTool.waitAnsibleCallFinish(caller, 300);
 		if (!caller.isNormalExit()) {
 			System.out.println(caller.toString());
 			System.out.println("bad ansible result ,skip back step ");
