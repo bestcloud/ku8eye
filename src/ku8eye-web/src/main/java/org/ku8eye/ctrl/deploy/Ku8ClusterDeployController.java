@@ -56,11 +56,11 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
 	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
-		 return deployService.createInstallScripts(getCurTemplate(model));
-//		List<String> strs = new ArrayList<String>();
-//		strs.add("err  xxxx note provide ");
-//		strs.add("err  yyyy note provide ");
-//		return strs;
+		return deployService.createInstallScripts(getCurTemplate(model));
+		// List<String> strs = new ArrayList<String>();
+		// strs.add("err  xxxx note provide ");
+		// strs.add("err  yyyy note provide ");
+		// return strs;
 	}
 
 	@RequestMapping(value = "/deploycluster/start-install", method = RequestMethod.GET)
@@ -77,7 +77,8 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
-	public AnsibleCallResult fetchAnsilbeResult(ModelMap model,HttpServletRequest request) {
+	public AnsibleCallResult fetchAnsilbeResult(ModelMap model,
+			HttpServletRequest request) {
 		if ("true".equals(request.getParameter("mock"))) {
 			return DemoDataUtil.getFakeAnsibleResult();
 		}
@@ -85,8 +86,10 @@ public class Ku8ClusterDeployController {
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
 		String errmsg = curCaller.getErrorMsg();
-		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
-		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(results);
+		ArrayList<String> results = new ArrayList<String>(
+				curCaller.getOutputs());
+		AnsibleCallResult parseResult = AnsibleResultParser
+				.parseResult(results);
 		parseResult.setAnsibleFinished(finished);
 		if (finished && results.isEmpty()) {
 			parseResult.setTaskResult("INIT", "INIT", false, errmsg);
@@ -110,66 +113,81 @@ public class Ku8ClusterDeployController {
 				curStepName = "install-kubernetes-task";
 				curTemplate.setCurInstallStep(curStepName);
 				parseResult.setAnsibleFinished(false);
-			}else
-			{//total finished 
-				curTemplate.setAnsibleResult(parseResult);
 			}
 		}
+		curTemplate.setAnsibleResult(parseResult);
 		return parseResult;
 
 	}
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-rawout", method = RequestMethod.GET)
-	public List<String> fetchAnsilbeRawOut(ModelMap model, HttpServletRequest request) {
+	public List<String> fetchAnsilbeRawOut(ModelMap model,
+			HttpServletRequest request) {
 		if ("true".equals(request.getParameter("mock"))) {
 			return DemoDataUtil.getFakeAnsibleOutput();
 		}
 		ProcessCaller curCaller = deployService.getProcessCaller();
-		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
+		ArrayList<String> results = new ArrayList<String>(
+				curCaller.getOutputs());
 		return results;
 
 	}
 
+	// @RequestMapping(value =
+	// "/deploycluster/ansible-final-result-report/{type}", method =
+	// RequestMethod.GET)
+	// public Object getAnsibleFinalResult(ModelMap model,
+	// @PathVariable("type") String type) {
+	// Ku8ClusterTemplate template = getCurTemplate(model);
+	// AnsibleCallResult result = template.getAnsibleResult();
+	// if ("sumary".equals(type)) {
+	// return result.getNodeTotalSumaryMap();
+	// } else {
+	// return result;
+	// }
+	// }
+
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
-	public Object getAnsibleFinalResult(ModelMap model,@PathVariable("type") String type) {
-		Ku8ClusterTemplate template =getCurTemplate(model);
-		AnsibleCallResult result= template.getAnsibleResult();
-		if("sumary".equals(type))
-		{
-			return result.getNodeTotalSumaryMap();
-		}else
-		{
-			return result;
+	public Object getAnsibleFinalResult(ModelMap model,
+			@PathVariable("type") String type) {
+
+		if ("sumary".equals(type)) {
+			return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+		} else {
+			return DemoDataUtil.getFakeAnsibleResult();
 		}
+
 	}
 
 	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
-	public Ku8ClusterTemplate selectTemplate(@PathVariable("id") int templateId, ModelMap model) {
-		Ku8ClusterTemplate template = deployService.getAndCloneTemplate(templateId);
+	public Ku8ClusterTemplate selectTemplate(
+			@PathVariable("id") int templateId, ModelMap model) {
+		Ku8ClusterTemplate template = deployService
+				.getAndCloneTemplate(templateId);
 		model.addAttribute("ku8template", template);
 		return template;
 
 	}
-	
+
 	@RequestMapping(value = "/deploycluster/global-params", method = RequestMethod.GET)
 	public Map<String, InstallParam> getGlobParameter(ModelMap model) {
-		Ku8ClusterTemplate template=getCurTemplate(model);
-		Map<String, InstallParam> Parameter=template.getAllGlobParameters();
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		Map<String, InstallParam> Parameter = template.getAllGlobParameters();
 		return Parameter;
 
 	}
-	
-	
+
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
 	public List<InstallNode> getNodesList(ModelMap model) {
-		Ku8ClusterTemplate template=getCurTemplate(model);
-		List<InstallNode> Parameter=template.getNodes();
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		List<InstallNode> Parameter = template.getNodes();
 		return Parameter;
 
 	}
 
 	@RequestMapping(value = "/deploycluster/getnodemodal/{status}")
-	public InstallNode getNodemodal(HttpServletRequest request, @RequestParam("addnode") String addnode,
+	public InstallNode getNodemodal(HttpServletRequest request,
+			@RequestParam("addnode") String addnode,
 			@PathVariable("status") String status, ModelMap model) {
 		InstallNode node;
 		// session中获取当前模板对象
@@ -194,7 +212,8 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/addk8snodes/{id}")
-	public List<InstallNode> addk8snodes(@PathVariable("id") String id, ModelMap model) {
+	public List<InstallNode> addk8snodes(@PathVariable("id") String id,
+			ModelMap model) {
 		// session中获取当前模板对象
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		List<InstallNode> nodes = new LinkedList<InstallNode>();
@@ -202,7 +221,8 @@ public class Ku8ClusterDeployController {
 		for (String s : strList) {
 			if (!s.isEmpty()) {
 				InstallNode node = template.getStandardK8sNode();
-				Host pros = hostService.getHostsByZoneString(Integer.parseInt(s));
+				Host pros = hostService.getHostsByZoneString(Integer
+						.parseInt(s));
 				node.setDefautNode(true);
 				node.setHostId(pros.getId());
 				node.setHostName(pros.getHostName());
@@ -216,7 +236,8 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
-	public InstallNode modifyTemplate(HttpServletRequest request, @RequestParam("templateString") String templateString,
+	public InstallNode modifyTemplate(HttpServletRequest request,
+			@RequestParam("templateString") String templateString,
 			@PathVariable("id") int templateId, ModelMap model) {
 		String arr[] = templateString.split(",");
 		// session中获取当前模板对象
@@ -241,7 +262,8 @@ public class Ku8ClusterDeployController {
 
 			List<InstallNode> k8sNodes = template.findAllK8sNodes();
 			for (InstallNode nodes : k8sNodes) {
-				nodes.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_NODE, "kubelet_hostname_override", nodes.getIp());
+				nodes.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_NODE,
+						"kubelet_hostname_override", nodes.getIp());
 			}
 
 			for (int i = 3; i < arr.length; i = i + 5) {
