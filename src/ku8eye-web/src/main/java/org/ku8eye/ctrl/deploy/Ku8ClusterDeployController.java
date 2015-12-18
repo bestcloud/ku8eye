@@ -57,10 +57,7 @@ public class Ku8ClusterDeployController {
 	@RequestMapping(value = "/deploycluster/create-ansible-scripts", method = RequestMethod.GET)
 	public List<String> createAnsibleScripts(ModelMap model) throws Exception {
 		return deployService.createInstallScripts(getCurTemplate(model));
-		// List<String> strs = new ArrayList<String>();
-		// strs.add("err xxxx note provide ");
-		// strs.add("err yyyy note provide ");
-		// return strs;
+
 	}
 
 	@RequestMapping(value = "/deploycluster/start-install", method = RequestMethod.GET)
@@ -130,12 +127,10 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-		if(true)
-		{
+		if (true) {
 			if ("sumary".equals(type)) {
-			return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
-			}else
-			{
+				return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+			} else {
 				return DemoDataUtil.getFakeAnsibleResult();
 			}
 		}
@@ -146,6 +141,7 @@ public class Ku8ClusterDeployController {
 		} else {
 			return result;
 		}
+
 	}
 
 	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
