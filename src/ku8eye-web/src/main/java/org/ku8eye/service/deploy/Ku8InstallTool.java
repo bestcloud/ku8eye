@@ -35,20 +35,23 @@ public class Ku8InstallTool {
 
 	private Ku8ClusterTemplate getTemp(String[] hosts, String rootPass, String clusterDocker0Ip) throws Exception {
 		Ku8ClusterTemplate template = deployService.getAllTemplates().get(0).clone();
+		InstallNode masterNode = null;
 		if (hosts.length == 1) {
 			System.out.println("install all in one k8s env ....");
 			InstallNode node = template.getStandardAllIneOneNode();
 			node.setIp(hosts[0]);
 			node.setRootPassword(rootPass);
+			masterNode = node;
+			//bug ...
+			template.getAllGlobParameters().get("install_quagga_router").setValue("true");
 			template.addNewNode(node);
 		} else {
 			System.out.println("install mutli nodes k8s env ....");
 			// master node
 			InstallNode node = template.getStandardMasterWithEtcdNode();
 			node.setIp(hosts[0]);
-			node.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange,
-					clusterDocker0Ip);
 			node.setRootPassword(rootPass);
+			masterNode = node;
 			template.addNewNode(node);
 			// minion nodes
 			for (int i = 1; i < hosts.length; i++) {
@@ -58,6 +61,9 @@ public class Ku8InstallTool {
 				template.addNewNode(node);
 			}
 		}
+		//设置master的参数
+		masterNode.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange,
+				clusterDocker0Ip);
 		return template;
 	}
 

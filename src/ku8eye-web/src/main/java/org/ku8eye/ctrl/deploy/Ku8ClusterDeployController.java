@@ -75,7 +75,8 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
 	public AnsibleCallResult fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
-		if ("true".equals(request.getParameter("mock"))) {
+		System.out.println("fetch ansible result ");
+		if ("false".equals(request.getParameter("mock"))) {
 			return DemoDataUtil.getFakeAnsibleResult();
 		}
 		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
@@ -116,7 +117,7 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-rawout", method = RequestMethod.GET)
 	public List<String> fetchAnsilbeRawOut(ModelMap model, HttpServletRequest request) {
-		if ("true".equals(request.getParameter("mock"))) {
+		if ("false".equals(request.getParameter("mock"))) {
 			return DemoDataUtil.getFakeAnsibleOutput();
 		}
 		ProcessCaller curCaller = deployService.getProcessCaller();
@@ -127,13 +128,13 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-		if (true) {
-			if ("sumary".equals(type)) {
-				return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
-			} else {
-				return DemoDataUtil.getFakeAnsibleResult();
-			}
-		}
+//		if (true) {
+//			if ("sumary".equals(type)) {
+//				return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+//			} else {
+//				return DemoDataUtil.getFakeAnsibleResult();
+//			}
+//		}
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		AnsibleCallResult result = template.getAnsibleResult();
 		if ("sumary".equals(type)) {
