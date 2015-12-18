@@ -50,7 +50,7 @@
 		          <div class="box box-info" style="margin-bottom:0px;">
 		            <!-- form start -->
 		            <form class="form-horizontal">
-		              <table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
+		              <table id="installResult" class="table table-bordered table-hover" style="font-size: 12px;">
 						<thead>
 						<tr>
 							<th rolspan="2">节点</th>
@@ -74,7 +74,6 @@
 </div>
 
 <script type="text/javascript">
-
 setTimeout(install, 200);
 function install(){
 	$.ajax({
@@ -85,6 +84,7 @@ function install(){
 	    	$.each(data,function(i,item){
 	    		$("#installData").append("<li>"+item+"</li>");
 	    	});
+	    	setTimeout(installResult, 5000);
 	    }
 	});
 	
@@ -95,21 +95,46 @@ function install(){
 	    success: function(data){
 	    	if(data.success==true){
 	    		$.each(data,function(i,item){
-		    		$("#installresult").append("<li>"+i+"</li>");
-		    		alert(i+"  "+item);
-		    		//$.each(item,function(m,n){
-		    			/*$.each(n,function(a,b){
-		    				$("#installresult").append("<li>"+a+"</li>");
-		    				$.each(b,function(c,d){
-		    					$("#installresult").append("<li>"+c+"</li>");
+	    			//$("#installresult").append("<li>第一级"+i+"</li>");
+	    			if(i=="ansibleFinished"||i=="stepName"||i=="success"){
+	    				
+	    			}else{
+	    				$.each(item,function(m,n){
+	    					$("#installresult").append("<li>group "+m+"</li>");
+	    					$("#installresult").append("<li>Ansible job FAILED</li>");
+	    					$.each(n,function(a,b){
+	    						$("#installresult").append("<li>&nbsp;&nbsp;&nbsp;&nbsp;task "+a+"</li>");
+	    						if(i=="hostTaskResultMap"){
+	    							$.each(b,function(c,d){
+	    								//$("#installresult").append("<li>第四级c==  "+c+"</li>");
+	    								//$("#installresult").append("<li>第四级d==  "+d+"</li>");
+	    								if(c=="nodeSumarys"){
+	    									$.each(d,function(e,f){
+		    									$("#installresult").append("<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node "+e+" result:"+f+"</li>");
+		    									//$("#installresult").append("<li>第五级f==  "+f+"</li>");
+		    								});
+	    								}
+	    		    				});
+	    						}else{
+	    							//$("#installresult").append("<li>第三级b==  "+b+"</li>");
+	    						}
 		    				});
-		    				
-		    			});
-		    			$("#installresult").append("<li>"+m+"</li>");*/
-		    		//});
-		    		
+	    		    	});
+	    			}
+		  
 		    	});
-	    		$("#myModal2").modal('show') 
+	    		
+				$.ajax({
+				    url:"/deploycluster/ansible-final-result-report/sumary",
+				    type: "GET",
+				    dataType:"json",
+				    success: function(data){
+				    	$.each(data,function(isa,isb){
+				    		$("#installResult").append("<tr><td></td><td></td><td></td></tr>");
+				    	});
+				    	
+				    }
+				});
 	    	}else{
 	    		//setTimeout(install, 200);
 	    		$("#myModal2").modal('show') 
@@ -117,7 +142,11 @@ function install(){
 
 	    }
 	});
-
 }
+
+function installResult(){
+	
+}
+
 
 </script>
