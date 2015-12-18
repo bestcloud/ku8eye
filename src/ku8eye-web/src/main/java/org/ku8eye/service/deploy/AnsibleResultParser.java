@@ -90,16 +90,17 @@ public class AnsibleResultParser {
 				} else if (line.startsWith(taskFatalPrex)) {
 					String ip = line.substring(line.indexOf("[") + 1, line.indexOf("]"));
 					String token = "=> ";
-					String sumary = line.substring(line.indexOf(token) + token.length(), line.length() - 1);
+					String sumary = line.substring(line.indexOf(token) + token.length(), line.length() );
 					result.addTaskSumary(groupName, taskName, ip, sumary);
 					taskErrMsg = sumary;
 					result.setTaskResult(groupName, taskName, false, taskErrMsg);
 					hasTaskFaild = true;
+					sumary ="fatal: "+sumary;
 					result.addTaskSumary(groupName, taskName, ip, sumary);
 				} else if (line.startsWith(taskfailedPrex)) {
 					String ip = line.substring(line.indexOf("[") + 1, line.indexOf("]"));
 					String token = "=> ";
-					String sumary = line.substring(line.indexOf(token) + token.length(), line.length() - 1);
+					String sumary ="failed: "+line.substring(line.indexOf(token) + token.length(), line.length() );
 					result.addTaskSumary(groupName, taskName, ip, sumary);
 				} else if (line.startsWith(playRecapPrex)) {
 					groupBegin = false;

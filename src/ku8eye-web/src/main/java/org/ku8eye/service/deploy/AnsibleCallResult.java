@@ -8,7 +8,8 @@ public class AnsibleCallResult {
 	private Map<String, Map<String, AnsibleTaskResult>> hostTaskResultMap = new HashMap<String, Map<String, AnsibleTaskResult>>();
 	private Map<String, AnsibleNodeSum> nodeTotalSumaryMap = new LinkedHashMap<String, AnsibleNodeSum>();
 	private boolean ansibleFinished = false;
-    private String stepName;
+	private String stepName;
+
 	public void addTaskSumary(String groupName, String taskName, String node, String summary) {
 
 		findTaskResult(groupName, taskName).andNodeSumary(node, summary);
@@ -35,6 +36,23 @@ public class AnsibleCallResult {
 		this.stepName = stepName;
 	}
 
+	private Map<String, String> findFailedTasks(String nodeIP) {
+		Map<String, String> faildTasks = new LinkedHashMap<String, String>();
+		for (Map<String, AnsibleTaskResult> groupTasks : hostTaskResultMap.values()) {
+			for (AnsibleTaskResult resut : groupTasks.values()) {
+				for (Map.Entry<String, String> ipSumEnry : resut.getNodeSumarys().entrySet()) {
+					String sumary = ipSumEnry.getValue();
+					if (ipSumEnry.getKey().equals(nodeIP)
+							&& (sumary.startsWith("failed:") || sumary.startsWith("fatal:"))) {
+						// faildTasks
+						faildTasks.put(resut.getTaskName(), sumary);
+					}
+				}
+			}
+		}
+		return faildTasks;
+	}
+
 	public void addTotalSumary(String node, String summary) {
 		String[] items = summary.split("\\s");
 		int ok = 0;
@@ -43,22 +61,25 @@ public class AnsibleCallResult {
 		int failed = 0;
 		for (String item : items) {
 			if (item.startsWith("ok")) {
-				ok =getValue(item); 
+				ok = getValue(item);
 			} else if (item.startsWith("changed")) {
 				changed = getValue(item);
 			} else if (item.startsWith("unreachable")) {
-				unreachable =getValue(item);
+				unreachable = getValue(item);
 			} else if (item.startsWith("failed")) {
 				failed = getValue(item);
 			}
 		}
-		nodeTotalSumaryMap.put(node, new AnsibleNodeSum(ok, changed, unreachable, failed));
+		AnsibleNodeSum sum = new AnsibleNodeSum(ok, changed, unreachable, failed);
+		if (failed > 0 || unreachable > 0) {
+			sum.setFailedMsgs(this.findFailedTasks(node));
+		}
+		nodeTotalSumaryMap.put(node, sum);
 
 	}
 
-	private  static int getValue(String item)
-	{
-	return Integer.parseInt(item.substring(item.indexOf("=")+1));	
+	private static int getValue(String item) {
+		return Integer.parseInt(item.substring(item.indexOf("=") + 1));
 	}
 
 	public Map<String, AnsibleNodeSum> getNodeTotalSumaryMap() {

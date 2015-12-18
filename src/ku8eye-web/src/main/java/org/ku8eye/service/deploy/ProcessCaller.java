@@ -30,11 +30,9 @@ public class ProcessCaller {
 		finished = false;
 		ProcessBuilder pb = new ProcessBuilder(execArgs);
 		pb.directory(new File(workDir));
-		System.out.println("working dir is " + workDir + " args " + Arrays.toString(execArgs));
+		LOGGER.info("Process working dir is " + workDir + " with args " + Arrays.toString(execArgs));
 		pb.redirectErrorStream(true);
-
 		curProcess = pb.start();
-
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(curProcess.getInputStream()));
 		try {
 			String line;
@@ -67,10 +65,11 @@ public class ProcessCaller {
 
 	public boolean isFinished() {
 		Process process = curProcess;
-		return (finished ||(process != null && !process.isAlive()));
+		return (finished ||!finished && (process != null && !process.isAlive()));
 	}
 
 	public void shutdownCaller(boolean clearOutputs) {
+		System.out.println("shutdown caller ");
 		Process process = curProcess;
 		if (process != null && process.isAlive()) {
 			process.destroyForcibly();
