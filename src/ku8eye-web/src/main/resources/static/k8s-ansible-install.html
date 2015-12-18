@@ -80,6 +80,21 @@ setTimeout(install, 200);
 
 function install(){
 	$.ajax({
+	    url:"/deploycluster/fetch-ansilbe-result",
+	    type: "GET",
+	    dataType:"text",
+	    success: function(data){
+	    	alert("sdf="+data);
+	    	$.each(data,function(i,item){
+	    		$("#installData").append("<li>"+item+"</li>");
+	    	});
+	    }
+	});
+	
+	
+	
+	
+	$.ajax({
 	    url:"/deploycluster/fetch-ansilbe-rawout?mock=true",
 	    type: "GET",
 	    dataType:"json",
