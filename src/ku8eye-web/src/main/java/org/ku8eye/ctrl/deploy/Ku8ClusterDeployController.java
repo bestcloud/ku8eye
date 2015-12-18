@@ -103,24 +103,22 @@ public class Ku8ClusterDeployController {
 			parseResult.setTaskResult("INIT", "INIT", false, errmsg);
 		}
 		boolean installFinished = finished && !parseResult.isSuccess();
-		String curStepName = curTemplate.getCurInstallStep();
-		parseResult.setStepName(curStepName);
+		String curStep = curTemplate.getCurInstallStep();
+		parseResult.setStepName(curStep);
 		if (parseResult.isAnsibleFinished() && parseResult.isSuccess()) {
 			// begin next step
-			if (curStepName.equals("ssh-key-task")) {
+			if (curStep.equals("ssh-key-task")) {
 				deployService.shutdownProcessCallerIfRunning(true);
 				deployService.disableFirewalld(10 * 60, false);
 				// next step
-				curStepName = "close-firewall-task";
-				curTemplate.setCurInstallStep(curStepName);
+				curTemplate.setCurInstallStep("close-firewall-task");
 				parseResult.setAnsibleFinished(finished);
 
-			} else if (curStepName.equals("close-firewall-task")) {
+			} else if (curStep.equals("close-firewall-task")) {
 				deployService.shutdownProcessCallerIfRunning(true);
 				deployService.installK8s(30 * 60, false);
 				// next step
-				curStepName = "install-kubernetes-task";
-				curTemplate.setCurInstallStep(curStepName);
+				curTemplate.setCurInstallStep("install-kubernetes-task");
 				parseResult.setAnsibleFinished(finished);
 			} else {
 				// all finished
@@ -128,7 +126,7 @@ public class Ku8ClusterDeployController {
 			}
 		}
 
-		curTemplate.setCurStepResult(curStepName, new InstallStepOutInfo(curStepName, finished, parseResult, results),
+		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
 				installFinished);
 
 		InstallOutputBean out = new InstallOutputBean(curTemplate.fetchStepResults(), installFinished,
