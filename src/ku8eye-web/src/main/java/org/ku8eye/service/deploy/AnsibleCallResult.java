@@ -2,6 +2,8 @@ package org.ku8eye.service.deploy;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class AnsibleCallResult {
@@ -129,28 +131,37 @@ public class AnsibleCallResult {
 
 	public String printInfo() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Ansible job " + (this.isSuccess() ? " SUCCESS " : " FAILED \r\n"));
+		for (String s : toInfo()) {
+			sb.append(s).append("\r\n");
+		}
+		return sb.toString();
+	}
+
+	public List<String> toInfo() {
+		List<String> results = new LinkedList<String>();
+		String info = (this.ansibleFinished) ? (this.isSuccess() ? " SUCCESS " : " FAILED ") : " RUNNING";
+		results.add("Ansible Job finished ?" + this.ansibleFinished + "  " + info);
+
 		for (Map.Entry<String, Map<String, AnsibleTaskResult>> groupTasks : hostTaskResultMap.entrySet()) {
-			System.out.println("group " + groupTasks.getKey());
+
 			for (AnsibleTaskResult taskResult : groupTasks.getValue().values()) {
-				sb.append("   task " + taskResult.getTaskName()
-						+ (taskResult.isSuccess() ? " SUCCESS "
-								: (taskResult.getFailMsg() == null) ? "" : " FAILED :" + taskResult.getFailMsg()))
-						.append("\r\n");
+				results.add("Group " + groupTasks.getKey());
+				results.add("   Task " + taskResult.getTaskName() + (taskResult.isSuccess() ? " SUCCESS "
+						: (taskResult.getFailMsg() == null) ? "" : " FAILED :" + taskResult.getFailMsg()));
 				for (Map.Entry<String, String> taskSumerys : taskResult.getNodeSumarys().entrySet())
 
 				{
-					sb.append("       node  " + taskSumerys.getKey() + " result:" + taskSumerys.getValue())
-							.append("\r\n");
+					results.add("       Node  " + taskSumerys.getKey() + " Result:" + taskSumerys.getValue());
 				}
 			}
 		}
+		results.add("***************Ansible Summray********************");
 		for (Map.Entry<String, AnsibleNodeSum> taskSumerys : nodeTotalSumaryMap.entrySet())
 
 		{
-			sb.append("node  " + taskSumerys.getKey() + " sumary:" + taskSumerys.getValue()).append("\r\n");
+			results.add("Node  " + taskSumerys.getKey() + " sumary:" + taskSumerys.getValue());
 		}
-		return sb.toString();
+		return results;
 	}
 
 	public void markSuccess() {

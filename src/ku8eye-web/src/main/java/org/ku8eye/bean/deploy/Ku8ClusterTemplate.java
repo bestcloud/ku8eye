@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
 import org.ku8eye.service.deploy.AnsibleCallResult;
-import org.ku8eye.service.deploy.ProcessCaller;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Template for Ku8 Cluster install
@@ -26,7 +26,8 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public static String NODE_ROLE_REGISTRY = "docker-registry";
 	public static String DEFAULT_GLOBAL = "default-global";
 	private volatile String curInstallStep;
-	private volatile AnsibleCallResult ansibleResult;
+	private volatile boolean installFinished = false;
+	private LinkedHashMap<String, InstallStepOutInfo> stepResults = new LinkedHashMap<String, InstallStepOutInfo>();
 
 	public Ku8ClusterTemplate() {
 
@@ -58,12 +59,18 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return logoImage;
 	}
 
-	public AnsibleCallResult getAnsibleResult() {
-		return ansibleResult;
+	public boolean jugdgeInstallFinished() {
+		return installFinished;
 	}
 
-	public void setAnsibleResult(AnsibleCallResult ansibleResult) {
-		this.ansibleResult = ansibleResult;
+	public void setCurStepResult(String stepName, InstallStepOutInfo oupputInfo, boolean installFinished) {
+		this.curInstallStep = stepName;
+		this.installFinished = installFinished;
+		stepResults.put(stepName, oupputInfo);
+	}
+
+	public Map<String, InstallStepOutInfo> fetchStepResults() {
+		return stepResults;
 	}
 
 	public InstallNode getStandardMasterWithEtcdNode() {
@@ -314,5 +321,16 @@ public class Ku8ClusterTemplate implements Cloneable {
 		// kubnode
 		List<InstallParam> kuberNdoeParams = new ArrayList<InstallParam>();
 		globalParams.put(NODE_ROLE_NODE, kuberNdoeParams);
+	}
+
+	public void clearStatus() {
+		this.curInstallStep = null;
+		this.stepResults.clear();
+		this.installFinished = false;
+	}
+
+	@JsonIgnore
+	public AnsibleCallResult fetchLastAnsibleResult() {
+		return this.stepResults.get(this.curInstallStep).fetchAnsibleCallResult();
 	}
 }
