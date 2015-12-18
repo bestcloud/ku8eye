@@ -43,17 +43,18 @@
 					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">安装结果</h4>
+				<h4 class="modal-title" id="myModalLabel">安装成功</h4>
 			</div>
 			<div class="modal-body">
 				<!-- Horizontal Form -->
 		          <div class="box box-info" style="margin-bottom:0px;">
 		            <!-- form start -->
 		            <form class="form-horizontal">
-		              <table id="installResult" class="table table-bordered table-hover" style="font-size: 12px;">
+		              <table id="dialogResult" class="table table-bordered table-hover" style="font-size: 12px;text-align:center;">
 						<thead>
 						<tr>
-							<th rolspan="2">节点</th>
+							<th colspan="2">节点</th>
+						
 							<th>安装汇总</th>
 						</tr>
 						</thead>
@@ -66,15 +67,15 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
 				</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="save">保<span style="padding-left: 12px" />存
-				</button>
 			</div>
 		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
+
 setTimeout(install, 200);
+
 function install(){
 	$.ajax({
 	    url:"/deploycluster/fetch-ansilbe-rawout?mock=true",
@@ -84,7 +85,6 @@ function install(){
 	    	$.each(data,function(i,item){
 	    		$("#installData").append("<li>"+item+"</li>");
 	    	});
-	    	setTimeout(installResult, 5000);
 	    }
 	});
 	
@@ -121,31 +121,49 @@ function install(){
 		    				});
 	    		    	});
 	    			}
-		  
 		    	});
+	    		if(data.ansibleFinished==true){
+	    			installResult("success")
+    			}else{
+    				setTimeout(install, 200);
+    			}
 	    		
-				$.ajax({
-				    url:"/deploycluster/ansible-final-result-report/sumary",
-				    type: "GET",
-				    dataType:"json",
-				    success: function(data){
-				    	$.each(data,function(isa,isb){
-				    		$("#installResult").append("<tr><td></td><td></td><td></td></tr>");
-				    	});
-				    	
-				    }
-				});
+	    		
+	    		
 	    	}else{
 	    		//setTimeout(install, 200);
-	    		$("#myModal2").modal('show') 
+	    		installResult("fail")
 	    	}
 
 	    }
 	});
 }
 
-function installResult(){
-	
+
+
+
+function installResult(_type){
+	if(_type=="success"){
+		$("#myModalLabel").html("安装成功");
+	}else{
+		$("#myModalLabel").html("安装失败");
+	}
+	$("#myModal2").modal('show') 
+	$.ajax({
+	    url:"/deploycluster/ansible-final-result-report/sumary",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(isa,isb){
+	    		if(isb.success==true){
+	    			$("#dialogResult").append("<tr><td>成功图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
+	    		}else{
+	    			$("#dialogResult").append("<tr><td>失败图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
+	    		}
+	    		
+	    	});
+	    }
+	});
 }
 
 
