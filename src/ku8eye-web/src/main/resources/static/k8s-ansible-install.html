@@ -10,13 +10,13 @@
 					<thead>
 						<tr>
 							<th style="width:60%;">
-							<div style="padding-bottom: 5px;height:350px;color:#E9C340;background-color:#000000;OVERFLOW-Y: scroll">
+							<div style="padding-bottom: 5px;height:600px;color:#E9C340;background-color:#000000;OVERFLOW-Y: scroll">
 								<ul id="installData" style="list-style-type:none;">
 									
 								</ul>
 							</div>
 							</th>
-							<th><div style="padding-bottom: 5px;height:350px;background-color:#ffffff;OVERFLOW-Y: scroll">
+							<th><div style="padding-bottom: 5px;height:600px;background-color:#ffffff;OVERFLOW-Y: scroll">
 								<ul id="installresult" style="list-style-type:none;">
 								
 								</ul>
@@ -65,7 +65,9 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
+				</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">验证集群
 				</button>
 			</div>
 		</div>
@@ -89,7 +91,7 @@ function install(){
 	});
 	
 	$.ajax({
-	    url:"/deploycluster/fetch-ansilbe-result?mock=true",
+	    url:"/deploycluster/fetch-ansilbe-result",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
@@ -123,16 +125,15 @@ function install(){
 	    			}
 		    	});
 	    		if(data.ansibleFinished==true){
-	    			installResult("success")
+	    			installResult("success");
     			}else{
     				setTimeout(install, 200);
     			}
-	    		
-	    		
-	    		
 	    	}else{
-	    		//setTimeout(install, 200);
-	    		installResult("fail")
+	    		
+	    		$("#installresult").append("<li>"+data.hostTaskResultMap.INIT.INIT.failMsg+"</li>");
+	    		
+	    		installResult("fail");
 	    	}
 
 	    }
@@ -145,8 +146,12 @@ function install(){
 function installResult(_type){
 	if(_type=="success"){
 		$("#myModalLabel").html("安装成功");
+		$("#installFail").hide();
+		$("#installSucc").show();
 	}else{
 		$("#myModalLabel").html("安装失败");
+		$("#installFail").show();
+		$("#installSucc").hide();
 	}
 	$("#myModal2").modal('show') 
 	$.ajax({
@@ -155,7 +160,7 @@ function installResult(_type){
 	    dataType:"json",
 	    success: function(data){
 	    	$.each(data,function(isa,isb){
-	    		if(isb.success==true){
+	    		if(_type=="success"){
 	    			$("#dialogResult").append("<tr><td>成功图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
 	    		}else{
 	    			$("#dialogResult").append("<tr><td>失败图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
