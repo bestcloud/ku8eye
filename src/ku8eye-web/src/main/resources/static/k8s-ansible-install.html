@@ -77,78 +77,36 @@
 <script type="text/javascript">
 
 setTimeout(install, 200);
-
+//每隔2秒，如果数据没更新完成，继续循环
 function install(){
 	$.ajax({
 	    url:"/deploycluster/fetch-ansilbe-result",
 	    type: "GET",
-	    dataType:"text",
-	    success: function(data){
-	    	alert("sdf="+data);
-	    	$.each(data,function(i,item){
-	    		$("#installData").append("<li>"+item+"</li>");
-	    	});
-	    }
-	});
-	
-	
-	
-	
-	$.ajax({
-	    url:"/deploycluster/fetch-ansilbe-rawout?mock=true",
-	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	$.each(data,function(i,item){
-	    		$("#installData").append("<li>"+item+"</li>");
+	    	$.each(data.stepResults,function(i,item){
+	    		$("#installData").append("<li>"+i+"</li>");
+	    		$("#installresult").append("<li>"+i+"</li>");
+	    		//左边输出
+	    		$.each(item.ansibleRowDatas,function(m,n){
+	    			$("#installData").append("<li>"+n+"</li>");
+	    		});
+	    		//右边输出
+				$.each(item.ansibleOutSummary,function(a,b){
+					$("#installresult").append("<li>"+b+"</li>");
+	    		});
 	    	});
-	    }
-	});
-	
-	$.ajax({
-	    url:"/deploycluster/fetch-ansilbe-result",
-	    type: "GET",
-	    dataType:"json",
-	    success: function(data){
-	    	if(data.success==true){
-	    		$.each(data,function(i,item){
-	    			//$("#installresult").append("<li>第一级"+i+"</li>");
-	    			if(i=="ansibleFinished"||i=="stepName"||i=="success"){
-	    				
-	    			}else{
-	    				$.each(item,function(m,n){
-	    					$("#installresult").append("<li>group "+m+"</li>");
-	    					$("#installresult").append("<li>Ansible job FAILED</li>");
-	    					$.each(n,function(a,b){
-	    						$("#installresult").append("<li>&nbsp;&nbsp;&nbsp;&nbsp;task "+a+"</li>");
-	    						if(i=="hostTaskResultMap"){
-	    							$.each(b,function(c,d){
-	    								//$("#installresult").append("<li>第四级c==  "+c+"</li>");
-	    								//$("#installresult").append("<li>第四级d==  "+d+"</li>");
-	    								if(c=="nodeSumarys"){
-	    									$.each(d,function(e,f){
-		    									$("#installresult").append("<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node "+e+" result:"+f+"</li>");
-		    									//$("#installresult").append("<li>第五级f==  "+f+"</li>");
-		    								});
-	    								}
-	    		    				});
-	    						}else{
-	    							//$("#installresult").append("<li>第三级b==  "+b+"</li>");
-	    						}
-		    				});
-	    		    	});
-	    			}
-		    	});
-	    		if(data.ansibleFinished==true){
+	    	
+	    	if(data.finished==true){
+	    		if(data.success==true){
 	    			installResult("success");
-    			}else{
-    				setTimeout(install, 200);
-    			}
+	    		}else{
+	    			installResult("fail");
+	    		}
+	    		
 	    	}else{
-	    		$("#installresult").append("<li>"+data.hostTaskResultMap.INIT.INIT.failMsg+"</li>");
-	    		installResult("fail");
+	    		setTimeout(install, 200);
 	    	}
-
 	    }
 	});
 }
@@ -172,14 +130,23 @@ function installResult(_type){
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	$.each(data,function(isa,isb){
-	    		if(_type=="success"){
-	    			$("#dialogResult").append("<tr><td>成功图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
+	    	var faileMessage="";
+    		$.each(data,function(isa,isb){
+				if(data.failedMsgs==null){
+	    			
 	    		}else{
-	    			$("#dialogResult").append("<tr><td>失败图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+"</td></tr>");
+	    			$.each(data.failedMsgs,function(a,b){
+	    				faileMessage+=b+";";
+	    			});
+	    		}
+
+	    		if(_type=="success"){
+	    			$("#dialogResult").append("<tr><td>成功图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedMsgs="+faileMessage+"</td></tr>");
+	    		}else{
+	    			$("#dialogResult").append("<tr><td>失败图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedMsgs="+faileMessage+"</td></tr>");
 	    		}
 	    		
-	    	});
+	    	});	
 	    }
 	});
 }
