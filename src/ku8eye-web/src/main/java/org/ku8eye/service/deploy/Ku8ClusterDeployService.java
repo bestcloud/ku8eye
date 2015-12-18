@@ -139,7 +139,8 @@ public class Ku8ClusterDeployService {
 	private Ku8ClusterTemplate createAllInOneTemplate() {
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
 		temp.setId(0);
-		temp.getAllGlobParameters().get("install_quagga_router").setValue("false");
+		//bug
+		//temp.getAllGlobParameters().get("install_quagga_router").setValue("false");
 		temp.setName("All In One Cluster");
 		temp.setTemplateType(1);
 		temp.setDescribe("All service in one server");
@@ -234,8 +235,8 @@ public class Ku8ClusterDeployService {
 	public void shutdownProcessCallerIfRunning(boolean clearOutputs) {
 		if (!processCaller.isFinished()) {
 			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
-			processCaller.shutdownCaller(clearOutputs);
 		}
+		processCaller.shutdownCaller(clearOutputs);
 	}
 
 	public String deployHasError() throws Exception {
