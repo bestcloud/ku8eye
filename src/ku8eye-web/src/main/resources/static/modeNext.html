@@ -5,6 +5,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;padding-top:15px">
+				    <button id="back"  class="btn btn-primary" data-dismiss="modal">返回</button>	
 					<button id="install"  class="btn btn-primary" data-dismiss="modal">开始安装</button>	
 				</div>
 				<div id="errorInformation" style="color:#D81E12;">
@@ -58,6 +59,26 @@
 
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
+	var determine=0;
+	$.ajax({
+	    url:"/deploycluster/nodeslist",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		determine++;
+	    	});
+	    	
+	    }
+	});
+	$("#back").click(function(){
+		if(determine==1){
+			$(".content").load("singleNode.html");
+		}else{
+			$(".content").load("multiNode.html");
+		}
+	});
+	
 	$("#Detection").hide();
 	$("#errorInformation").hide();
 	//获取页面数据上
@@ -86,7 +107,6 @@
 		    			nodeRole+=m+";";
 		    		});
 		    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>待检测</td></tr>");
-		    		
 		    	});
 		    	
 		    }
