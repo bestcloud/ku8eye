@@ -64,7 +64,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	public void setCurStepResult(String stepName, InstallStepOutInfo oupputInfo, boolean installFinished) {
-		this.curInstallStep = stepName;
 		this.installFinished = installFinished;
 		stepResults.put(stepName, oupputInfo);
 	}

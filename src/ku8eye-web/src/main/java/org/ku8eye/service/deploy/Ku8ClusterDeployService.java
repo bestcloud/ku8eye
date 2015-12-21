@@ -232,11 +232,11 @@ public class Ku8ClusterDeployService {
 		return processCaller;
 	}
 
-	public void shutdownProcessCallerIfRunning(boolean clearOutputs) {
+	public void shutdownProcessCallerIfRunning(final Process process,boolean clearOutputs) {
 		if (!processCaller.isFinished()) {
 			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
 		}
-		processCaller.shutdownCaller(clearOutputs);
+		processCaller.shutdownCaller(process,clearOutputs);
 	}
 
 	public String deployHasError() throws Exception {

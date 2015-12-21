@@ -1,6 +1,7 @@
 package org.ku8eye.ctrl.deploy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,8 @@ public class Ku8ClusterDeployController {
 	public String startInstall(ModelMap model) {
 		try {
 			this.getCurTemplate(model).clearStatus();
-			deployService.shutdownProcessCallerIfRunning(true);
+			final Process pross = deployService.getProcessCaller().getCurProcess();
+			deployService.shutdownProcessCallerIfRunning(pross, true);
 			deployService.deployKeyFiles(10 * 60, false);
 			Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 			curTemplate.setCurInstallStep("ssh-key-task");
@@ -88,7 +90,7 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
 	public InstallOutputBean fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
-		System.out.println("fetch ansible result ");
+
 		// if ("false".equals(request.getParameter("mock"))) {
 		// return DemoDataUtil.getFakeAnsibleResult();
 		// }
@@ -102,20 +104,23 @@ public class Ku8ClusterDeployController {
 		if (finished && results.isEmpty()) {
 			parseResult.setTaskResult("INIT", "INIT", false, errmsg);
 		}
-		boolean installFinished = finished && !parseResult.isSuccess();
 		String curStep = curTemplate.getCurInstallStep();
-		parseResult.setStepName(curStep);
-		if (parseResult.isAnsibleFinished() && parseResult.isSuccess()) {
+		boolean installFinished = (finished && curStep.equals("install-kubernetes-task"))
+				|| (finished && !parseResult.isSuccess());
+
+		if (finished && parseResult.isSuccess()) {
 			// begin next step
 			if (curStep.equals("ssh-key-task")) {
-				deployService.shutdownProcessCallerIfRunning(true);
+				final Process pross = deployService.getProcessCaller().getCurProcess();
+				deployService.shutdownProcessCallerIfRunning(pross, true);
 				deployService.disableFirewalld(10 * 60, false);
 				// next step
 				curTemplate.setCurInstallStep("close-firewall-task");
 				parseResult.setAnsibleFinished(finished);
 
 			} else if (curStep.equals("close-firewall-task")) {
-				deployService.shutdownProcessCallerIfRunning(true);
+				final Process pross = deployService.getProcessCaller().getCurProcess();
+				deployService.shutdownProcessCallerIfRunning(pross, true);
 				deployService.installK8s(30 * 60, false);
 				// next step
 				curTemplate.setCurInstallStep("install-kubernetes-task");
@@ -125,13 +130,12 @@ public class Ku8ClusterDeployController {
 				installFinished = finished;
 			}
 		}
-
 		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
 				installFinished);
 
 		InstallOutputBean out = new InstallOutputBean(curTemplate.fetchStepResults(), installFinished,
 				parseResult.isSuccess());
-		System.out.println("fetch ansible result " + out);
+		System.out.println("fetch ansible result " + curStep+" out "+Arrays.toString(results.toArray()));
 		return out;
 
 	}
@@ -149,20 +153,20 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-		
-		 if ("sumary".equals(type)) {
-		 return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
-		 } else {
-		 return DemoDataUtil.getFakeAnsibleResult();
-		 }
-		
-//		Ku8ClusterTemplate template = getCurTemplate(model);
-//		AnsibleCallResult result = template.fetchLastAnsibleResult();
-//		if ("sumary".equals(type)) {
-//			return result.getNodeTotalSumaryMap();
-//		} else {
-//			return result;
-//		}
+
+		// if ("sumary".equals(type)) {
+		// return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+		// } else {
+		// return DemoDataUtil.getFakeAnsibleResult();
+		// }
+
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		AnsibleCallResult result = template.fetchLastAnsibleResult();
+		if ("sumary".equals(type)) {
+			return result.getNodeTotalSumaryMap();
+		} else {
+			return result;
+		}
 
 	}
 

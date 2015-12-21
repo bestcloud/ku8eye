@@ -65,20 +65,21 @@ public class ProcessCaller {
 
 	public boolean isFinished() {
 		Process process = curProcess;
-		return (finished ||!finished && (process != null && !process.isAlive()));
+		return (finished || !finished && (process != null && !process.isAlive()));
 	}
 
-	public void shutdownCaller(boolean clearOutputs) {
+	public Process getCurProcess()
+	{
+		return this.curProcess;
+	}
+	public void shutdownCaller(final Process process, boolean clearOutputs) {
 		System.out.println("shutdown caller ");
-		Process process = curProcess;
 		if (process != null && process.isAlive()) {
 			process.destroyForcibly();
 		}
 		this.errorMsg = "killed by caller ";
-		curProcess = null;
 		finished = true;
-		if(clearOutputs)
-		{
+		if (clearOutputs) {
 			this.outputs.clear();
 		}
 	}
@@ -113,18 +114,18 @@ public class ProcessCaller {
 		processThread.start();
 	}
 
-	public void asnyWaitFinish(final int timeOutSeconds,final boolean clearOutputs) {
+	public void asnyWaitFinish(final int timeOutSeconds, final boolean clearOutputs) {
 		final Process procss = this.curProcess;
 		Thread monitorThread = new Thread() {
 			public void run() {
-				waitFinish(procss, timeOutSeconds,clearOutputs);
+				waitFinish(procss, timeOutSeconds, clearOutputs);
 			}
 		};
 		monitorThread.setDaemon(true);
 		monitorThread.start();
 	}
 
-	public void waitFinish(final Process process, int timeOutSeconds,boolean clearOutputs) {
+	public void waitFinish(final Process process, int timeOutSeconds, boolean clearOutputs) {
 		long timeOutMillis = System.currentTimeMillis() + timeOutSeconds * 1000;
 		while (System.currentTimeMillis() < timeOutMillis && !finished) {
 			try {
@@ -134,7 +135,7 @@ public class ProcessCaller {
 			}
 		}
 		if (process != null && process.isAlive()) {
-			shutdownCaller(clearOutputs);
+			shutdownCaller(process,clearOutputs);
 
 		}
 	}
