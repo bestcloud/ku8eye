@@ -96,8 +96,8 @@ function install(){
 	    	var _data="";
     		var _result="";
 	    	$.each(data.stepResults,function(i,item){
-	    		_data="<li style='color:#ffffff;font-size:18px;'>。。。。。。。Job  Begin : "+i+"。。。。。。。。</li>";
-	    		_result="<li style='weight:700;font-size:18px;'>。。。Job : "+i+"。。。。</li>";
+	    		_data +="<li style='color:#ffffff;font-size:18px;'>。。。。。。。Job  Begin : "+i+"。。。。。。。。</li>";
+	    		_result +="<li style='weight:700;font-size:18px;'>。。。Job : "+i+"。。。。</li>";
 	    		$.each(item,function(c,d){
 	    			if(c=="ansibleRowDatas"){
 	    				//左边输出
