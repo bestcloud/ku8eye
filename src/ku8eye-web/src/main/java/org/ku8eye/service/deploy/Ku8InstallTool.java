@@ -92,9 +92,10 @@ public class Ku8InstallTool {
 				break;
 			}
 		}
+		
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
 		if (!caller.isFinished()) {
-			caller.shutdownCaller(true);
+			caller.shutdownCaller(caller.getCurProcess(),true);
 		}
 		if (!caller.isNormalExit() && parseResult.isSuccess()) {
 			parseResult.setTaskResult("INIT", "INIT", false, caller.getErrorMsg());

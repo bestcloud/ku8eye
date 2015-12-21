@@ -1,6 +1,5 @@
 package org.ku8eye.service.deploy;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class AnsibleNodeSum {
@@ -24,6 +23,16 @@ public class AnsibleNodeSum {
 
 	public Map<String, String> getFailedMsgs() {
 		return failedMsgs;
+	}
+
+	public String getFailedPrintMsg() {
+		StringBuilder sb = new StringBuilder();
+		if (failedMsgs != null && !failedMsgs.isEmpty()) {
+			for (Map.Entry<String, String> entry : failedMsgs.entrySet()) {
+				sb.append("<BR>").append(entry.getValue()).append(":").append(entry.getValue()).append("<BR>");
+			}
+		}
+		return sb.toString();
 	}
 
 	public void setFailedMsgs(Map<String, String> failedMsgs) {
@@ -84,7 +93,7 @@ public class AnsibleNodeSum {
 						+ failed + "]";
 		if (failedMsgs != null) {
 			for (Map.Entry<String, String> entry : failedMsgs.entrySet()) {
-                str+=" TASK:"+entry.getKey()+" "+entry.getValue()+"\r\n";
+				str += " TASK:" + entry.getKey() + " " + entry.getValue() + "\r\n";
 			}
 		}
 		return str;

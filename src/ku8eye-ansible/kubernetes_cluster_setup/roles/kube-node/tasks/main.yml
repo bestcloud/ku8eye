@@ -80,6 +80,7 @@
   shell: docker ps | grep {{quagga_router_image_tag}}
   ignore_errors: True
   register: quagga_router_container_id
+  when: install_quagga_router
 
 ## if container doesn't exist, create running script
 - name: quagga_router container doesn't exist, create running script
@@ -93,6 +94,7 @@
 
 - name: check quagga_router started ok
   shell: docker ps | grep {{quagga_router_image_tag}}
+  when: install_quagga_router
 
 
 ################################ kubelet & kube-proxy #########################

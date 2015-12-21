@@ -130,7 +130,7 @@ public class Ku8ClusterDeployService {
 		String[] temp1 = mask16IP.trim().split("\\.");
 		String subNetPrex = temp1[0] + "." + temp1[1] + ".";
 		for (int i = 0; i < 254; i++) {
-			targetList.add(subNetPrex + i + ".1/24");
+			targetList.add(subNetPrex + i + ".3/24");
 		}
 		return targetList;
 
@@ -185,7 +185,8 @@ public class Ku8ClusterDeployService {
 		temp.setTemplateType(1);
 		temp.setDescribe("Standard server");
 		temp.setMinNodes(3);
-		temp.setMaxNodes(20);
+		temp.setMaxNodes(50);
+		temp.getAllGlobParameters().get("install_quagga_router").setValue("true");
 
 		return temp;
 	}
@@ -232,11 +233,11 @@ public class Ku8ClusterDeployService {
 		return processCaller;
 	}
 
-	public void shutdownProcessCallerIfRunning(boolean clearOutputs) {
+	public void shutdownProcessCallerIfRunning(final Process process,boolean clearOutputs) {
 		if (!processCaller.isFinished()) {
 			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
 		}
-		processCaller.shutdownCaller(clearOutputs);
+		processCaller.shutdownCaller(process,clearOutputs);
 	}
 
 	public String deployHasError() throws Exception {

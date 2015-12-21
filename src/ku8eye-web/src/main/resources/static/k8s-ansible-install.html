@@ -152,11 +152,14 @@ function installResult(_type){
 	    dataType:"json",
 	    success: function(data){
 	    	var faileMessage="";
+	    	alert("failedMsgs=="+data.failedMsgs);
     		$.each(data,function(isa,isb){
 				if(data.failedMsgs==null){
 	    			
 	    		}else{
+	    			alert("");
 	    			$.each(data.failedMsgs,function(a,b){
+	    				alert(a+"   "+b);
 	    				faileMessage+=a+"="+b+";";
 	    			});
 	    		}
