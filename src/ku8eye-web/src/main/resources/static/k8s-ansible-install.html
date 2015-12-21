@@ -4,7 +4,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;padding-top:15px">
-					<h3>正在为您安装kubernetes集群，请耐心等待。。。。</h3>
+					<h3 id="resultTitle">正在为您安装kubernetes集群，请耐心等待。。。。</h3>
 				</div>
 				<table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
 					<thead>
@@ -25,6 +25,10 @@
 						</tr>
 					</thead>
 				</table>
+				<div style="padding-bottom: 5px;padding-top:15px">
+					<button id="back"  class="btn btn-primary" data-dismiss="modal">返回</button>	
+				 	<button id="detail"  class="btn btn-primary" data-dismiss="modal">详细信息</button>	
+				</div>
 				
 			</div>
 			<!-- /.box-body -->
@@ -75,7 +79,12 @@
 </div>
 
 <script type="text/javascript">
-
+$("#back").click(function(){
+	$(".content").load("modeNext.html");
+});
+$("#detail").click(function(){
+	$("#myModal2").modal('show'); 
+});
 setTimeout(install, 200);
 //每隔2秒，如果数据没更新完成，继续循环
 function install(){
@@ -84,17 +93,21 @@ function install(){
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
+	    	
 	    	$.each(data.stepResults,function(i,item){
-	    		$("#installData").append("<li>"+i+"</li>");
-	    		$("#installresult").append("<li>"+i+"</li>");
+	    		var _data="";
+	    		var _result="";
 	    		//左边输出
 	    		$.each(item.ansibleRowDatas,function(m,n){
-	    			$("#installData").append("<li>"+n+"</li>");
+	    			_data += "<li>"+n+"</li>";
 	    		});
 	    		//右边输出
 				$.each(item.ansibleOutSummary,function(a,b){
-					$("#installresult").append("<li>"+b+"</li>");
+					_result += "<li>"+b+"</li>";
 	    		});
+	    		
+				$("#installData").html(_data);
+				$("#installresult").html(_result);
 	    	});
 	    	
 	    	if(data.finished==true){
@@ -119,12 +132,14 @@ function installResult(_type){
 		$("#myModalLabel").html("安装成功");
 		$("#installFail").hide();
 		$("#installSucc").show();
+		$("#resultTitle").html("安装成功");
 	}else{
 		$("#myModalLabel").html("安装失败");
 		$("#installFail").show();
 		$("#installSucc").hide();
+		$("#resultTitle").html("安装失败");
 	}
-	$("#myModal2").modal('show') 
+	$("#myModal2").modal('show'); 
 	$.ajax({
 	    url:"/deploycluster/ansible-final-result-report/sumary",
 	    type: "GET",
