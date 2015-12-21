@@ -2,6 +2,7 @@ package org.ku8eye.ctrl.deploy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -90,10 +91,15 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
 	public InstallOutputBean fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
-
-		// if ("false".equals(request.getParameter("mock"))) {
-		// return DemoDataUtil.getFakeAnsibleResult();
-		// }
+//		System.out.println("fetch ansible result ");
+//		if (true) {
+//
+//			Map<String, InstallStepOutInfo> stepInfos = new LinkedHashMap<String, InstallStepOutInfo>();
+//			stepInfos.put("ssh-key-task", new InstallStepOutInfo("ssh-key-task", true,
+//					DemoDataUtil.getFakeAnsibleResult(), DemoDataUtil.getFakeAnsibleOutput()));
+//			InstallOutputBean out = new InstallOutputBean(stepInfos, false, true);
+//			return out;
+//		}
 		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
@@ -132,32 +138,23 @@ public class Ku8ClusterDeployController {
 		}
 		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
 				installFinished);
-
+		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
+				installFinished);
 		InstallOutputBean out = new InstallOutputBean(curTemplate.fetchStepResults(), installFinished,
 				parseResult.isSuccess());
-		System.out.println("fetch ansible result " + curStep+" out "+Arrays.toString(results.toArray()));
+		System.out.println("fetch ansible result " + curStep + " out " + Arrays.toString(results.toArray()));
 		return out;
-
-	}
-
-	@RequestMapping(value = "/deploycluster/fetch-ansilbe-rawout", method = RequestMethod.GET)
-	public List<String> fetchAnsilbeRawOut(ModelMap model, HttpServletRequest request) {
-		if ("false".equals(request.getParameter("mock"))) {
-			return DemoDataUtil.getFakeAnsibleOutput();
-		}
-		ProcessCaller curCaller = deployService.getProcessCaller();
-		ArrayList<String> results = new ArrayList<String>(curCaller.getOutputs());
-		return results;
 
 	}
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-
+		// if (true) {
 		// if ("sumary".equals(type)) {
 		// return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
 		// } else {
 		// return DemoDataUtil.getFakeAnsibleResult();
+		// }
 		// }
 
 		Ku8ClusterTemplate template = getCurTemplate(model);
