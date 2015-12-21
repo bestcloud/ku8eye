@@ -4,6 +4,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;padding-top:15px">
+				<button id="back"  class="btn btn-primary" data-dismiss="modal" style="float:right;">返回</button>	
 					<h3 id="resultTitle">正在为您安装kubernetes集群，请耐心等待。。。。</h3>
 				</div>
 				<table id="example1" class="table table-bordered table-hover" style="font-size: 12px;">
@@ -26,7 +27,6 @@
 					</thead>
 				</table>
 				<div style="padding-bottom: 5px;padding-top:15px">
-					<button id="back"  class="btn btn-primary" data-dismiss="modal">返回</button>	
 				 	<button id="detail"  class="btn btn-primary" data-dismiss="modal">详细信息</button>	
 				</div>
 				
@@ -111,8 +111,8 @@ function install(){
 	    			}
 	    		});
 
-				$("#installData").append(_data);
-				$("#installresult").append(_result);
+				$("#installData").html(_data);
+				$("#installresult").html(_result);
 	    	});
 	    	
 	    	if(data.finished==true){
