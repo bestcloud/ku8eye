@@ -79,7 +79,6 @@
 		}
 	});
 	
-	$("#Detection").hide();
 	$("#errorInformation").hide();
 	//获取页面数据上
 	$.ajax({
@@ -94,24 +93,23 @@
 	    }
 	}); 
 	
+	$.ajax({
+	    url:"/deploycluster/nodeslist",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		var nodeRole="";
+	    		$.each(item.nodeRoleParams,function(m,n){
+	    			nodeRole+=m+";";
+	    		});
+	    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>待检测</td></tr>");
+	    	});
+	    	
+	    }
+	});
+	
 	$("#install").click(function(){
-		$("#Detection").show();
-		$.ajax({
-		    url:"/deploycluster/nodeslist",
-		    type: "GET",
-		    dataType:"json",
-		    success: function(data){
-		    	$.each(data,function(i,item){
-		    		var nodeRole="";
-		    		$.each(item.nodeRoleParams,function(m,n){
-		    			nodeRole+=m+";";
-		    		});
-		    		$("#example2").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>待检测</td></tr>");
-		    	});
-		    	
-		    }
-		});
-		
 		$.ajax({
 		    url:"/deploycluster/create-ansible-scripts",
 		    type: "GET",
