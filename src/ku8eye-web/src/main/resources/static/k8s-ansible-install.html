@@ -93,21 +93,26 @@ function install(){
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	
 	    	$.each(data.stepResults,function(i,item){
 	    		var _data="";
 	    		var _result="";
-	    		//左边输出
-	    		$.each(item.ansibleRowDatas,function(m,n){
-	    			_data += "<li>"+n+"</li>";
+	    		$.each(item,function(c,d){
+	    			if(c=="ansibleRowDatas"){
+	    				//左边输出
+	    	    		$.each(d,function(m,n){
+	    	    			_data += "<li>"+n+"</li>";
+	    	    		});
+	    			}
+	    			if(c=="ansibleOutSummary"){
+	    				//右边输出
+	    				$.each(d,function(a,b){
+	    					_result += "<li>"+b+"</li>";
+	    	    		});
+	    			}
 	    		});
-	    		//右边输出
-				$.each(item.ansibleOutSummary,function(a,b){
-					_result += "<li>"+b+"</li>";
-	    		});
-	    		
-				$("#installData").html(_data);
-				$("#installresult").html(_result);
+
+				$("#installData").append(_data);
+				$("#installresult").append(_result);
 	    	});
 	    	
 	    	if(data.finished==true){
@@ -151,7 +156,7 @@ function installResult(_type){
 	    			
 	    		}else{
 	    			$.each(data.failedMsgs,function(a,b){
-	    				faileMessage+=b+";";
+	    				faileMessage+=a+"="+b+";";
 	    			});
 	    		}
 
