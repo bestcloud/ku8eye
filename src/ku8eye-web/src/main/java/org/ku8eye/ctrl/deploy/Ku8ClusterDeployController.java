@@ -138,8 +138,6 @@ public class Ku8ClusterDeployController {
 		}
 		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
 				installFinished);
-		curTemplate.setCurStepResult(curStep, new InstallStepOutInfo(curStep, finished, parseResult, results),
-				installFinished);
 		InstallOutputBean out = new InstallOutputBean(curTemplate.fetchStepResults(), installFinished,
 				parseResult.isSuccess());
 		System.out.println("fetch ansible result " + curStep + " out " + Arrays.toString(results.toArray()));

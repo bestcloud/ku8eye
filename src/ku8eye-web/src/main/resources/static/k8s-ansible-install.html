@@ -93,9 +93,11 @@ function install(){
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
+	    	var _data="";
+    		var _result="";
 	    	$.each(data.stepResults,function(i,item){
-	    		var _data="";
-	    		var _result="";
+	    		_data +="<li style='color:#ffffff;font-size:18px;'>。。。。。。。Job  Begin : "+i+"。。。。。。。。</li>";
+	    		_result +="<li style='weight:700;font-size:18px;'>。。。Job : "+i+"。。。。</li>";
 	    		$.each(item,function(c,d){
 	    			if(c=="ansibleRowDatas"){
 	    				//左边输出
@@ -110,10 +112,9 @@ function install(){
 	    	    		});
 	    			}
 	    		});
-
-				$("#installData").html(_data);
-				$("#installresult").html(_result);
 	    	});
+	    	$("#installData").html(_data);
+			$("#installresult").html(_result);
 	    	
 	    	if(data.finished==true){
 	    		if(data.success==true){
@@ -123,7 +124,7 @@ function install(){
 	    		}
 	    		
 	    	}else{
-	    		setTimeout(install, 200);
+	    		setTimeout(install, 2000);
 	    	}
 	    }
 	});
@@ -151,11 +152,14 @@ function installResult(_type){
 	    dataType:"json",
 	    success: function(data){
 	    	var faileMessage="";
+	    	alert("failedMsgs=="+data.failedMsgs);
     		$.each(data,function(isa,isb){
 				if(data.failedMsgs==null){
 	    			
 	    		}else{
+	    			alert("");
 	    			$.each(data.failedMsgs,function(a,b){
+	    				alert(a+"   "+b);
 	    				faileMessage+=a+"="+b+";";
 	    			});
 	    		}

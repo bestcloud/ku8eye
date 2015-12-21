@@ -15,6 +15,6 @@ public class K8sAPIService {
 
 	public static void main(String[] args) {
 		K8sAPIService service= new K8sAPIService();
-		service.checkK8sClusterStatus("");
+		service.checkK8sClusterStatus("http://192.168.18.133:8080");
 	}
 }

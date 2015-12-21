@@ -133,7 +133,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} else if (NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
 
 		{
-			list.add(new InstallParam("docker0_ip", "172.17.42.1/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker0_ip", "172.17.42.3/24", "docker0网桥的IP地址"));
 			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
 			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
 			list.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
@@ -292,7 +292,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		// def
 		List<InstallParam> def_list = new ArrayList<InstallParam>();
 
-		def_list.add(new InstallParam("install_quagga_router", "true", "是否安装Quagga路由"));
+		def_list.add(new InstallParam("install_quagga_router", "false", "是否安装Quagga路由"));
 		def_list.add(new InstallParam("quagga_router_image_id", "f96cfe685533", "quagga router 镜像ID"));
 		def_list.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router",
 				"index.alauda.cn/georce/router quagga router 镜像tag"));

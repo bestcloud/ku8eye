@@ -55,8 +55,8 @@ public class Ku8GenInstallTemplateTest {
 		Ku8ClusterTemplate template = getAllInOneTemp();
 		Assert.assertTrue(template.getNodes().size()==1);
 		List<String> errMsgs = deployService.createInstallScripts(template);
-		//bug
-		//Assert.assertEquals(template.getAllGlobParameters().get("install_quagga_router").getValue(), "false");
+		
+		Assert.assertEquals(template.getAllGlobParameters().get("install_quagga_router").getValue(), "false");
 		Assert.assertTrue(errMsgs.size() == 0);
 
 	}
