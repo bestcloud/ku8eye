@@ -132,7 +132,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} else if (NODE_ROLE_MASTER.equalsIgnoreCase(role)) {
 			list.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
 			list.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
-			list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "172.0.0.1/16",
+			list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "10.0.0.1/16",
 					"Kubernetes集群里的Node节点所用IP地址范围"));
 			list.add(new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16",
 					"Kubernetes Services可分配IP地址池"));
@@ -142,7 +142,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} else if (NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
 
 		{
-			list.add(new InstallParam("docker0_ip", "172.17.42.3/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker0_ip", "10.17.42.3/24", "docker0网桥的IP地址"));
 			list.add(new InstallParam("docker_registry_port", "5000", " docker registry 服务目录"));
 			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
 			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
