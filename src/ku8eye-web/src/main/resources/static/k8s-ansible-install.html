@@ -72,9 +72,9 @@
 			</div>
 			<div class="modal-footer">
 				<span style="color:#D81E12;float:left;" id="clusterSpan"></span>
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">保存集群
 				</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">验证集群
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
 				</button>
 			</div>
 		</div>
@@ -151,12 +151,10 @@ function install(){
 function installResult(_type){
 	if(_type=="success"){
 		$("#myModalLabel").html("安装成功");
-		$("#installFail").hide();
 		$("#installSucc").show();
 		$("#resultTitle").html("安装成功");
 	}else{
 		$("#myModalLabel").html("安装失败");
-		$("#installFail").show();
 		$("#installSucc").hide();
 		$("#resultTitle").html("安装失败");
 	}
@@ -185,7 +183,7 @@ function installResult(_type){
 		    dataType:"text",
 		    success: function(data){
 		    	if(data=="SUCCESS:"){
-		    		$(".content").load("cluser_main.html");
+		    		$(".content").load("cluster_main.html");
 		    	}else{
 		    		$("#clusterSpan").html("保存数据失败！！！！");
 		    	}
