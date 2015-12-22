@@ -206,19 +206,8 @@ $("#selectSaveBtn").click(function(){
     	$("#multiName").html(nodename);
     	myarrs.splice(0,myarrs.length);
     	myarrs.push(nodeid);
-    	//master的数据
-		$.ajax({
-	        url:"/deploycluster/getnodemodal/multiNode",
-	        data:{
-	        	'addnode':_addnode
-	        },
-	        type: "GET",
-	        dataType:"json",
-	        success: function(data){
-	        }
-	    });
-
-		//nodes的数据
+    	
+    	//Master节点数据
     	$.ajax({
 	        url:"/deploycluster/getnodemodal/multiaddNode",
 	        data:{
@@ -227,17 +216,26 @@ $("#selectSaveBtn").click(function(){
 	        type: "GET",
 	        dataType:"json",
 	        success: function(data){
-//	        	alert("返回的数据"+data);
-				//nodes的值
-				var RoleParam="";
-				$.each(data.nodeRoleParams,function(a,b){ 
-					/*$.each(b,function(c,d){
-						RoleParam+=d.name+"="+d.value+";";
-					});*/
-	        		$("#multiNodes").html("<tr><td>"+nodeip+"</td><td><button class='del'>删除</button></td></tr>");
-	        	});
+				
 	        }
 	    });
+		
+    	//nodes的数据
+    	$.ajax({
+    	    url:"/deploycluster/nodeslist",
+    	    type: "GET",
+    	    dataType:"json",
+    	    success: function(data){
+    	    	$.each(data,function(i,item){
+    	    		var nodeRole="";
+    	    		$.each(item.nodeRoleParams,function(m,n){
+    	    			nodeRole+=m+";";
+    	    		});
+    	    		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td></td></tr>");
+    	    	});
+    	    	
+    	    }
+    	});
 
 });
 
@@ -274,7 +272,7 @@ $("#addSaveBtn").click(function(){
         			});
         		});
         		setcount++;
-        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td><button class='del'>删除</button></td></tr>");
+        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td><button class='del' value='"+item.hostId+"'>删除</button></td></tr>");
         		
         	});
         	
@@ -310,8 +308,11 @@ $("#addSaveBtn").click(function(){
 
         	//删除行
 			$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+				$(this).unbind('click');
 				var j=this.parentNode.parentNode.rowIndex;
 				document.getElementById('multiNodes').deleteRow(j);
+				myarrs.splice($.inArray($(this).val(),myarrs),1);
+				
 			});
 
         }  
