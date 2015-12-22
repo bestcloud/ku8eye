@@ -76,7 +76,7 @@
 		                <div class="form-group">
 		                  <label for="cpu-limits" class="col-sm-2 control-label">参数：</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="cpu-limits"  id="parameterValue">
+		                    <input type="text" class="form-control"  id="parameterValue" value="">
 		                  </div>
 		                </div>
 		              </div>
@@ -118,28 +118,48 @@
 	
 	$("#errorInformation").hide();
 	//获取页面数据上
-	$.ajax({
-	    url:"/deploycluster/global-params",
-	    type: "GET",
-	    dataType:"json",
-	    success: function(data){
-	    	$.each(data,function(i,item){
-	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"<button style='float:right;' data-toggle='modal' data-target='#myModal4' class='set' c='"+item.value+"'  cn='"+item.name+"'>修改</button></td><td>"+item.describe+"</td></tr>");
-	    	});
-	    	//修改参数
-	    	$( '#example1' ).find( 'tr .set' ).click(function() {
-	    		alert($( this ).attr('c'));
-	    		alert($( this ).attr('cn'));
-	    		//参数
-	    		//$("#parameterName").html($( this ).attr('cn'));
-	    		//值
-	    		$("#parameterValue").html($( this ).attr('c'));
-	    	});
-	    	
-	    }
-	}); 
-	
-	
+	nodeNext();
+	function nodeNext(){
+		
+		$.ajax({
+		    url:"/deploycluster/global-params",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	
+		    	var li="";
+		    	$.each(data,function(i,item){
+		    		li+="<tr><td>"+item.name+"</td><td>"+item.value+"<button style='float:right;' data-toggle='modal' data-target='#myModal4' class='set' c='"+item.value+"'  cn='"+item.name+"'>修改</button></td><td>"+item.describe+"</td></tr>";
+		    	});
+		    	$("#example1").html("<tr><th>系统参数</th><th>当前值</th><th>含义</th></tr>"+li);
+		    	//修改参数
+		    	var _param="",_value="";
+		    	$( '#example1' ).find( 'tr .set' ).click(function() {
+		    		//参数
+		    		//$("#parameterName").html($( this ).attr('cn'));
+		    		//值
+		    		_param=$( this ).attr('cn');
+		    		_value=$( this ).attr('c');
+		    		$("#parameterValue").val(_value);
+		    	});
+		    	$("#setSaveBtn").click(function(){
+		    		$.ajax({
+		    		    url:"/deploycluster/update-global-params?param="+_param+"&value="+$("#parameterValue").val(),
+		    		    type: "GET",
+		    		    dataType:"text",
+		    		    success: function(data){
+		    		    	
+		    		    	if(data=="SUCCESS:"){
+		    		    		nodeNext();
+		    		    	}
+		    		    }
+		    		});
+		    	});
+		    	
+		    }
+		});
+	}
+
 	$.ajax({
 	    url:"/deploycluster/nodeslist",
 	    type: "GET",
