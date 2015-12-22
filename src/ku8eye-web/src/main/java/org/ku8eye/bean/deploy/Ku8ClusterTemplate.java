@@ -3,6 +3,7 @@ package org.ku8eye.bean.deploy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -355,5 +356,17 @@ public class Ku8ClusterTemplate implements Cloneable {
 	@JsonIgnore
 	public AnsibleCallResult fetchLastAnsibleResult() {
 		return this.stepResults.get(this.curInstallStep).fetchAnsibleCallResult();
+	}
+
+	public void deleteNodeOfHostId(int hostId) {
+		Iterator<InstallNode> itor = this.nodes.iterator();
+		while (itor.hasNext()) {
+			InstallNode node = itor.next();
+			if (node.getHostId() == hostId) {
+				itor.remove();
+				
+			}
+		}
+
 	}
 }

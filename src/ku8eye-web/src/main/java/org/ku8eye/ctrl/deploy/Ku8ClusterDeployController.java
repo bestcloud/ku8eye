@@ -156,13 +156,13 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-//		 if (true) {
-//		 if ("sumary".equals(type)) {
-//		 return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
-//		 } else {
-//		 return DemoDataUtil.getFakeAnsibleResult();
-//		 }
-//		 }
+		// if (true) {
+		// if ("sumary".equals(type)) {
+		// return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+		// } else {
+		// return DemoDataUtil.getFakeAnsibleResult();
+		// }
+		// }
 
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		AnsibleCallResult result = template.fetchLastAnsibleResult();
@@ -198,6 +198,27 @@ public class Ku8ClusterDeployController {
 		Map<String, InstallParam> Parameter = template.getAllGlobParameters();
 		return Parameter;
 
+	}
+
+	@RequestMapping(value = "/deploycluster/update-global-params", method = RequestMethod.GET)
+	public String updatetGlobParameter(ModelMap model, HttpServletRequest request) {
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		String paramName = request.getParameter("param");
+		String paramValue = request.getParameter("value");
+		Map<String, InstallParam> params = template.getAllGlobParameters();
+		InstallParam paramObj = params.get(paramName);
+		if (paramObj != null) {
+			paramObj.setValue(paramValue);
+			return "SUCCESS:";
+		} else {
+			return "FAILED:";
+		}
+
+	}
+	@RequestMapping(value = "/deploycluster/deletenode/{hostId}")
+	public void deleteTemplateNode(ModelMap model, @PathVariable("hostId") int hostId) {
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		template.deleteNodeOfHostId(hostId);
 	}
 
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
