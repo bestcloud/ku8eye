@@ -17,7 +17,7 @@
 					<span>主机名:</span>
 					<span id="multiName"></span>
 				</div>
-				<table id="multiMaster" class="table table-bordered table-hover"
+				<!-- <table id="multiMaster" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
 						<tr>
@@ -27,7 +27,7 @@
 							<th>描述</th>
 						</tr>
 					</thead>
-				</table>
+				</table> -->
 				
 				<div style="padding: 10px 0px;">
 					<span>Kubernetes nodes&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -39,7 +39,6 @@
 					<thead>
 						<tr>
 							<th>节点</th>
-							<th>节点参数</th>
 							<th>设置</th>
 						</tr>
 					</thead>
@@ -148,6 +147,8 @@ $("#addNode").click(function(){
 	$("#addSaveBtn").show();
 	selectOrAddNode("add");
 });
+
+
 function selectOrAddNode(_type){
 	$('#example2').DataTable({
 	    "ajax":"/addlist/1",
@@ -211,27 +212,6 @@ $("#selectSaveBtn").click(function(){
 	        type: "GET",
 	        dataType:"json",
 	        success: function(data){
-	        	//alert("返回的数据"+data);
-				//Master的值
-				var mastertable="";
-				$.each(data.nodeRoleParams,function(i,item){	
-					var masterName="",mastervalue="",masterDescribe="";
-	        		$.each(item,function(m,n){
-	        		    masterName+=n.name+";\n";
-	        			mastervalue+=n.value+";\n";
-	        			masterDescribe+=n.describe+";\n";
-	        		});
-	        		mastertable+=[
-	        			          '<tr>',
-	        			          '<td>'+i+'</td>',
-	        			          '<td>'+masterName+'</td>',
-	        			          '<td>'+mastervalue+'</td>',
-	        			          '<td>'+masterDescribe+'</td>',
-	        			          '</tr>'
-	        			          ].join('');
-	        	});
-				$("#multiMaster").html("<tr><th>角色</th><th>参数名</th><th>参数值</th><th>描述</th></tr>");
-				$("#multiMaster").append(mastertable);
 	        }
 	    });
 
@@ -248,10 +228,10 @@ $("#selectSaveBtn").click(function(){
 				//nodes的值
 				var RoleParam="";
 				$.each(data.nodeRoleParams,function(a,b){ 
-					$.each(b,function(c,d){
+					/*$.each(b,function(c,d){
 						RoleParam+=d.name+"="+d.value+";";
-					});
-	        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+					});*/
+	        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td><button class='del'>删除</button></td></tr>");
 	        	});
 	        }
 	    });
@@ -282,7 +262,7 @@ $("#addSaveBtn").click(function(){
         			});
         		});
         		setcount++;
-        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
+        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td><button class='del'>删除</button></td></tr>");
         		
         	});
         	
