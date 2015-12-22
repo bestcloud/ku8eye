@@ -33,10 +33,11 @@ public class ProcessCaller {
 		LOGGER.info("Process working dir is " + workDir + " with args " + Arrays.toString(execArgs));
 		pb.redirectErrorStream(true);
 		curProcess = pb.start();
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(curProcess.getInputStream()));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(curProcess.getInputStream()),80);
 		try {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				//System.out.println("ansible:"+line);
 				outputs.add(line);
 			}
 		} catch (IOException e) {

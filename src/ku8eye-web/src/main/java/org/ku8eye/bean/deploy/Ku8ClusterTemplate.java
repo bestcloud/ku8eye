@@ -35,6 +35,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	private int id;
+	private int clusterId;
 	private String logoImage;
 	private String detailPageUrl;
 	// kube-dns服务设置的domain名
@@ -54,6 +55,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// nodes to install
 	private List<InstallNode> nodes = new ArrayList<InstallNode>();
 	private List<String> allowedNewRoles = new ArrayList<String>();
+
+	public int getClusterId() {
+		return clusterId;
+	}
+
+	public void setClusterId(int clusterId) {
+		this.clusterId = clusterId;
+	}
 
 	public String getLogoImage() {
 		return logoImage;
@@ -134,6 +143,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 
 		{
 			list.add(new InstallParam("docker0_ip", "172.17.42.3/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker_registry_port", "5000", " docker registry 服务目录"));
 			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
 			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
 			list.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));

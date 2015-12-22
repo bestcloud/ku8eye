@@ -90,25 +90,25 @@ public class Ku8ClusterDeployController {
 	// }
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
-	public InstallOutputBean fetchAnsilbeResult(ModelMap model,
-			HttpServletRequest request) {
-//		System.out.println("fetch ansible result ");
-//		if (true) {
-//
-//			Map<String, InstallStepOutInfo> stepInfos = new LinkedHashMap<String, InstallStepOutInfo>();
-//			if(System.currentTimeMillis()%2==1)
-//			{
-//			stepInfos.put("ssh-key-task", new InstallStepOutInfo(
-//					"ssh-key-task", true, DemoDataUtil.getFakeAnsibleResult(),
-//					DemoDataUtil.getFakeAnsibleOutput()));
-//			}else
-//			{
-//				System.out.println("not add data");
-//			}
-//			InstallOutputBean out = new InstallOutputBean(stepInfos, false,
-//					true);
-//			return out;
-//		}
+	public InstallOutputBean fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
+		// System.out.println("fetch ansible result ");
+		// if (true) {
+		//
+		// Map<String, InstallStepOutInfo> stepInfos = new LinkedHashMap<String,
+		// InstallStepOutInfo>();
+		// if(System.currentTimeMillis()%2==1)
+		// {
+		// stepInfos.put("ssh-key-task", new InstallStepOutInfo(
+		// "ssh-key-task", true, DemoDataUtil.getFakeAnsibleResult(),
+		// DemoDataUtil.getFakeAnsibleOutput()));
+		// }else
+		// {
+		// System.out.println("not add data");
+		// }
+		// InstallOutputBean out = new InstallOutputBean(stepInfos, false,
+		// true);
+		// return out;
+		// }
 		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
@@ -170,6 +170,16 @@ public class Ku8ClusterDeployController {
 			return result.getNodeTotalSumaryMap();
 		} else {
 			return result;
+		}
+
+	}
+
+	@RequestMapping(value = "/deploycluster/write-cluster-info2db", method = RequestMethod.GET)
+	public String writeClusterInfo2db(ModelMap model) throws Exception {
+		if (this.deployService.addClusterRecordToDB(this.getCurTemplate(model))) {
+			return "SUCCESS:";
+		} else {
+			return "FAILED:";
 		}
 
 	}

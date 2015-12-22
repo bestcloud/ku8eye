@@ -47,7 +47,7 @@ public class InstallStepOutInfo {
 	}
 
 	public List<String> getAnsibleOutSummary() {
-		return ansibleResult.toInfo();
+		return ansibleResult.toSimpleInfo();
 	}
 
 }
