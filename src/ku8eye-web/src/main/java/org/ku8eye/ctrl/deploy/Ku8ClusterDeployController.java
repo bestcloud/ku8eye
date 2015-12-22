@@ -204,6 +204,8 @@ public class Ku8ClusterDeployController {
 	public List<InstallNode> getNodesList(ModelMap model, HttpServletRequest request) {
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		List<InstallNode> nodes = template.getNodes();
+		log.info("zhangyingddd"+request.getParameter("type"));
+		
 		if ("node".equals(request.getParameter("type"))) {
 			List<InstallNode> filterNodes = new LinkedList<InstallNode>();
 			for (InstallNode node : nodes) {
