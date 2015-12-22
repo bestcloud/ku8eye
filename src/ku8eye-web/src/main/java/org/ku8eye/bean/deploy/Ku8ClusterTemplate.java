@@ -85,7 +85,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public InstallNode getStandardMasterWithEtcdNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
@@ -105,7 +104,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public InstallNode getStandardAllIneOneNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
@@ -128,7 +126,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public InstallNode getStandardK8sNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_NODE));
@@ -364,7 +361,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 			InstallNode node = itor.next();
 			if (node.getHostId() == hostId) {
 				itor.remove();
-				
+
 			}
 		}
 

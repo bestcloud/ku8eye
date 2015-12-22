@@ -257,7 +257,7 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/addk8snodes/{id}")
-	public List<InstallNode> addk8snodes(@PathVariable("id") String id, ModelMap model) {
+	public void addk8snodes(@PathVariable("id") String id, ModelMap model) {
 		// session中获取当前模板对象
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		String strList[] = id.split(",");
@@ -273,7 +273,7 @@ public class Ku8ClusterDeployController {
 				template.addNewNode(node);
 			}
 		}
-		return template.getAllMinionNodes();
+		
 	}
 
 	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
