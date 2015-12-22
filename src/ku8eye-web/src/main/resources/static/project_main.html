@@ -7,6 +7,10 @@
 					<a onclick="fnClickAddRow();" href="javascript:void(0);"
 						class="btn btn-primary " data-toggle="modal"
 						data-target="#myModal">新增Application</a>
+						
+					<a onclick="createProject()" href="javascript:void(0);"
+						class="btn btn-primary " >新增Project</a>
+						
 				</div>
 				<table id="example1" class="table table-bordered table-hover"
 					style="font-size: 12px;">
@@ -115,4 +119,12 @@
        		          }
        		      ]
     });
+    
+    
+    function createProject()
+    {
+    	window.location.href = "./createProject.html";
+    	
+    }
+    
 </script>
