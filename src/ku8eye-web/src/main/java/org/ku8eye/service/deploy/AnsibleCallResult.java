@@ -164,6 +164,16 @@ public class AnsibleCallResult {
 		return results;
 	}
 
+	public List<String> toSimpleInfo() {
+		List<String> results = new LinkedList<String>();
+		results.add("***************Ansible Summray********************");
+		for (Map.Entry<String, AnsibleNodeSum> taskSumerys : nodeTotalSumaryMap.entrySet())
+
+		{
+			results.add("Node  " + taskSumerys.getKey() + " sumary:" + taskSumerys.getValue());
+		}
+		return results;
+	}
 	public void markSuccess() {
 		for (Map<String, AnsibleTaskResult> groupTasks : hostTaskResultMap.values()) {
 			for (AnsibleTaskResult taskResult : groupTasks.values()) {

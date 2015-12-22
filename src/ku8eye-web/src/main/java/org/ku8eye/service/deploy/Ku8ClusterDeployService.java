@@ -1,16 +1,21 @@
 package org.ku8eye.service.deploy;
 
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
 import org.ku8eye.bean.deploy.InstallNode;
-import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
+import org.ku8eye.domain.Ku8sSrvEndpoint;
+import org.ku8eye.mapping.Ku8sSrvEndpointMapper;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,8 @@ import org.springframework.stereotype.Service;
 public class Ku8ClusterDeployService {
 
 	@Autowired
+	private SqlSessionFactoryBean sqlSessionFactory;
+	@Autowired
 	private TemplateUtil tmpUtil;
 	private Logger LOGGER = Logger.getLogger(Ku8ClusterDeployService.class);
 	private ProcessCaller processCaller = new ProcessCaller();
@@ -33,6 +40,10 @@ public class Ku8ClusterDeployService {
 
 	public void setAnsibleWorkDir(String ansibleWorkDir) {
 		this.ansibleWorkDir = ansibleWorkDir;
+	}
+
+	public void setSqlSessionFactory(SqlSessionFactoryBean sqlSessionFactory) {
+		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
 	public void setTmpUtil(TemplateUtil tmpUtil) {
@@ -62,7 +73,6 @@ public class Ku8ClusterDeployService {
 
 	private void processTemplateAutoParams(Ku8ClusterTemplate template) {
 		// etcd param
-		Map<String, InstallParam> gloableParams = template.getAllGlobParameters();
 		HashMap<String, String> autoParams = template.getAutoComputedGlobalParams();
 		InstallNode etcdNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_ETCD);
 		String ectdIP = etcdNode.getIp();
@@ -100,6 +110,7 @@ public class Ku8ClusterDeployService {
 
 		// update global param
 		autoParams.put("docker_registry_server_name", docker_registry_server_name);
+		autoParams.put("docker_registry_port", dockerRegNode.getNodeParam("docker_registry_port"));
 		autoParams.put("docker_registry_server_ip", dockerRegIP);
 		autoParams.put("docker_registry_root_dir", dockerRegNode.getNodeParam("docker_registry_root_dir"));
 		autoParams.put("docker_registry_image_id", dockerRegNode.getNodeParam("docker_registry_image_id"));
@@ -116,6 +127,74 @@ public class Ku8ClusterDeployService {
 		}
 		// every node ,set root and password
 
+	}
+
+	public boolean addClusterRecordToDB(Ku8ClusterTemplate template) throws Exception {
+		String etcd_url = template.getAutoComputedGlobalParams().get("etcd_servers");
+		String master_url = template.getAutoComputedGlobalParams().get("kube_master_url");
+		String registry_url = "http://" + template.getAutoComputedGlobalParams().get("docker_registry_server_name")
+				+ ":" + template.getAutoComputedGlobalParams().get("docker_registry_port");
+		int clusterId = template.getClusterId();
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.getObject().openSession(false);
+			Statement stmt=session.getConnection().createStatement();
+			Ku8sSrvEndpointMapper srvEndPntMapper = session.getMapper(Ku8sSrvEndpointMapper.class);
+			for (InstallNode node : template.getNodes()) {
+				int hostId = node.getHostId();
+				Ku8sSrvEndpoint srvEndpnt = null;
+				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_MASTER)) {
+					srvEndpnt = new Ku8sSrvEndpoint();
+					srvEndpnt.setClusterId(clusterId);
+					srvEndpnt.setHostId(hostId);
+					srvEndpnt.setServiceUrl(master_url);
+					srvEndpnt.setServiceType(Constants.K8S_TYPE_API_SERVICE);
+					srvEndpnt.setServiceStatus(Constants.K8S_SERICE_STATUS_OK);
+					srvEndpnt.setNote("Auto created in install process ");
+					srvEndpnt.setLastUpdated(new Date());
+					srvEndPntMapper.insert(srvEndpnt);
+
+				}
+				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_ETCD)) {
+					srvEndpnt = new Ku8sSrvEndpoint();
+					srvEndpnt.setClusterId(clusterId);
+					srvEndpnt.setHostId(hostId);
+					srvEndpnt.setServiceUrl(etcd_url);
+					srvEndpnt.setServiceType(Constants.K8S_TYPE_ETCD_SERVICE);
+					srvEndpnt.setServiceStatus(Constants.K8S_SERICE_STATUS_OK);
+					srvEndpnt.setNote("Auto created in install process ");
+					srvEndpnt.setLastUpdated(new Date());
+					srvEndPntMapper.insert(srvEndpnt);
+				}
+				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_REGISTRY)) {
+					srvEndpnt = new Ku8sSrvEndpoint();
+					srvEndpnt.setClusterId(clusterId);
+					srvEndpnt.setHostId(hostId);
+					srvEndpnt.setServiceUrl(registry_url);
+					srvEndpnt.setServiceType(Constants.K8S_TYPE_REGISTRY_SERVICE);
+					srvEndpnt.setServiceStatus(Constants.K8S_SERICE_STATUS_OK);
+					srvEndpnt.setNote("Auto created in install process ");
+					srvEndpnt.setLastUpdated(new Date());
+					srvEndPntMapper.insert(srvEndpnt);
+				}
+				String sql = "update host  set CLUSTER_ID =" + clusterId + ",USAGE_FLAG=" + Constants.HOST_USAGED
+						+ ",LAST_UPDATED= now()  where ID=" + hostId;
+				stmt.executeUpdate(sql);
+			}
+			stmt.close();
+			session.commit();
+			return true;
+		} catch (Exception e) {
+			LOGGER.error("cant' save cluster info to db " + e);
+			if (session != null) {
+				session.rollback();
+			}
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -139,8 +218,8 @@ public class Ku8ClusterDeployService {
 	private Ku8ClusterTemplate createAllInOneTemplate() {
 		Ku8ClusterTemplate temp = new Ku8ClusterTemplate();
 		temp.setId(0);
-		//bug
-		//temp.getAllGlobParameters().get("install_quagga_router").setValue("false");
+		// bug
+		// temp.getAllGlobParameters().get("install_quagga_router").setValue("false");
 		temp.setName("All In One Cluster");
 		temp.setTemplateType(1);
 		temp.setDescribe("All service in one server");
@@ -233,11 +312,11 @@ public class Ku8ClusterDeployService {
 		return processCaller;
 	}
 
-	public void shutdownProcessCallerIfRunning(final Process process,boolean clearOutputs) {
+	public void shutdownProcessCallerIfRunning(final Process process, boolean clearOutputs) {
 		if (!processCaller.isFinished()) {
 			LOGGER.warn("find ansible process runing ,kill it " + processCaller);
 		}
-		processCaller.shutdownCaller(process,clearOutputs);
+		processCaller.shutdownCaller(process, clearOutputs);
 	}
 
 	public String deployHasError() throws Exception {
