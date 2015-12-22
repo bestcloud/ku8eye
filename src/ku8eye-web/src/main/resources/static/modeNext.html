@@ -87,7 +87,7 @@
 	    dataType:"json",
 	    success: function(data){
 	    	$.each(data,function(i,item){
-	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"</td><td>"+item.describe+"</td></tr>");
+	    		$("#example1").append("<tr><td>"+item.name+"</td><td>"+item.value+"<button class='del'>修改</button></td><td>"+item.describe+"</td></tr>");
 	    	});
 	    	
 	    }

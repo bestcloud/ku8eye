@@ -155,7 +155,7 @@ function selectOrAddNode(_type){
 	    "columns": [
 	    			{ "data": "id", render: function ( data, type, row ) {
 	            		// Combine the first and last names into a single table field
-	            			return _type=="select"?"<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>":"<input type='checkbox' value='"+data+"' class='chkbox' name='child' checked='checked'/>";
+	            			return _type=="select"?"<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>":"<input type='checkbox' value='"+data+"' class='chkbox' name='child'/>";
 	        		} },
 	    			{ "data": "hostName" },
 	    			{ "data": "ip" },
@@ -187,6 +187,8 @@ $.ajax({
     }
 });
 
+var myarrs=new Array();
+
 //选择节点按钮事件
 $("#selectSaveBtn").click(function(){
 		
@@ -202,7 +204,8 @@ $("#selectSaveBtn").click(function(){
 		
 		$("#multiIp").html(nodeip);
     	$("#multiName").html(nodename);
-    	
+    	myarrs.splice(0,myarrs.length);
+    	myarrs.push(nodeid);
     	//master的数据
 		$.ajax({
 	        url:"/deploycluster/getnodemodal/multiNode",
@@ -231,7 +234,7 @@ $("#selectSaveBtn").click(function(){
 					/*$.each(b,function(c,d){
 						RoleParam+=d.name+"="+d.value+";";
 					});*/
-	        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td><button class='del'>删除</button></td></tr>");
+	        		$("#multiNodes").html("<tr><td>"+nodeip+"</td><td><button class='del'>删除</button></td></tr>");
 	        	});
 	        }
 	    });
@@ -241,9 +244,18 @@ $("#selectSaveBtn").click(function(){
 //添加节点按钮事件
 $("#addSaveBtn").click(function(){
 	var de="";
+	var flag=false;
 	$(":checkbox:checked").closest("#example2 tr").find(":checkbox").each(function(i, eleDom) {
-		// 遍历每个被选中的复选框所在行的文本框的值
-		de += eleDom.value + ",";
+		// 遍历每个被选中的复选框所在行的文本框的值,如果当前页面包含这个id则不添加
+		for(var s=0;s<myarrs.length;s++){
+			if(myarrs[s]==eleDom.value){
+				flag=true;
+			}
+		}
+		if(flag==false){
+			de += eleDom.value + ",";
+			myarrs.push(eleDom.value);
+		}
 	});
 	$.ajax({
         url:"/deploycluster/addk8snodes/"+de,
