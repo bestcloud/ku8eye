@@ -1,5 +1,6 @@
 package org.ku8eye.bean.project;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Project {
@@ -64,6 +65,21 @@ class Service {
 	private String replica;
 	private String version;
 	private Images image;
+	private HashMap<String,String> label;
+	private HashMap<String,String> volumes;
+	
+	public HashMap<String, String> getVolumes() {
+		return volumes;
+	}
+	public void setVolumes(HashMap<String, String> volumes) {
+		this.volumes = volumes;
+	}
+	public HashMap<String, String> getLabel() {
+		return label;
+	}
+	public void setLabel(HashMap<String, String> label) {
+		this.label = label;
+	}
 	public String getName() {
 		return name;
 	}
@@ -100,7 +116,6 @@ class Service {
 	public void setImage(Images image) {
 		this.image = image;
 	}
-	
 }
 
 class Images {
@@ -109,6 +124,7 @@ class Images {
 	String registry;
 	String imageName;
 	String command;
+	String imagePullPolicy;		
 	String quotas_limits;
 	String quotas_cpu;
 	String quotas_memory;
@@ -160,7 +176,6 @@ class Images {
 	public void setQuotas_memory(String quotas_memory) {
 		this.quotas_memory = quotas_memory;
 	}
-	
 }
 
 class Port {
