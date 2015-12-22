@@ -230,11 +230,11 @@ $("#addSaveBtn").click(function(){
         url:"/deploycluster/addk8snodes/"+de,
         type: "GET",
         dataType:"json",
-        success: function(data){
-        	setTimeout(addData, 500);
+        success: function(data){	
         }  
     });	
 	//nodes节点显示
+	setTimeout(addData, 500);
 	function addData(){
 		$.ajax({
 		    url:"/deploycluster/nodeslist?type=node",
@@ -243,9 +243,9 @@ $("#addSaveBtn").click(function(){
 		    success: function(data){
 		    	var li="";
 		    	$.each(data,function(i,item){
-		    		li +="<tr><td>"+item.ip+"</td><td><Button>删除</Button></td></tr>";
+		    		li +="<tr><td>"+item.ip+"</td><td><Button class='del' value='"+item.hostId+"'>删除</Button></td></tr>";
 		    	});
-		    	$("#multiNodes").html(li);
+		    	$("#multiNodes").html("<tr><td>节点</td><td>设置</td></tr>"+li);
 		    	//修改参数
 	        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
 	        		$("#setting").html("");
@@ -278,10 +278,16 @@ $("#addSaveBtn").click(function(){
 
 	        	//删除行
 				$( '#multiNodes' ).find( 'tr .del' ).click(function() {
-					$(this).unbind('click');
-					var j=this.parentNode.parentNode.rowIndex;
-					document.getElementById('multiNodes').deleteRow(j);
-					myarrs.splice($.inArray($(this).val(),myarrs),1);
+					var deleteId=$(this).val();
+					$.ajax({
+				        url:"/deploycluster/deletenode/"+deleteId,
+				        type: "GET",
+				        dataType:"json",
+				        success: function(data){
+				  
+				        }  
+				    });	
+					setTimeout(addData, 500);
 					
 				});
 		    	
