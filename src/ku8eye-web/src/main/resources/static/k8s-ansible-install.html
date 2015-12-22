@@ -71,6 +71,7 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
+				<span style="color:#D81E12;float:left;" id="clusterSpan"></span>
 				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
 				</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">验证集群
@@ -176,6 +177,22 @@ function installResult(_type){
 	    	});	
 	    }
 	});
+	
+	$("#installSucc").click(function(){
+		$.ajax({
+		    url:"/deploycluster/write-cluster-info2db",
+		    type: "GET",
+		    dataType:"text",
+		    success: function(data){
+		    	if(data=="SUCCESS:"){
+		    		$(".content").load("cluser_main.html");
+		    	}else{
+		    		$("#clusterSpan").html("保存数据失败！！！！");
+		    	}
+		    }
+		});
+	});
+	
 }
 
 
