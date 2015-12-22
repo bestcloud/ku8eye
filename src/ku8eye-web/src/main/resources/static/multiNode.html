@@ -209,7 +209,7 @@ $("#selectSaveBtn").click(function(){
     	
     	//Master节点数据
     	$.ajax({
-	        url:"/deploycluster/getnodemodal/multiaddNode",
+	        url:"/deploycluster/getnodemodal/multiNode",
 	        data:{
 	        	'addnode':_addnode
 	        },
@@ -219,24 +219,6 @@ $("#selectSaveBtn").click(function(){
 				
 	        }
 	    });
-		
-    	//nodes的数据
-    	$.ajax({
-    	    url:"/deploycluster/nodeslist",
-    	    type: "GET",
-    	    dataType:"json",
-    	    success: function(data){
-    	    	$.each(data,function(i,item){
-    	    		var nodeRole="";
-    	    		$.each(item.nodeRoleParams,function(m,n){
-    	    			nodeRole+=m+";";
-    	    		});
-    	    		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td></td></tr>");
-    	    	});
-    	    	
-    	    }
-    	});
-
 });
 
 //添加节点按钮事件
@@ -255,13 +237,14 @@ $("#addSaveBtn").click(function(){
 			myarrs.push(eleDom.value);
 		}
 	});
+	
+	//添加数据到后台
 	$.ajax({
         url:"/deploycluster/addk8snodes/"+de,
         type: "GET",
         dataType:"json",
         success: function(data){
-//        	alert(data);
-        	var setcount=0;
+        	/*var setcount=0;
         	$.each(data,function(i,item){
         	    RoleParam="";
         	    
@@ -274,9 +257,26 @@ $("#addSaveBtn").click(function(){
         		setcount++;
         		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td><button class='del' value='"+item.hostId+"'>删除</button></td></tr>");
         		
-        	});
-        	
-        	//修改参数
+        	});*/
+        }  
+    });	
+	
+	//nodes节点显示
+	$.ajax({
+	    url:"/deploycluster/nodeslist?type=node",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	alert(data);
+	    	$.each(data,function(i,item){
+	    		var nodeRole="";
+	    		$.each(item.nodeRoleParams,function(m,n){
+	    			nodeRole+=m+";";
+	    		});
+	    		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td></td></tr>");
+	    	});
+	    	
+	    	//修改参数
         	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
         		$("#setting").html("");
 				var dialogValue=$( this ).attr('value');
@@ -314,9 +314,11 @@ $("#addSaveBtn").click(function(){
 				myarrs.splice($.inArray($(this).val(),myarrs),1);
 				
 			});
-
-        }  
-    });						
+	    	
+	    }
+	});
+	
+	
 });
 
 $("#nextStep").click(function(){
