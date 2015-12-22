@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,6 +14,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.ku8eye.Constants;
 import org.ku8eye.bean.deploy.InstallNode;
+import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +44,6 @@ public class Ku8InstallTool {
 			node.setIp(hosts[0]);
 			node.setRootPassword(rootPass);
 			masterNode = node;
-			//bug ...
-			template.getAllGlobParameters().get("install_quagga_router").setValue("true");
 			template.addNewNode(node);
 		} else {
 			System.out.println("install mutli nodes k8s env ....");
@@ -61,9 +61,9 @@ public class Ku8InstallTool {
 				template.addNewNode(node);
 			}
 		}
-		//设置master的参数
-		masterNode.setRoleParam(Ku8ClusterTemplate.NODE_ROLE_MASTER, Constants.k8sparam_cluster_docker0_ip_srange,
-				clusterDocker0Ip);
+		// 设置全局的参数
+		Map<String, InstallParam> globalParams = template.getAllGlobParameters();
+		globalParams.get(Constants.k8sparam_cluster_docker0_ip_srange).setValue(clusterDocker0Ip);
 		return template;
 	}
 
@@ -92,10 +92,10 @@ public class Ku8InstallTool {
 				break;
 			}
 		}
-		
+
 		AnsibleCallResult parseResult = AnsibleResultParser.parseResult(totalOutResults);
 		if (!caller.isFinished()) {
-			caller.shutdownCaller(caller.getCurProcess(),true);
+			caller.shutdownCaller(caller.getCurProcess(), true);
 		}
 		if (!caller.isNormalExit() && parseResult.isSuccess()) {
 			parseResult.setTaskResult("INIT", "INIT", false, caller.getErrorMsg());

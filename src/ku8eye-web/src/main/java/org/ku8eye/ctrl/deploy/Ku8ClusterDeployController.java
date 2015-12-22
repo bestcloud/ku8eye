@@ -201,10 +201,19 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
-	public List<InstallNode> getNodesList(ModelMap model) {
+	public List<InstallNode> getNodesList(ModelMap model, HttpServletRequest request) {
 		Ku8ClusterTemplate template = getCurTemplate(model);
-		List<InstallNode> Parameter = template.getNodes();
-		return Parameter;
+		List<InstallNode> nodes = template.getNodes();
+		if ("node".equals(request.getParameter("type"))) {
+			List<InstallNode> filterNodes = new LinkedList<InstallNode>();
+			for (InstallNode node : nodes) {
+				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_NODE)) {
+					filterNodes.add(node);
+				}
+			}
+			nodes=filterNodes;
+		}
+		return nodes;
 
 	}
 

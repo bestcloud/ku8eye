@@ -20,7 +20,7 @@ public class K8sAPIService {
 		for(Node node:nodeList.getItems())
 		{
 			System.out.println(node.getMetadata().getName());
-			nodeIps.add(node.getMetadata().getName());
+			nodeIps.add(node.getSpec().toString());
 		}
 		return nodeIps;
 		
