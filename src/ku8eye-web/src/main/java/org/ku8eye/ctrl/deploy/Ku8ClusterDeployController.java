@@ -156,13 +156,13 @@ public class Ku8ClusterDeployController {
 
 	@RequestMapping(value = "/deploycluster/ansible-final-result-report/{type}", method = RequestMethod.GET)
 	public Object getAnsibleFinalResult(ModelMap model, @PathVariable("type") String type) {
-		 if (true) {
-		 if ("sumary".equals(type)) {
-		 return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
-		 } else {
-		 return DemoDataUtil.getFakeAnsibleResult();
-		 }
-		 }
+//		 if (true) {
+//		 if ("sumary".equals(type)) {
+//		 return DemoDataUtil.getFakeAnsibleResult().getNodeTotalSumaryMap();
+//		 } else {
+//		 return DemoDataUtil.getFakeAnsibleResult();
+//		 }
+//		 }
 
 		Ku8ClusterTemplate template = getCurTemplate(model);
 		AnsibleCallResult result = template.fetchLastAnsibleResult();
