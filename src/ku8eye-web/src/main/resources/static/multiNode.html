@@ -187,8 +187,6 @@ $.ajax({
     }
 });
 
-var myarrs=new Array();
-
 //选择节点按钮事件
 $("#selectSaveBtn").click(function(){
 		
@@ -204,8 +202,6 @@ $("#selectSaveBtn").click(function(){
 		
 		$("#multiIp").html(nodeip);
     	$("#multiName").html(nodename);
-    	myarrs.splice(0,myarrs.length);
-    	myarrs.push(nodeid);
     	
     	//Master节点数据
     	$.ajax({
@@ -224,18 +220,9 @@ $("#selectSaveBtn").click(function(){
 //添加节点按钮事件
 $("#addSaveBtn").click(function(){
 	var de="";
-	var flag=false;
 	$(":checkbox:checked").closest("#example2 tr").find(":checkbox").each(function(i, eleDom) {
 		// 遍历每个被选中的复选框所在行的文本框的值,如果当前页面包含这个id则不添加
-		for(var s=0;s<myarrs.length;s++){
-			if(myarrs[s]==eleDom.value){
-				flag=true;
-			}
-		}
-		if(flag==false){
-			de += eleDom.value + ",";
-			myarrs.push(eleDom.value);
-		}
+		de += eleDom.value + ",";
 	});
 	
 	//添加数据到后台
@@ -244,81 +231,64 @@ $("#addSaveBtn").click(function(){
         type: "GET",
         dataType:"json",
         success: function(data){
-        	/*var setcount=0;
-        	$.each(data,function(i,item){
-        	    RoleParam="";
-        	    
-        		$.each(item.nodeRoleParams,function(m,n){
-        			
-        			$.each(n,function(m1,n1){
-        				RoleParam+=n1.name+"="+n1.value+";";
-        			});
-        		});
-        		setcount++;
-        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td><button class='del' value='"+item.hostId+"'>删除</button></td></tr>");
-        		
-        	});*/
+        	setTimeout(addData, 500);
         }  
     });	
-	
 	//nodes节点显示
-	$.ajax({
-	    url:"/deploycluster/nodeslist?type=node",
-	    type: "GET",
-	    dataType:"json",
-	    success: function(data){
-	    	
-	    	$.each(data,function(i,item){
-	    		var nodeRole="";
-	    		$.each(item.nodeRoleParams,function(m,n){
-	    			nodeRole+=m+";";
-	    		});
-	    		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td></td></tr>");
-	    	});
-	    	
-	    	//修改参数
-        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
-        		$("#setting").html("");
-				var dialogValue=$( this ).attr('value');
-				var dialogip=$( this ).attr('c');
-				var dialogpasswd=$( this ).attr('passwd');
-				var modifyId=$( this ).attr('count');
-				var hostName=$( this ).attr('host');
-				var arrname=dialogValue.split(";");
-				var i;
-				var li="";
-				for(i=0;i<arrname.length-1;i++){
-					var arrValue=arrname[i].split("=");
-					li +=[
-					      '<div class="form-group">',
-					      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
-					      '<div class="col-sm-10">',
-					      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
-					      '</div>',
-					      '</div>'
-					      ].join('');
-				}
-				$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
-				
-				$("#setSaveBtn").click(function(){
-					$(this).unbind('click');
-					$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+	function addData(){
+		$.ajax({
+		    url:"/deploycluster/nodeslist?type=node",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	var li="";
+		    	$.each(data,function(i,item){
+		    		li +="<tr><td>"+item.ip+"</td><td><Button>删除</Button></td></tr>";
+		    	});
+		    	$("#multiNodes").html(li);
+		    	//修改参数
+	        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
+	        		$("#setting").html("");
+					var dialogValue=$( this ).attr('value');
+					var dialogip=$( this ).attr('c');
+					var dialogpasswd=$( this ).attr('passwd');
+					var modifyId=$( this ).attr('count');
+					var hostName=$( this ).attr('host');
+					var arrname=dialogValue.split(";");
+					var i;
+					var li="";
+					for(i=0;i<arrname.length-1;i++){
+						var arrValue=arrname[i].split("=");
+						li +=[
+						      '<div class="form-group">',
+						      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
+						      '<div class="col-sm-10">',
+						      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
+						      '</div>',
+						      '</div>'
+						      ].join('');
+					}
+					$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
+					
+					$("#setSaveBtn").click(function(){
+						$(this).unbind('click');
+						$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+					});
 				});
-			});
 
-        	//删除行
-			$( '#multiNodes' ).find( 'tr .del' ).click(function() {
-				$(this).unbind('click');
-				var j=this.parentNode.parentNode.rowIndex;
-				document.getElementById('multiNodes').deleteRow(j);
-				myarrs.splice($.inArray($(this).val(),myarrs),1);
-				
-			});
-	    	
-	    }
-	});
-	
-	
+	        	//删除行
+				$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+					$(this).unbind('click');
+					var j=this.parentNode.parentNode.rowIndex;
+					document.getElementById('multiNodes').deleteRow(j);
+					myarrs.splice($.inArray($(this).val(),myarrs),1);
+					
+				});
+		    	
+		    }
+		});
+	}
+
 });
 
 $("#nextStep").click(function(){
