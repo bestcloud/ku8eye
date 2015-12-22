@@ -132,12 +132,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} else if (NODE_ROLE_MASTER.equalsIgnoreCase(role)) {
 			list.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
 			list.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
-			list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "10.0.0.1/16",
-					"Kubernetes集群里的Node节点所用IP地址范围"));
-			list.add(new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16",
-					"Kubernetes Services可分配IP地址池"));
-			list.add(new InstallParam("apiserver_service_node_port_range", "1000-5000",
-					"NodePort 类型的 Service 可用端口范围，含两端"));
 			list.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
 		} else if (NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
 
@@ -301,7 +295,12 @@ public class Ku8ClusterTemplate implements Cloneable {
 		globalParams = new HashMap<String, List<InstallParam>>();
 		// def
 		List<InstallParam> def_list = new ArrayList<InstallParam>();
-
+		def_list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "10.0.0.1/16",
+				"Kubernetes集群里的Node节点所用IP地址范围"));
+		def_list.add(
+				new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16", "Kubernetes Services可分配IP地址池"));
+		def_list.add(
+				new InstallParam("apiserver_service_node_port_range", "1000-5000", "NodePort 类型的 Service 可用端口范围，含两端"));
 		def_list.add(new InstallParam("install_quagga_router", "false", "是否安装Quagga路由"));
 		def_list.add(new InstallParam("quagga_router_image_id", "f96cfe685533", "quagga router 镜像ID"));
 		def_list.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router",

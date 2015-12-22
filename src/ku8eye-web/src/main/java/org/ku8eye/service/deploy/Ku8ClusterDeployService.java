@@ -12,6 +12,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 import org.ku8eye.Constants;
 import org.ku8eye.bean.deploy.InstallNode;
+import org.ku8eye.bean.deploy.InstallParam;
 import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.domain.Ku8sSrvEndpoint;
 import org.ku8eye.mapping.Ku8sSrvEndpointMapper;
@@ -73,6 +74,7 @@ public class Ku8ClusterDeployService {
 
 	private void processTemplateAutoParams(Ku8ClusterTemplate template) {
 		// etcd param
+		 Map<String, InstallParam> allGlobalParams=template.getAllGlobParameters();
 		HashMap<String, String> autoParams = template.getAutoComputedGlobalParams();
 		InstallNode etcdNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_ETCD);
 		String ectdIP = etcdNode.getIp();
@@ -86,7 +88,7 @@ public class Ku8ClusterDeployService {
 		InstallNode masterNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_MASTER);
 		String masterIp = masterNode.getIp();
 		String apiserver_insecure_port = masterNode.getNodeParam("apiserver_insecure_port");
-		String clusterDocker0IPAdd = masterNode.getNodeParam(Constants.k8sparam_cluster_docker0_ip_srange);
+		String clusterDocker0IPAdd = allGlobalParams.get(Constants.k8sparam_cluster_docker0_ip_srange).getValue();
 		String kube_master_url = "http://" + masterIp + ":" + apiserver_insecure_port;
 		// update global param
 		autoParams.put("kube_master_url", kube_master_url);
@@ -95,10 +97,6 @@ public class Ku8ClusterDeployService {
 
 		autoParams.put("apiserver_insecure_port", apiserver_insecure_port);
 		autoParams.put(Constants.k8sparam_cluster_docker0_ip_srange, clusterDocker0IPAdd);
-		autoParams.put("apiserver_service_cluster_ip_range",
-				masterNode.getNodeParam("apiserver_service_cluster_ip_range"));
-		autoParams.put("apiserver_service_node_port_range",
-				masterNode.getNodeParam("apiserver_service_node_port_range"));
 		autoParams.put("kube_node_sync_period", masterNode.getNodeParam("kube_node_sync_period"));
 
 		// docker registry
