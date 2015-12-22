@@ -29,17 +29,6 @@ public class TestAnsibleResultParser {
 		Assert.assertEquals(result.getNodeTotalSumaryMap().get("192.168.18.133"),new AnsibleNodeSum(107,92,0,0));
 	}
 
-	@Test
-	public void testAllInOneParseTest2() throws UnsupportedEncodingException {
-		InputStream inStream = this.getClass().getClassLoader().getResourceAsStream("ansible-result2.txt");
-		List<String> fileLines =  DemoDataUtil.readFromStream(inStream);
-		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
-		System.out.println("____________________________Report______________________________");
-		System.out.println(result.printInfo());
-		Assert.assertEquals(result.isSuccess(),false);
-		Map<String, Map<String, AnsibleTaskResult>>  hostResultMap=result.getHostTaskResultMap();
-		Assert.assertEquals(hostResultMap.size(),1);
-	}
 	
 	@Test
 	public void testAllInOneParseTest3() throws UnsupportedEncodingException {

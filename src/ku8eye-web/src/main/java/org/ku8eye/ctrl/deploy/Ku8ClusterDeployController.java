@@ -90,25 +90,25 @@ public class Ku8ClusterDeployController {
 	// }
 
 	@RequestMapping(value = "/deploycluster/fetch-ansilbe-result", method = RequestMethod.GET)
-	public InstallOutputBean fetchAnsilbeResult(ModelMap model,
-			HttpServletRequest request) {
-//		System.out.println("fetch ansible result ");
-//		if (true) {
-//
-//			Map<String, InstallStepOutInfo> stepInfos = new LinkedHashMap<String, InstallStepOutInfo>();
-//			if(System.currentTimeMillis()%2==1)
-//			{
-//			stepInfos.put("ssh-key-task", new InstallStepOutInfo(
-//					"ssh-key-task", true, DemoDataUtil.getFakeAnsibleResult(),
-//					DemoDataUtil.getFakeAnsibleOutput()));
-//			}else
-//			{
-//				System.out.println("not add data");
-//			}
-//			InstallOutputBean out = new InstallOutputBean(stepInfos, false,
-//					true);
-//			return out;
-//		}
+	public InstallOutputBean fetchAnsilbeResult(ModelMap model, HttpServletRequest request) {
+		// System.out.println("fetch ansible result ");
+		// if (true) {
+		//
+		// Map<String, InstallStepOutInfo> stepInfos = new LinkedHashMap<String,
+		// InstallStepOutInfo>();
+		// if(System.currentTimeMillis()%2==1)
+		// {
+		// stepInfos.put("ssh-key-task", new InstallStepOutInfo(
+		// "ssh-key-task", true, DemoDataUtil.getFakeAnsibleResult(),
+		// DemoDataUtil.getFakeAnsibleOutput()));
+		// }else
+		// {
+		// System.out.println("not add data");
+		// }
+		// InstallOutputBean out = new InstallOutputBean(stepInfos, false,
+		// true);
+		// return out;
+		// }
 		Ku8ClusterTemplate curTemplate = this.getCurTemplate(model);
 		ProcessCaller curCaller = deployService.getProcessCaller();
 		boolean finished = curCaller.isFinished();
@@ -174,6 +174,16 @@ public class Ku8ClusterDeployController {
 
 	}
 
+	@RequestMapping(value = "/deploycluster/write-cluster-info2db", method = RequestMethod.GET)
+	public String writeClusterInfo2db(ModelMap model) throws Exception {
+		if (this.deployService.addClusterRecordToDB(this.getCurTemplate(model))) {
+			return "SUCCESS:";
+		} else {
+			return "FAILED:";
+		}
+
+	}
+
 	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
 	public Ku8ClusterTemplate selectTemplate(@PathVariable("id") int templateId, ModelMap model) {
 		Ku8ClusterTemplate template = deployService.getAndCloneTemplate(templateId);
@@ -191,10 +201,19 @@ public class Ku8ClusterDeployController {
 	}
 
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
-	public List<InstallNode> getNodesList(ModelMap model) {
+	public List<InstallNode> getNodesList(ModelMap model, HttpServletRequest request) {
 		Ku8ClusterTemplate template = getCurTemplate(model);
-		List<InstallNode> Parameter = template.getNodes();
-		return Parameter;
+		List<InstallNode> nodes = template.getNodes();
+		if ("node".equals(request.getParameter("type"))) {
+			List<InstallNode> filterNodes = new LinkedList<InstallNode>();
+			for (InstallNode node : nodes) {
+				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_NODE)) {
+					filterNodes.add(node);
+				}
+			}
+			nodes=filterNodes;
+		}
+		return nodes;
 
 	}
 
