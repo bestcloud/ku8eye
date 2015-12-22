@@ -178,6 +178,7 @@ public class Ku8ClusterDeployService {
 				String sql = "update host  set CLUSTER_ID =" + clusterId + ",USAGE_FLAG=" + Constants.HOST_USAGED
 						+ ",LAST_UPDATED= now()  where ID=" + hostId;
 				stmt.executeUpdate(sql);
+				stmt.executeUpdate("delete from ku8s_srv_endpoint where CLUSTER_ID= "+clusterId);
 			}
 			stmt.close();
 			session.commit();
