@@ -114,6 +114,16 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return node.clone();
 	}
 
+	public List<InstallNode> getAllMinionNodes() {
+		List<InstallNode> filterNodes = new LinkedList<InstallNode>();
+		for (InstallNode node : nodes) {
+			if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_NODE)) {
+				filterNodes.add(node);
+			}
+		}
+		return filterNodes;
+	}
+
 	public InstallNode getStandardK8sNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
@@ -149,6 +159,11 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	public void addNewNode(InstallNode node) {
+		for (InstallNode existNode : this.nodes) {
+			if (existNode.getHostId() == node.getHostId() || existNode.getIp().equals(node.getIp())) {
+				return;
+			}
+		}
 		nodes.add(node);
 
 	}

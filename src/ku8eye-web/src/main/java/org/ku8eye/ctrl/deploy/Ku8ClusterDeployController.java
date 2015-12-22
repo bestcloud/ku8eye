@@ -203,18 +203,11 @@ public class Ku8ClusterDeployController {
 	@RequestMapping(value = "/deploycluster/nodeslist", method = RequestMethod.GET)
 	public List<InstallNode> getNodesList(ModelMap model, HttpServletRequest request) {
 		Ku8ClusterTemplate template = getCurTemplate(model);
-		List<InstallNode> nodes = template.getNodes();
 		if ("node".equals(request.getParameter("type"))) {
-			List<InstallNode> filterNodes = new LinkedList<InstallNode>();
-			for (InstallNode node : nodes) {
-				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_NODE)) {
-					filterNodes.add(node);
-				}
-			}
-			nodes=filterNodes;
+			return template.getAllMinionNodes();
 		}
+		List<InstallNode> nodes = template.getNodes();
 		return nodes;
-
 	}
 
 	@RequestMapping(value = "/deploycluster/getnodemodal/{status}")
@@ -246,7 +239,6 @@ public class Ku8ClusterDeployController {
 	public List<InstallNode> addk8snodes(@PathVariable("id") String id, ModelMap model) {
 		// session中获取当前模板对象
 		Ku8ClusterTemplate template = getCurTemplate(model);
-		List<InstallNode> nodes = new LinkedList<InstallNode>();
 		String strList[] = id.split(",");
 		for (String s : strList) {
 			if (!s.isEmpty()) {
@@ -258,10 +250,9 @@ public class Ku8ClusterDeployController {
 				node.setIp(pros.getIp());
 				node.setRootPassword(pros.getRootPasswd());
 				template.addNewNode(node);
-				nodes.add(node);
 			}
 		}
-		return nodes;
+		return template.getAllMinionNodes();
 	}
 
 	@RequestMapping(value = "/deploycluster/modifytemplate/{id}", method = RequestMethod.GET)
