@@ -110,7 +110,7 @@ public class Ku8ClusterDeployService {
 
 		// update global param
 		autoParams.put("docker_registry_server_name", docker_registry_server_name);
-
+		autoParams.put("docker_registry_port", dockerRegNode.getNodeParam("docker_registry_port"));
 		autoParams.put("docker_registry_server_ip", dockerRegIP);
 		autoParams.put("docker_registry_root_dir", dockerRegNode.getNodeParam("docker_registry_root_dir"));
 		autoParams.put("docker_registry_image_id", dockerRegNode.getNodeParam("docker_registry_image_id"));
@@ -163,6 +163,7 @@ public class Ku8ClusterDeployService {
 					srvEndpnt.setServiceType(Constants.K8S_TYPE_ETCD_SERVICE);
 					srvEndpnt.setServiceStatus(Constants.K8S_SERICE_STATUS_OK);
 					srvEndpnt.setNote("Auto created in install process ");
+					srvEndpnt.setLastUpdated(new Date());
 					srvEndPntMapper.insert(srvEndpnt);
 				}
 				if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_REGISTRY)) {
@@ -173,6 +174,7 @@ public class Ku8ClusterDeployService {
 					srvEndpnt.setServiceType(Constants.K8S_TYPE_REGISTRY_SERVICE);
 					srvEndpnt.setServiceStatus(Constants.K8S_SERICE_STATUS_OK);
 					srvEndpnt.setNote("Auto created in install process ");
+					srvEndpnt.setLastUpdated(new Date());
 					srvEndPntMapper.insert(srvEndpnt);
 				}
 				String sql = "update host  set CLUSTER_ID =" + clusterId + ",USAGE_FLAG=" + Constants.HOST_USAGED
