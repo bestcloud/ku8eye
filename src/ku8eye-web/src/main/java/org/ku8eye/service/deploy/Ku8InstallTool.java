@@ -57,6 +57,7 @@ public class Ku8InstallTool {
 			for (int i = 1; i < hosts.length; i++) {
 				node = template.getStandardK8sNode();
 				node.setIp(hosts[i]);
+				node.setHostId(i);
 				node.setRootPassword(rootPass);
 				template.addNewNode(node);
 			}
