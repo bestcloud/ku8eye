@@ -11,13 +11,13 @@
 					<thead>
 						<tr>
 							<th style="width:60%;">
-							<div style="padding-bottom: 5px;height:600px;color:#E9C340;background-color:#000000;OVERFLOW-Y: scroll">
+							<div style="padding-bottom: 5px;height:600px;color:#E9C340;background-color:#000000;OVERFLOW-Y: scroll" id="scroll1">
 								<ul id="installData" style="list-style-type:none;">
 									
 								</ul>
 							</div>
 							</th>
-							<th><div style="padding-bottom: 5px;height:600px;background-color:#ffffff;OVERFLOW-Y: scroll">
+							<th><div style="padding-bottom: 5px;height:600px;background-color:#ffffff;OVERFLOW-Y: scroll" id="scroll2">
 								<span id="installPercent" style="font-size:17px;padding-left:20px;">安装进度:</span>
 								<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 90%; height: 25px; border: solid 1px #ccc;">
 								<div id="processbar" style="background-color: #90EE90; width: 0px; height: 24px;"></div>
@@ -124,10 +124,13 @@ function install(){
 	    		});
 	    		
 	    	});
-
+	    	
 	    	$("#installData").html(_data);
 			$("#installresult").html(_result);
-	    	
+			
+			$('#scroll1').scrollTop( $('#scroll1')[0].scrollHeight );
+			$('#scroll2').scrollTop( $('#scroll2')[0].scrollHeight );
+			
 	    	if(data.finished==true){
 	    		$("#installPercent").html("安装进度:100%");
 	    		document.getElementById("processbar").style.width = (100)+ "%";
