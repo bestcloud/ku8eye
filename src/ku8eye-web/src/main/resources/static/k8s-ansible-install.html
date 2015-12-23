@@ -61,7 +61,6 @@
 						<thead>
 						<tr>
 							<th colspan="2">节点</th>
-						
 							<th>安装汇总</th>
 						</tr>
 						</thead>
@@ -72,9 +71,10 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
+				<span style="color:#D81E12;float:left;" id="clusterSpan"></span>
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">保存集群
 				</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">验证集群
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
 				</button>
 			</div>
 		</div>
@@ -100,11 +100,12 @@ function install(){
     		var _result="";
     		var count=0;
 	    	$.each(data.stepResults,function(i,item){
-	    		
 	    		_data +="<li style='color:#ffffff;font-size:18px;'>................Job  Begin : "+i+"................</li>";
 	    		_result +="<li style='weight:700;font-size:18px;'>...........Job : "+i+"...........</li>";
+	    		count++;
+	    		$("#installPercent").html("安装进度:"+(10*count)+ "%");
+	    		document.getElementById("processbar").style.width = (10*count)+ "%";
 	    		$.each(item,function(c,d){
-	    			count=0;
 	    			if(c=="ansibleRowDatas"){
 	    				//左边输出
 	    	    		$.each(d,function(m,n){
@@ -114,6 +115,8 @@ function install(){
 	    			if(c=="ansibleOutSummary"){
 	    				//右边输出
 	    				count++;
+	    				$("#installPercent").html("安装进度:"+(10*count)+ "%");
+	    				document.getElementById("processbar").style.width = (10*count)+ "%";
 	    				$.each(d,function(a,b){
 	    					_result += "<li>"+b+"</li>";
 	    	    		});
@@ -121,17 +124,13 @@ function install(){
 	    		});
 	    		
 	    	});
-	   		
-	   		if(count==3){
-	   			$("#installPercent").html("安装进度:100%");
-	   		}else{
-	   			$("#installPercent").html("安装进度:"+(20*count)+ "%");
-	   		}
-	    	document.getElementById("processbar").style.width = (30*count)+ "%";
+
 	    	$("#installData").html(_data);
 			$("#installresult").html(_result);
 	    	
 	    	if(data.finished==true){
+	    		$("#installPercent").html("安装进度:100%");
+	    		document.getElementById("processbar").style.width = (100)+ "%";
 	    		if(data.success==true){
 	    			installResult("success");
 	    		}else{
@@ -151,12 +150,10 @@ function install(){
 function installResult(_type){
 	if(_type=="success"){
 		$("#myModalLabel").html("安装成功");
-		$("#installFail").hide();
 		$("#installSucc").show();
 		$("#resultTitle").html("安装成功");
 	}else{
 		$("#myModalLabel").html("安装失败");
-		$("#installFail").show();
 		$("#installSucc").hide();
 		$("#resultTitle").html("安装失败");
 	}
@@ -177,7 +174,26 @@ function installResult(_type){
 	    	});	
 	    }
 	});
+	
+	$("#installSucc").click(function(){
+		$.ajax({
+		    url:"/deploycluster/write-cluster-info2db",
+		    type: "GET",
+		    dataType:"text",
+		    success: function(data){
+		    	if(data=="SUCCESS:"){
+		    		$(".content").load("cluster_main.html");
+		    	}else{
+		    		$("#clusterSpan").html("保存数据失败！！！！");
+		    	}
+		    }
+		});
+	});
+	
 }
+
+
+
 
 
 </script>

@@ -17,7 +17,7 @@
 					<span>主机名:</span>
 					<span id="multiName"></span>
 				</div>
-				<table id="multiMaster" class="table table-bordered table-hover"
+				<!-- <table id="multiMaster" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
 						<tr>
@@ -27,7 +27,7 @@
 							<th>描述</th>
 						</tr>
 					</thead>
-				</table>
+				</table> -->
 				
 				<div style="padding: 10px 0px;">
 					<span>Kubernetes nodes&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -39,7 +39,6 @@
 					<thead>
 						<tr>
 							<th>节点</th>
-							<th>节点参数</th>
 							<th>设置</th>
 						</tr>
 					</thead>
@@ -148,13 +147,15 @@ $("#addNode").click(function(){
 	$("#addSaveBtn").show();
 	selectOrAddNode("add");
 });
+
+
 function selectOrAddNode(_type){
 	$('#example2').DataTable({
 	    "ajax":"/addlist/1",
 	    "columns": [
 	    			{ "data": "id", render: function ( data, type, row ) {
 	            		// Combine the first and last names into a single table field
-	            			return _type=="select"?"<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>":"<input type='checkbox' value='"+data+"' class='chkbox' name='child' checked='checked'/>";
+	            			return _type=="select"?"<input type='radio' value='"+data+"' class='chkbox' name='child' checked='checked'/>":"<input type='checkbox' value='"+data+"' class='chkbox' name='child'/>";
 	        		} },
 	    			{ "data": "hostName" },
 	    			{ "data": "ip" },
@@ -202,8 +203,8 @@ $("#selectSaveBtn").click(function(){
 		$("#multiIp").html(nodeip);
     	$("#multiName").html(nodename);
     	
-    	//master的数据
-		$.ajax({
+    	//Master节点数据
+    	$.ajax({
 	        url:"/deploycluster/getnodemodal/multiNode",
 	        data:{
 	        	'addnode':_addnode
@@ -211,119 +212,89 @@ $("#selectSaveBtn").click(function(){
 	        type: "GET",
 	        dataType:"json",
 	        success: function(data){
-	        	//alert("返回的数据"+data);
-				//Master的值
-				var mastertable="";
-				$.each(data.nodeRoleParams,function(i,item){	
-					var masterName="",mastervalue="",masterDescribe="";
-	        		$.each(item,function(m,n){
-	        		    masterName+=n.name+";\n";
-	        			mastervalue+=n.value+";\n";
-	        			masterDescribe+=n.describe+";\n";
-	        		});
-	        		mastertable+=[
-	        			          '<tr>',
-	        			          '<td>'+i+'</td>',
-	        			          '<td>'+masterName+'</td>',
-	        			          '<td>'+mastervalue+'</td>',
-	        			          '<td>'+masterDescribe+'</td>',
-	        			          '</tr>'
-	        			          ].join('');
-	        	});
-				$("#multiMaster").html("<tr><th>角色</th><th>参数名</th><th>参数值</th><th>描述</th></tr>");
-				$("#multiMaster").append(mastertable);
+				
 	        }
 	    });
-
-		//nodes的数据
-    	$.ajax({
-	        url:"/deploycluster/getnodemodal/multiaddNode",
-	        data:{
-	        	'addnode':_addnode
-	        },
-	        type: "GET",
-	        dataType:"json",
-	        success: function(data){
-//	        	alert("返回的数据"+data);
-				//nodes的值
-				var RoleParam="";
-				$.each(data.nodeRoleParams,function(a,b){ 
-					$.each(b,function(c,d){
-						RoleParam+=d.name+"="+d.value+";";
-					});
-	        		$("#multiNodes").append("<tr><td>"+nodeip+"</td><td id='mulnodes'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4'   host='"+root_passwd+"' count='mulnodes' passwd='"+root_passwd+"'   c='"+nodeip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
-	        	});
-	        }
-	    });
-
 });
 
 //添加节点按钮事件
 $("#addSaveBtn").click(function(){
 	var de="";
 	$(":checkbox:checked").closest("#example2 tr").find(":checkbox").each(function(i, eleDom) {
-		// 遍历每个被选中的复选框所在行的文本框的值
+		// 遍历每个被选中的复选框所在行的文本框的值,如果当前页面包含这个id则不添加
 		de += eleDom.value + ",";
 	});
+	
+	//添加数据到后台
 	$.ajax({
         url:"/deploycluster/addk8snodes/"+de,
         type: "GET",
         dataType:"json",
-        success: function(data){
-//        	alert(data);
-        	var setcount=0;
-        	$.each(data,function(i,item){
-        	    RoleParam="";
-        	    
-        		$.each(item.nodeRoleParams,function(m,n){
-        			
-        			$.each(n,function(m1,n1){
-        				RoleParam+=n1.name+"="+n1.value+";";
-        			});
-        		});
-        		setcount++;
-        		$("#multiNodes").append("<tr><td>"+item.ip+"</td><td id='set"+setcount+"'>"+RoleParam+"</td><td><button data-toggle='modal' data-target='#myModal4' host='"+item.hostName+"' count='set"+setcount+"' passwd='"+item.rootPassword+"' c='"+item.ip+"' value='"+RoleParam+"' class='set'>设置</button>&nbsp;&nbsp;&nbsp;&nbsp;<button class='del'>删除</button></td></tr>");
-        		
-        	});
-        	
-        	//修改参数
-        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
-        		$("#setting").html("");
-				var dialogValue=$( this ).attr('value');
-				var dialogip=$( this ).attr('c');
-				var dialogpasswd=$( this ).attr('passwd');
-				var modifyId=$( this ).attr('count');
-				var hostName=$( this ).attr('host');
-				var arrname=dialogValue.split(";");
-				var i;
-				var li="";
-				for(i=0;i<arrname.length-1;i++){
-					var arrValue=arrname[i].split("=");
-					li +=[
-					      '<div class="form-group">',
-					      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
-					      '<div class="col-sm-10">',
-					      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
-					      '</div>',
-					      '</div>'
-					      ].join('');
-				}
-				$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
-				
-				$("#setSaveBtn").click(function(){
-					$(this).unbind('click');
-					$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
-				});
-			});
-
-        	//删除行
-			$( '#multiNodes' ).find( 'tr .del' ).click(function() {
-				var j=this.parentNode.parentNode.rowIndex;
-				document.getElementById('multiNodes').deleteRow(j);
-			});
-
+        success: function(data){	
         }  
-    });						
+    });	
+	//nodes节点显示
+	setTimeout(addData, 500);
+	function addData(){
+		$.ajax({
+		    url:"/deploycluster/nodeslist?type=node",
+		    type: "GET",
+		    dataType:"json",
+		    success: function(data){
+		    	var li="";
+		    	$.each(data,function(i,item){
+		    		li +="<tr><td>"+item.ip+"</td><td><Button class='del' value='"+item.hostId+"'>删除</Button></td></tr>";
+		    	});
+		    	$("#multiNodes").html("<tr><td>节点</td><td>设置</td></tr>"+li);
+		    	//修改参数
+	        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
+	        		$("#setting").html("");
+					var dialogValue=$( this ).attr('value');
+					var dialogip=$( this ).attr('c');
+					var dialogpasswd=$( this ).attr('passwd');
+					var modifyId=$( this ).attr('count');
+					var hostName=$( this ).attr('host');
+					var arrname=dialogValue.split(";");
+					var i;
+					var li="";
+					for(i=0;i<arrname.length-1;i++){
+						var arrValue=arrname[i].split("=");
+						li +=[
+						      '<div class="form-group">',
+						      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
+						      '<div class="col-sm-10">',
+						      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
+						      '</div>',
+						      '</div>'
+						      ].join('');
+					}
+					$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
+					
+					$("#setSaveBtn").click(function(){
+						$(this).unbind('click');
+						$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+					});
+				});
+
+	        	//删除行
+				$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+					var deleteId=$(this).val();
+					$.ajax({
+				        url:"/deploycluster/deletenode/"+deleteId,
+				        type: "GET",
+				        dataType:"json",
+				        success: function(data){
+				  
+				        }  
+				    });	
+					setTimeout(addData, 500);
+					
+				});
+		    	
+		    }
+		});
+	}
+
 });
 
 $("#nextStep").click(function(){

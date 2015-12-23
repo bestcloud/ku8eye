@@ -1,0 +1,25 @@
+PLAY [docker-registry] ******************************************************** 
+
+GATHERING FACTS *************************************************************** 
+ok: [192.168.18.133]
+
+TASK: [docker-registry | tag registry image] ********************************** 
+skipping: [192.168.18.133]
+
+TASK: [docker-registry | check if registry container exists] ****************** 
+failed: [192.168.18.133] => {"changed": true, "cmd": "docker ps | grep registry", "delta": "0:00:00.496356", "end": "2015-12-10 00:09:43.624146", "rc": 1, "start": "2015-12-10 00:09:43.127790", "warnings": []}
+...ignoring
+
+TASK: [docker-registry | registry container doesn't exist, create running script] *** 
+ok: [192.168.18.133]
+
+TASK: [docker-registry | registry container doesn't exist, start docker registry container] *** 
+failed: [192.168.18.133] => {"changed": true, "cmd": "/root/start_docker_registry.sh", "delta": "0:00:00.050294", "end": "2015-12-10 00:09:43.969859", "rc": 1, "start": "2015-12-10 00:09:43.919565", "warnings": []}
+stderr: Error response from daemon: Conflict. The name "registry" is already in use by container e05032d47162. You have to remove (or rename) that container to be able to reuse that name.
+
+FATAL: all hosts have already failed -- aborting
+
+PLAY RECAP ******************************************************************** 
+           to retry, use: --limit @/root/setup.retry
+
+192.168.18.133             : ok=15   changed=7    unreachable=0    failed=1  
