@@ -96,24 +96,19 @@
 
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
-	var determine=0;
 	$.ajax({
-	    url:"/deploycluster/nodeslist",
+	    url:"/deploycluster/getnodemodal/modal",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	$.each(data,function(i,item){
-	    		determine++;
+	    	$("#back").click(function(){
+	    		if(data.id==0){
+	    			$(".content").load("singleNode.html");
+	    		}else{
+	    			$(".content").load("multiNode.html");
+	    		}
 	    	});
-	    	
 	    }
-	});
-	$("#back").click(function(){
-		if(determine==1){
-			$(".content").load("singleNode.html");
-		}else{
-			$(".content").load("multiNode.html");
-		}
 	});
 	
 	$("#errorInformation").hide();
