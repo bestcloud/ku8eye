@@ -88,6 +88,9 @@
 	</div>
 </div>
 
+<div class="modal fade" id="serModal" tabindex="-1" role="dialog" aria-labelledby="serModalLabel">
+</div>
+
 
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
@@ -100,20 +103,13 @@
         			{ "data": "version" },
         			{ "data": "k8sVersion" },
 					{ "defaultContent": "<button class='build'>Build</button>&nbsp;<button class='view'>View</button>"}
-        		],
-       		"buttons": [
-       		          {
-       		              text: 'Reload',
-       		              action: function ( e, dt, node, config ) {
-       		                  dt.ajax.reload();
-       		              }
-       		          }
-       		      ]
+        		]
     });
     
 	$('#appTable tbody').on( 'click', 'button.build', function () {
 		var data = table.row($(this).parents('tr')).data();
-        createProject();
+		$('#serModal').load('build_project.html');
+        $('#serModal').modal('toggle');
     } );
 	
 	$('#appTable tbody').on( 'click', 'button.view', function () {

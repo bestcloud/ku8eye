@@ -6,11 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.ku8eye.bean.GridData;
-import org.ku8eye.bean.deploy.Ku8ClusterTemplate;
 import org.ku8eye.bean.project.Project;
-import org.ku8eye.ctrl.deploy.Ku8ClusterDeployController;
 import org.ku8eye.domain.Ku8Project;
-import org.ku8eye.domain.Tenant;
 import org.ku8eye.domain.User;
 import org.ku8eye.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +50,8 @@ public class ProjectController {
 			@RequestParam("name") String name,
 			@RequestParam("version") String version,
 			@RequestParam("k8sVersion") String k8sVersion,
-			@RequestParam("note") String note,ModelMap model) {
+			@RequestParam("note") String note,
+			ModelMap model) {
 
 		User user = (User) model.get("user");
 		
