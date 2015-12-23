@@ -52,7 +52,6 @@
 		              <div class="box-body">
 		                <div class="form-group">
 		                  <label for="hostName" class="col-sm-2 control-label">Host Name</label>
-		
 		                  <div class="col-sm-10">
 		                    <input type="text" class="form-control" id="hostName" >
 		                  </div>
@@ -70,9 +69,21 @@
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="usage" class="col-sm-2 control-label">Usage</label>
+		                  <label for="cores" class="col-sm-2 control-label">Cores</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="form-control" id="usage"  >
+		                    <input type="text" class="form-control" id="cores"  >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="memory" class="col-sm-2 control-label">Memory</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="memory"  >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="location" class="col-sm-2 control-label">Location</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="form-control" id="location"  >
 		                  </div>
 		                </div>
 		                
@@ -83,11 +94,10 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">
-					关<span style="padding-left: 12px" />闭
+				<span style="float:left;" id="addResult"></span>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
 				</button>
-				<button type="button" class="btn btn-primary">
-					保<span style="padding-left: 12px" />存
+				<button type="button" class="btn btn-primary" id="saveHost">保<span style="padding-left: 12px" />存
 				</button>
 			</div>
 		</div>
@@ -98,25 +108,134 @@
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
 	$(document).ajaxStart(function() { Pace.restart(); });
-    $('#example1').DataTable({
-        "ajax":"/hostlist/1",
-        "columns": [
-        			{ "data": "id" },
-        			{ "data": "hostName" },
-        			{ "data": "ip" },
-        			{ "data": "cores" },
-        			{ "data": "memory" },
-        			{ "data": "sshLogin" },
-        			{ "data": "usageFlag" },
-        			{ "data": "location" }
-	       		],
-       		"buttons": [
-       		          {
-       		              text: 'Reload',
-       		              action: function ( e, dt, node, config ) {
-       		                  dt.ajax.reload();
-       		              }
-       		          }
-       		      ]
+	hostList();
+	function hostList(){
+		$('#example1').DataTable({
+	        "ajax":"/hostlist/1",
+	        "columns": [
+	        			{ "data": "id" },
+	        			{ "data": "hostName" },
+	        			{ "data": "ip" },
+	        			{ "data": "cores" },
+	        			{ "data": "memory" },
+	        			{ "data": "sshLogin" },
+	        			{ "data": "usageFlag" },
+	        			{ "data": "location" }
+		       		],
+	       		"buttons": [
+	       		          {
+	       		              text: 'Reload',
+	       		              action: function ( e, dt, node, config ) {
+	       		                  dt.ajax.reload();
+	       		              }
+	       		          }
+	       		      ]
+	    });
+	}
+	var log="";
+	$('form :input').blur(function(){
+        var $parent = $(this).parent();
+        $parent.find(".formtips").remove();
+        //验证hostName
+        if( $(this).is('#hostName') ){
+               if( this.value=="" || this.value.length > 32 ){
+                   var errorMsg = '不能为空！';
+                   $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+               }else{
+            	   log+="t";
+               }
+        }
+        //验证ip
+        if( $(this).is('#ip') ){
+        	var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/g //匹配I
+           if( this.value=="" ||!re.test($("#ip").val())){
+                 var errorMsg = '请输入正确的IP地址.';
+                 $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }else{
+        	   log+="t";
+           }
+        }
+        
+      //验证rootpass
+        if( $(this).is('#rootpass') ){
+           if( this.value=="" || this.value.length <5 ){
+                 var errorMsg = '请输入至少6位的密码.';
+                 $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }else{
+        	   log+="t";
+           }
+        }
+      
+      //验证cores
+        if( $(this).is('#cores') ){
+           if(this.value=="" || this.value.length > 4){
+                 var errorMsg = '长度不能超过4位。';
+                 $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }else{
+        	   log+="t";
+           }
+        }
+      //验证memory
+        if( $(this).is('#memory') ){
+           var z= /^[0-9]*$/;
+           if( this.value=="" ||!z.test($("#memory").val())){
+                 var errorMsg = '请输入0-9数字';
+                 $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }else{
+        	   log+="t";
+           }
+        }
+      //验证location
+        if( $(this).is('#location') ){
+           if( this.value==""){
+                 var errorMsg = '不能为空！.';
+                 $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }else{
+        	   log+="t";
+           }
+        }
+        
+   }).keyup(function(){
+      $(this).triggerHandler("blur");
+   }).focus(function(){
+        $(this).triggerHandler("blur");
+   });
+    
+    $("#saveHost").click(function(){
+    	
+    	var _hostName=$("#hostName").val();
+        var _ip=$("#ip").val();
+        var _rootpass=$("#rootpass").val();
+        var _cores=$("#cores").val();
+        var _memory=$("#memory").val();
+        var _location=$("#location").val();
+        
+    	$("form :input.form-control").trigger('blur');
+        var numError = $('form .onError').length;
+        if(numError){
+            return false;
+        }else{
+        	$.ajax({
+        	    url:"/host/addhost",
+        	    type: "GET",
+        	    dataType:"text",
+        	    data:{
+        	    	hostname:_hostName,
+        	    	ip:_ip,
+        	    	rootpass:_rootpass,
+        	    	cores:_cores,
+        	    	memory:_memory,
+        	    	location:_location
+        	    },
+        	    success: function(data){
+        	    	if(data==1){
+        	    		$("#addResult").html("添加成功");
+        	    	}else{
+        	    		$("#addResult").html("添加失败");
+        	    	}
+        	    }
+        	});
+        }
     });
+    
 </script>

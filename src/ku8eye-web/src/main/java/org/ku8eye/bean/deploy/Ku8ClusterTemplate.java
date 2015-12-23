@@ -3,6 +3,7 @@ package org.ku8eye.bean.deploy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	private int id;
+	private int clusterId;
 	private String logoImage;
 	private String detailPageUrl;
 	// kube-dns服务设置的domain名
@@ -54,6 +56,14 @@ public class Ku8ClusterTemplate implements Cloneable {
 	// nodes to install
 	private List<InstallNode> nodes = new ArrayList<InstallNode>();
 	private List<String> allowedNewRoles = new ArrayList<String>();
+
+	public int getClusterId() {
+		return clusterId;
+	}
+
+	public void setClusterId(int clusterId) {
+		this.clusterId = clusterId;
+	}
 
 	public String getLogoImage() {
 		return logoImage;
@@ -75,7 +85,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public InstallNode getStandardMasterWithEtcdNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
@@ -95,7 +104,6 @@ public class Ku8ClusterTemplate implements Cloneable {
 	public InstallNode getStandardAllIneOneNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_ETCD));
@@ -105,10 +113,19 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return node.clone();
 	}
 
+	public List<InstallNode> getAllMinionNodes() {
+		List<InstallNode> filterNodes = new LinkedList<InstallNode>();
+		for (InstallNode node : nodes) {
+			if (node.hasRole(Ku8ClusterTemplate.NODE_ROLE_NODE)) {
+				filterNodes.add(node);
+			}
+		}
+		return filterNodes;
+	}
+
 	public InstallNode getStandardK8sNode() {
 		InstallNode node = new InstallNode();
 		node.setDefautNode(true);
-		node.setHostId(1);
 		node.setHostName("Not Selected");
 		node.setIp("Not Selected");
 		node.getNodeRoleParams().putAll(initInstallParameter(Ku8ClusterTemplate.NODE_ROLE_NODE));
@@ -123,17 +140,12 @@ public class Ku8ClusterTemplate implements Cloneable {
 		} else if (NODE_ROLE_MASTER.equalsIgnoreCase(role)) {
 			list.add(new InstallParam("apiserver_insecure_port", "8080", " kube-apiserver监听的非安全端口号"));
 			list.add(new InstallParam("ca_crt_CN", "ku8eye.org", ""));
-			list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "172.0.0.1/16",
-					"Kubernetes集群里的Node节点所用IP地址范围"));
-			list.add(new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16",
-					"Kubernetes Services可分配IP地址池"));
-			list.add(new InstallParam("apiserver_service_node_port_range", "1000-5000",
-					"NodePort 类型的 Service 可用端口范围，含两端"));
 			list.add(new InstallParam("kube_node_sync_period", "10s", "master与node信息同步时间间隔"));
 		} else if (NODE_ROLE_REGISTRY.equalsIgnoreCase(role))
 
 		{
-			list.add(new InstallParam("docker0_ip", "172.17.42.3/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker0_ip", "10.17.42.3/24", "docker0网桥的IP地址"));
+			list.add(new InstallParam("docker_registry_port", "5000", " docker registry 服务目录"));
 			list.add(new InstallParam("docker_registry_root_dir", "/var/lib/registry", " docker registry 运行目录"));
 			list.add(new InstallParam("docker_registry_image_id", "774242a00f13", "docker registry 镜像ID"));
 			list.add(new InstallParam("docker_registry_image_tag", "registry:2.2.0", "docker registry 镜像tag"));
@@ -145,6 +157,11 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	public void addNewNode(InstallNode node) {
+		for (InstallNode existNode : this.nodes) {
+			if (existNode.getHostId() == node.getHostId() || existNode.getIp().equals(node.getIp())) {
+				return;
+			}
+		}
 		nodes.add(node);
 
 	}
@@ -177,6 +194,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return autoComputedGlobalParams;
 	}
 
+	public InstallNode getCurrentMasterNode()
+	{
+		for (InstallNode node : this.nodes) {
+			if (node.hasRole(NODE_ROLE_MASTER)) {
+				return node;
+			}
+		}
+		return null;
+	}
 	public List<InstallNode> findAllK8sNodes() {
 		List<InstallNode> results = new LinkedList<InstallNode>();
 		for (InstallNode node : this.nodes) {
@@ -291,7 +317,12 @@ public class Ku8ClusterTemplate implements Cloneable {
 		globalParams = new HashMap<String, List<InstallParam>>();
 		// def
 		List<InstallParam> def_list = new ArrayList<InstallParam>();
-
+		def_list.add(new InstallParam(Constants.k8sparam_cluster_docker0_ip_srange, "10.0.0.1/16",
+				"Kubernetes集群里的Node节点所用IP地址范围"));
+		def_list.add(
+				new InstallParam("apiserver_service_cluster_ip_range", "20.1.0.0/16", "Kubernetes Services可分配IP地址池"));
+		def_list.add(
+				new InstallParam("apiserver_service_node_port_range", "1000-5000", "NodePort 类型的 Service 可用端口范围，含两端"));
 		def_list.add(new InstallParam("install_quagga_router", "false", "是否安装Quagga路由"));
 		def_list.add(new InstallParam("quagga_router_image_id", "f96cfe685533", "quagga router 镜像ID"));
 		def_list.add(new InstallParam("quagga_router_image_tag", "index.alauda.cn/georce/router",
@@ -331,5 +362,17 @@ public class Ku8ClusterTemplate implements Cloneable {
 	@JsonIgnore
 	public AnsibleCallResult fetchLastAnsibleResult() {
 		return this.stepResults.get(this.curInstallStep).fetchAnsibleCallResult();
+	}
+
+	public void deleteNodeOfHostId(int hostId) {
+		Iterator<InstallNode> itor = this.nodes.iterator();
+		while (itor.hasNext()) {
+			InstallNode node = itor.next();
+			if (node.getHostId() == hostId) {
+				itor.remove();
+
+			}
+		}
+
 	}
 }

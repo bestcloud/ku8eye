@@ -40,9 +40,11 @@ public class Ku8GenInstallTemplateTest {
 		Ku8ClusterTemplate template = deployService.getAllTemplates().get(1).clone();
 		InstallNode node = template.getStandardMasterWithEtcdNode();
 		node.setIp("192.168.18.133");
+		//node.setHostId(0);
 		node.setRootPassword("1111111");
 		template.addNewNode(node);
 		node = template.getStandardK8sNode();
+		node.setHostId(1);
 		node.setIp("192.168.18.134");
 		node.setRootPassword("1111111");
 		template.addNewNode(node);

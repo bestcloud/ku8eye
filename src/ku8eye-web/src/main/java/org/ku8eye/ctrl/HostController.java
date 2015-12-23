@@ -32,7 +32,7 @@ public class HostController {
 	private Ku8ClusterDeployService deployService;
 	private Logger log = Logger.getLogger(this.toString());
 
-	@RequestMapping(value = "/addlist/{zoneId}")
+	@RequestMapping(value = "/hostlist/{zoneId}")
 	public GridData getProjects(@PathVariable("zoneId") int zoneId) {
 		GridData grid = new GridData();
 		List<Host> pros = hostService.getHostsByZoneId(zoneId);
@@ -43,34 +43,31 @@ public class HostController {
 	/**
 	 * add host
 	 * 
-	 * 
-	 *
-	 *
 	 */
-	@RequestMapping(value = "/hostl")
-	public int checkLogin(HttpServletRequest request, @RequestParam("zone_id") String zone_id,
-			@RequestParam("host_name") String host_name, @RequestParam("ip") String ip,
-			@RequestParam("root_passwd") String root_passwd, @RequestParam("location") String location,
-			@RequestParam("note") String note, @RequestParam("cores") String cores,
-			@RequestParam("memory") String memory, @RequestParam("usage_flag") String usage_flag,
-			@RequestParam("ssh_login") String ssh_login, @RequestParam("cluster_id") String cluster_id) {
+	@RequestMapping(value = "/host/addhost")
+	public int checkLogin(HttpServletRequest request, @RequestParam("hostname") String hostname,
+			@RequestParam("ip") String ip, @RequestParam("rootpass") String rootpass,
+			@RequestParam("cores") String cores,@RequestParam("memory") String memory,
+			@RequestParam("location") String location) {
+		
 		Host host = new Host();
-
-		host.setZoneId(Integer.parseInt(zone_id));
-		host.setHostName(host_name);
+		host.setZoneId(1);
+		host.setHostName(hostname);
 		host.setIp(ip);
-		host.setRootPasswd(root_passwd);
+		host.setRootPasswd(rootpass);
 		host.setLocation(location);
-		host.setNote(note);
 		host.setCores(new Byte(cores));
 		host.setMemory(Integer.parseInt(memory));
-		host.setUsageFlag(new Byte(usage_flag));
-		host.setSshLogin(new Byte(ssh_login));
-		host.setClusterId(Integer.parseInt(cluster_id));
 		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
 		host.setLastUpdated(curDate);
-		int a = hostService.setHostNode(host);
-		return a;
+		int hostresult = hostService.setHostNode(host);
+		
+//		host.setNote(note);
+//		host.setUsageFlag(new Byte(usage_flag));
+//		host.setSshLogin(new Byte(ssh_login));
+//		host.setClusterId(Integer.parseInt(cluster_id));
+		
+		return hostresult;
 	}
 
 }

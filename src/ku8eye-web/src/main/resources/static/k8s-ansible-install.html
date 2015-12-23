@@ -18,9 +18,12 @@
 							</div>
 							</th>
 							<th><div style="padding-bottom: 5px;height:600px;background-color:#ffffff;OVERFLOW-Y: scroll">
-								<ul id="installresult" style="list-style-type:none;">
+								<span id="installPercent" style="font-size:17px;padding-left:20px;">安装进度:</span>
+								<div class="processb" id="process1" style="margin:10px 10px 10px 10px;width: 90%; height: 25px; border: solid 1px #ccc;">
+								<div id="processbar" style="background-color: #90EE90; width: 0px; height: 24px;"></div>
+								</div>
 								
-								</ul>
+								<ul id="installresult" style="list-style-type:none;"></ul>
 								</div>
 							</th>
 						</tr>
@@ -58,7 +61,6 @@
 						<thead>
 						<tr>
 							<th colspan="2">节点</th>
-						
 							<th>安装汇总</th>
 						</tr>
 						</thead>
@@ -69,9 +71,10 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
+				<span style="color:#D81E12;float:left;" id="clusterSpan"></span>
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">保存集群
 				</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" id="installSucc">验证集群
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="installFail">关<span style="padding-left: 12px" />闭
 				</button>
 			</div>
 		</div>
@@ -95,9 +98,13 @@ function install(){
 	    success: function(data){
 	    	var _data="";
     		var _result="";
+    		var count=0;
 	    	$.each(data.stepResults,function(i,item){
-	    		_data +="<li style='color:#ffffff;font-size:18px;'>。。。。。。。Job  Begin : "+i+"。。。。。。。。</li>";
-	    		_result +="<li style='weight:700;font-size:18px;'>。。。Job : "+i+"。。。。</li>";
+	    		_data +="<li style='color:#ffffff;font-size:18px;'>................Job  Begin : "+i+"................</li>";
+	    		_result +="<li style='weight:700;font-size:18px;'>...........Job : "+i+"...........</li>";
+	    		count++;
+	    		$("#installPercent").html("安装进度:"+(10*count)+ "%");
+	    		document.getElementById("processbar").style.width = (10*count)+ "%";
 	    		$.each(item,function(c,d){
 	    			if(c=="ansibleRowDatas"){
 	    				//左边输出
@@ -107,16 +114,23 @@ function install(){
 	    			}
 	    			if(c=="ansibleOutSummary"){
 	    				//右边输出
+	    				count++;
+	    				$("#installPercent").html("安装进度:"+(10*count)+ "%");
+	    				document.getElementById("processbar").style.width = (10*count)+ "%";
 	    				$.each(d,function(a,b){
 	    					_result += "<li>"+b+"</li>";
 	    	    		});
 	    			}
 	    		});
+	    		
 	    	});
+
 	    	$("#installData").html(_data);
 			$("#installresult").html(_result);
 	    	
 	    	if(data.finished==true){
+	    		$("#installPercent").html("安装进度:100%");
+	    		document.getElementById("processbar").style.width = (100)+ "%";
 	    		if(data.success==true){
 	    			installResult("success");
 	    		}else{
@@ -136,12 +150,10 @@ function install(){
 function installResult(_type){
 	if(_type=="success"){
 		$("#myModalLabel").html("安装成功");
-		$("#installFail").hide();
 		$("#installSucc").show();
 		$("#resultTitle").html("安装成功");
 	}else{
 		$("#myModalLabel").html("安装失败");
-		$("#installFail").show();
 		$("#installSucc").hide();
 		$("#resultTitle").html("安装失败");
 	}
@@ -152,28 +164,36 @@ function installResult(_type){
 	    dataType:"json",
 	    success: function(data){
 	    	var faileMessage="";
-	    	alert("failedMsgs=="+data.failedMsgs);
     		$.each(data,function(isa,isb){
-				if(data.failedMsgs==null){
-	    			
-	    		}else{
-	    			alert("");
-	    			$.each(data.failedMsgs,function(a,b){
-	    				alert(a+"   "+b);
-	    				faileMessage+=a+"="+b+";";
-	    			});
-	    		}
-
 	    		if(_type=="success"){
-	    			$("#dialogResult").append("<tr><td>成功图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedMsgs="+faileMessage+"</td></tr>");
+	    			$("#dialogResult").append("<tr><td><img src='./img/success.png' alt=''></td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedPrintMsg="+isb.failedPrintMsg+"</td></tr>");
 	    		}else{
-	    			$("#dialogResult").append("<tr><td>失败图标</td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedMsgs="+faileMessage+"</td></tr>");
+	    			$("#dialogResult").append("<tr><td><img src='./img/failed.png' alt=''></td><td>"+isa+"</td><td>ok="+isb.ok+",changed="+isb.changed+",unreachable="+isb.unreachable+",failed="+isb.failed+",failedPrintMsg="+isb.failedPrintMsg+"</td></tr>");
 	    		}
 	    		
 	    	});	
 	    }
 	});
+	
+	$("#installSucc").click(function(){
+		$.ajax({
+		    url:"/deploycluster/write-cluster-info2db",
+		    type: "GET",
+		    dataType:"text",
+		    success: function(data){
+		    	if(data=="SUCCESS:"){
+		    		$(".content").load("cluster_main.html");
+		    	}else{
+		    		$("#clusterSpan").html("保存数据失败！！！！");
+		    	}
+		    }
+		});
+	});
+	
 }
+
+
+
 
 
 </script>

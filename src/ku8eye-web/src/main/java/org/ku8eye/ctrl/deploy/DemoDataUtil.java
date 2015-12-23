@@ -22,7 +22,7 @@ public class DemoDataUtil {
 	
 	public static AnsibleCallResult getFakeAnsibleResult()
 	{
-		InputStream inStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/ku8eye/ctrl/deploy/ansbile-result1.txt");
+		InputStream inStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/ku8eye/ctrl/deploy/ansible-result2.txt");
 		List<String> fileLines = readFromStream(inStream);
 		AnsibleCallResult result = AnsibleResultParser.parseResult(fileLines);
 		calledTimes++;
