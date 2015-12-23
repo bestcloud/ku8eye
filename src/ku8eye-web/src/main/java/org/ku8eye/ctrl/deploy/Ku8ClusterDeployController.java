@@ -230,6 +230,16 @@ public class Ku8ClusterDeployController {
 		List<InstallNode> nodes = template.getNodes();
 		return nodes;
 	}
+	
+	
+	@RequestMapping(value = "/deploycluster/getnodemodal/modal")
+	public Ku8ClusterTemplate getmodal(ModelMap model) {
+		// session中获取当前模板对象
+		Ku8ClusterTemplate template = getCurTemplate(model);
+		return template;
+	}
+	
+	
 
 	@RequestMapping(value = "/deploycluster/getnodemodal/{status}")
 	public InstallNode getNodemodal(HttpServletRequest request, @RequestParam("addnode") String addnode,
