@@ -194,6 +194,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return autoComputedGlobalParams;
 	}
 
+	public InstallNode getCurrentMasterNode()
+	{
+		for (InstallNode node : this.nodes) {
+			if (node.hasRole(NODE_ROLE_MASTER)) {
+				return node;
+			}
+		}
+		return null;
+	}
 	public List<InstallNode> findAllK8sNodes() {
 		List<InstallNode> results = new LinkedList<InstallNode>();
 		for (InstallNode node : this.nodes) {

@@ -133,11 +133,13 @@ public class Ku8ClusterDeployService {
 		String registry_url = "http://" + template.getAutoComputedGlobalParams().get("docker_registry_server_name")
 				+ ":" + template.getAutoComputedGlobalParams().get("docker_registry_port");
 		int clusterId = template.getClusterId();
+		LOGGER.error("save cluster info to db  for cluster " + clusterId);
 		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.getObject().openSession(false);
 			Statement stmt=session.getConnection().createStatement();
 			Ku8sSrvEndpointMapper srvEndPntMapper = session.getMapper(Ku8sSrvEndpointMapper.class);
+			stmt.executeUpdate("delete from ku8s_srv_endpoint where CLUSTER_ID= "+clusterId);
 			for (InstallNode node : template.getNodes()) {
 				int hostId = node.getHostId();
 				Ku8sSrvEndpoint srvEndpnt = null;
@@ -178,7 +180,7 @@ public class Ku8ClusterDeployService {
 				String sql = "update host  set CLUSTER_ID =" + clusterId + ",USAGE_FLAG=" + Constants.HOST_USAGED
 						+ ",LAST_UPDATED= now()  where ID=" + hostId;
 				stmt.executeUpdate(sql);
-				stmt.executeUpdate("delete from ku8s_srv_endpoint where CLUSTER_ID= "+clusterId);
+				
 			}
 			stmt.close();
 			session.commit();
