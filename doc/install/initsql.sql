@@ -14,6 +14,7 @@ Date: 2015-11-24 15:57:56
 */
 DROP DATABASE IF EXISTS ku8eye;
 create database ku8eye DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+grant all privileges on ku8eye.* to 'ku8eye'@'localhost' identified  by '123456';
 grant all privileges on ku8eye.* to 'ku8eye'@'%' identified  by '123456';
 use ku8eye;
 SET FOREIGN_KEY_CHECKS=0;
