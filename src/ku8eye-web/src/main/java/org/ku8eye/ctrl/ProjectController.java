@@ -29,7 +29,7 @@ public class ProjectController {
         return grid;
 	}
 	
-	@RequestMapping(value="/createProject")
+	@RequestMapping(value="/createProject2")
 	public String createPorjects(String creatJson) throws Exception
 	{
 		 Project pr=om.readValue(creatJson, Project.class);
