@@ -22,6 +22,13 @@
 	.installationMode ul .mode_li{
 		padding-left:40px;
 	}
+	#cluster span{
+		font-size:15px;
+		float:left;
+		width:33.3%;
+		padding:5px 0px;
+	}
+	
 </style>
 
 <div class="row">
@@ -32,7 +39,7 @@
 				<div style="padding-bottom: 5px;">	
 					<h1 id="installtitle">您的计算机软件未安装，请安装！</h1>
 				</div>
-
+				<div id="cluster" style="padding:0px 0px 10px 0px;"></div>
 				<table id="example1" class="installationMode">
 					<thead>
 						
@@ -48,22 +55,24 @@
 <!-- /.row -->
 <script>
 //$.dailyInit();
+
 $.ajax({
-    url:"/clusterlist/1",
+    url:"/cluster/1",
     type: "GET",
     dataType:"json",
     success: function(data){
-    	$.each(data,function(i,item){
-    		if(item.installType==1){
-    			install();
-    		}else{
-    			installed();
-    		}
-    	});
+    	if(data.installType==1){
+			install(data);
+		}else{
+			installed(data);
+		}
     }
 }); 
 
-function install(){
+function install(installType){
+	$("#cluster").html("");
+	$("#example1").attr('class','installationMode')
+	$("#example1").attr('font-size','')
 	$.ajax({
 	    url:"/deploycluster/listtemplates",
 	    type: "GET",
@@ -96,23 +105,30 @@ function install(){
 	});
 }
 
-function installed(){
-	$("#installtitle").html("已完成安装！！！！");
+function installed(installData){
+	$("#cluster").html("");
+	$("#example1").attr('class','table table-bordered table-hover');
+	$("#example1").attr('font-size','12px');
+	if(installData.installType==2){
+		$("#installtitle").html("自动完成安装！！！！");
+	}else{
+		$("#installtitle").html("手动完成安装！！！！");	
+	}
+	$("#example1").html('<tr><th>id</th><th>Host Name</th><th>IP</th><th>Cores</th><th>Memory</th><th>SSH login</th><th>Usage</th><th>location</th></tr>');
 	$.ajax({
-	    url:"/deploycluster/nodeslist",
+	    url:"/host/cluster-hosts/"+installData.installType,
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
 	    	$.each(data,function(i,item){
-	    		var nodeRole="";
-	    		$.each(item.nodeRoleParams,function(m,n){
-	    			nodeRole+=m+";";
-	    		});
-	    		$("#example1").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>检测成功</td></tr>");
+	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
 	    	});
 	    	
 	    }
 	});
+	
+	$("#cluster").append("<span>name:"+installData.name+"</span><span>labels:"+installData.labels+"</span><span>k8sVersion:"+installData.k8sVersion+"</span><span>installType:"+installData.installType+"</span><span>lastUpdated:"+installData.lastUpdated+"</span>");
+	
 }
 
 </script>

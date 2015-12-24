@@ -111,7 +111,7 @@
 	hostList();
 	function hostList(){
 		$('#example1').DataTable({
-	        "ajax":"/hostlist/1",
+	        "ajax":"/host/1",
 	        "columns": [
 	        			{ "data": "id" },
 	        			{ "data": "hostName" },
@@ -159,7 +159,7 @@
       //验证rootpass
         if( $(this).is('#rootpass') ){
            if( this.value=="" || this.value.length <5 ){
-                 var errorMsg = '请输入至少6位的密码.';
+                 var errorMsg = '请输入至少4位的密码.';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
            }else{
         	   log+="t";
