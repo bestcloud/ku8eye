@@ -17,30 +17,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class HostService {
-	
+
 	@Autowired
 	private HostMapper hostDao;
-	private List<Host> hostList;
-	private Logger log = Logger.getLogger(this.toString());
+
 	/**
 	 * find User by userid
+	 * 
 	 * @param pUserId
 	 * @return User
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<Host> getHostsByZoneId(int  zoneId){	
+	public List<Host> getHostsByZoneId(int zoneId) {
 		return hostDao.selectAll();
 	}
-	
-	
+
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Host getHostsByZoneString(int  zoneId){	
+	public Host getHostsByZoneString(int zoneId) {
 		return hostDao.selectByPrimaryKey(zoneId);
 	}
-	
-	
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public int setHostNode(Host host){
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public int addHost(Host host) {
 		return hostDao.insert(host);
 	}
 }
