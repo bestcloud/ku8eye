@@ -47,26 +47,25 @@
 		              <div class="box-body">
 		                <div class="form-group">
 		                  <label for="name" class="col-sm-3 control-label">Name</label>
-		
-		                  <div class="col-sm-9">
+		                  <div class="col-sm-8">
 		                    <input type="text" class="form-control" id="name" >
 		                  </div>
 		                </div>
 		                <div class="form-group">
 		                  <label for="version" class="col-sm-3 control-label">Version</label>
-		                  <div class="col-sm-9">
+		                  <div class="col-sm-8">
 		                    <input type="text" class="form-control" id="version"  >
 		                  </div>
 		                </div>
 		                <div class="form-group">
 		                  <label for="k8s-version" class="col-sm-3 control-label">Ku8 Version</label>
-		                  <div class="col-sm-9">
+		                  <div class="col-sm-8">
 		                    <input type="text" class="form-control" id="k8s-version"  >
 		                  </div>
 		                </div>
 		                <div class="form-group">
 		                  <label for="note" class="col-sm-3 control-label">Note</label>
-		                  <div class="col-sm-9">
+		                  <div class="col-sm-8">
 		                    <input type="textearea" class="form-control" id="note"  >
 		                  </div>
 		                </div>
@@ -77,6 +76,9 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
+				<span style="float:left;color:#dd4b39;display:none;" id="addResult">
+					<i class="fa fa-times-circle-o"></i><label>&nbsp;添加失败 - TODO:Check logs</label>
+				</span>
 				<button type="button" class="btn btn-default" data-dismiss="modal">
 					关<span style="padding-left: 12px" />闭
 				</button>
@@ -117,6 +119,27 @@
         console.log('view- clicked on id '+data['name']);
     } );
 	
+	$('input', $('#appModal')).focusout(function() {
+		$(this).parent().find(".formtips").remove().end();
+		var v = $(this).val();
+		if(v === '')
+		{
+			$(this).closest('.form-group').addClass('has-error');
+            $(this).parent().append('<span class="formtips" style="color:#dd4b39">不能为空!</span>');
+		}
+		else
+		{
+			$(this).closest('.form-group').removeClass('has-error').addClass('has-success');
+		}
+	});
+	
+	$('#appModal').on('hidden.bs.modal', function () {
+		$(this).find('input,textarea,select').val('').end();
+		$(this).find('.form-group').removeClass('has-error').removeClass('has-success').end();
+		$(this).find(".formtips").remove().end();
+		$('#addResult').hide();
+	});
+	
 	function checkInput(){
 		var ret = true;
 		$('input', $('#appModal')).each(function () {
@@ -152,7 +175,7 @@
 				}
 				else
 				{
-					alert("error");
+					$('#addResult').show();
 				}
   		   	});	
 		}
