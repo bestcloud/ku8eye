@@ -184,9 +184,10 @@ public class Ku8ClusterDeployController {
 
 	}
 
-	@RequestMapping(value = "/deploycluster/selecttemplate/{id}", method = RequestMethod.GET)
-	public Ku8ClusterTemplate selectTemplate(@PathVariable("id") int templateId, ModelMap model) {
+	@RequestMapping(value = "/deploycluster/selecttemplate/{id}/{clusterId}", method = RequestMethod.GET)
+	public Ku8ClusterTemplate selectTemplate(@PathVariable("id") int templateId,@PathVariable("clusterId") int clusterId, ModelMap model) {
 		Ku8ClusterTemplate template = deployService.getAndCloneTemplate(templateId);
+		template.setClusterId(clusterId);
 		model.addAttribute("ku8template", template);
 		return template;
 
