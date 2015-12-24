@@ -11,4 +11,8 @@ public class Constants {
 	public static final byte K8S_SERICE_STATUS_OK = 1;
 	public static final byte K8S_SERICE_STATUS_ERR = -1;
 	public static final byte HOST_USAGED = 1;
+	
+	public static final byte K8S_AUTO_NOT_INSTALL = 1;
+	public static final byte K8S_AUTO_INSTALLED = 2;
+	public static final byte K8S_MANUAL_INSTALLED = 3;
 }
