@@ -157,13 +157,15 @@ public class Ku8ClusterTemplate implements Cloneable {
 	}
 
 	public void addNewNode(InstallNode node) {
-		for (InstallNode existNode : this.nodes) {
+		Iterator<InstallNode> itor = this.nodes.iterator();
+		while (itor.hasNext()) {
+			InstallNode existNode = itor.next();
 			if (existNode.getHostId() == node.getHostId() || existNode.getIp().equals(node.getIp())) {
-				return;
+				itor.remove();
+				break;
 			}
 		}
 		nodes.add(node);
-
 	}
 
 	public List<InstallParam> getGlobParameterByRole(String role) {
@@ -194,8 +196,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		return autoComputedGlobalParams;
 	}
 
-	public InstallNode getCurrentMasterNode()
-	{
+	public InstallNode getCurrentMasterNode() {
 		for (InstallNode node : this.nodes) {
 			if (node.hasRole(NODE_ROLE_MASTER)) {
 				return node;
@@ -203,6 +204,7 @@ public class Ku8ClusterTemplate implements Cloneable {
 		}
 		return null;
 	}
+
 	public List<InstallNode> findAllK8sNodes() {
 		List<InstallNode> results = new LinkedList<InstallNode>();
 		for (InstallNode node : this.nodes) {
