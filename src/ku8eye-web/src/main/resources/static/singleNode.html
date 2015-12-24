@@ -86,7 +86,7 @@ $("#back").click(function(){
 
 //要添加的节点对话框的表格值
 $('#example1').DataTable({
-    "ajax":"/hostlist/1",
+    "ajax":"/host/1",
     "columns": [
     			{ "data": "id", render: function ( data, type, row ) {
             		// Combine the first and last names into a single table field
@@ -113,14 +113,11 @@ $('#example1').DataTable({
 
 //模版默认的值显示
 $.ajax({
-    url:"/deploycluster/selecttemplate/0",
+    url:"/deploycluster/getcurtemplate",
     type: "GET",
     dataType:"json",
     success: function(data){
     	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
-    	$("#nodeIp").html(data.standardAllIneOneNode.ip);
-    	$("#nodeName").html(data.standardAllIneOneNode.hostName);
-    	
     	$.each(data.standardAllIneOneNode.nodeRoleParams,function(i,item){
     		var count=0;
     		$.each(item,function(m,n){
@@ -128,7 +125,8 @@ $.ajax({
     			$("#example").append("<tr><td>"+i+"</td><td>"+n.name+"</td><td><input type='text'  id='"+i+count+"' value='"+n.value+"'/></td><td>"+n.describe+"</td></tr>");
     		});
     	});
-    	
+    	$("#nodeIp").html(data.nodes[0].ip);
+    	$("#nodeName").html(data.nodes[0].hostName);
     }
 }); 
 

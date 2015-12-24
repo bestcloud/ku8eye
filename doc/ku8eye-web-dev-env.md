@@ -1,21 +1,28 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-链接：http://pan.baidu.com/s/1gezjw6B 密码：rluo
+http://pan.baidu.com/s/1dEvQtFj
 
-文件名为：ku8eye-web-0.4.tar.gz
-用gunzip解压缩后，得到文件ku8eye-web-0.4.tar
+### 安装部署的架构图如下图所示。
+###**注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。**###
+
+![安装架构图](../res/cluster_setup_arch.jpg)
+
+
+文件名为：ku8eye-web.tar.gz
+用gunzip解压缩后，得到文件ku8eye-web.tar
 
 导入docker镜像：
-`# docker load -i ku8eye-web-0.4.tar`
+`# docker load -i ku8eye-web.tar`
 
 给该镜像打上tag：
-`# docker tag 6f46b1372b52 ku8eye-web:0.4`
+`# docker tag 6f46b1372b52 ku8eye-web`
 
 运行开发环境：
-`docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.4`
-其中 3306 为 mysql 服务端口，8080 为 tomcat 服务端口，均需要映射到宿主机上
-如需映射sshd的22端口，可添加一个 -p 参数，例如 `-p 2222:22`
+`docker run -tid --name ku8eye-web -p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web`
+其中 3306 为mysql服务端口，8080 为tomcat服务端口，9001 为supervisor服务端口，均映射到宿主机上。
+
+如需映射sshd的22端口，需添加一个 -p 参数，例如 `-p 2222:22`
 
 容器启动成功后，需等待15秒左右，等待mysql数据库与web应用启动完成。
 
@@ -24,7 +31,7 @@
 
 使用命令行完成一键安装Kubernetes集群，脚本为：
 
-`/root/ku8eye-startup.sh $1 $2 $3`
+`/root/ku8eye-install-kubernetes.sh $1 $2 $3`
 
 **需要输入的3个参数为：**
 
@@ -42,7 +49,10 @@
 
 #### 2. 网页方式
 打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
-> 待完善
+
+点击左侧“K8s Cluster”菜单，选择“Cluster Inf”进行安装。
+
+![安装架构图](../res/ku8eye-web_setup_page01.png)
 
 
 
@@ -53,8 +63,46 @@
 **环境变量 JAVA_HOME=/root/jre1.8.0_65**
 ## 3. MySQL 5.7.9
 **数据库名：ku8eye**
+
 **数据库用户名：ku8eye，密码：123456**
-## 4. ku8eye-web 应用（jar包）
+## 4. ku8eye-web 应用
+**jar包：/root/ku8eye-web.jar**
+
+
+## Dockerfile以及打包所需的文件在以下目录：
+
+	src\ku8eye-ansible
+
+子目录和文件包括：
+
+	├─db_scripts
+	├─jre1.8.0_65               -- 需要自行补充二进制文件
+	├─kubernetes_cluster_setup
+	│  ├─group_vars
+	│  ├─pre-setup
+	│  │  └─multi-passworrd-sssh-key
+	│  └─roles
+	│      ├─docker-registry
+	│      │  ├─defaults
+	│      │  ├─files           -- 需要自行补充二进制文件
+	│      │  ├─tasks
+	│      │  └─templates
+	│      ├─etcd
+	│      │  ├─defaults
+	│      │  ├─files           -- 需要自行补充二进制文件
+	│      │  ├─tasks
+	│      │  └─templates
+	│      ├─kube-master
+	│      │  ├─defaults
+	│      │  ├─files           -- 需要自行补充二进制文件
+	│      │  ├─tasks
+	│      │  └─templates
+	│      └─kube-node
+	│          ├─defaults
+	│          ├─files          -- 需要自行补充二进制文件
+	│          ├─tasks
+	│          └─templates
+	└─shell_scripts
 
 
 
@@ -105,20 +153,24 @@
 	# 7. add ku8eye-ansible binary and config files
 	COPY kubernetes_cluster_setup /root/kubernetes_cluster_setup
 	
-	# 8. copy init scripts, web app
-	COPY ku8eye-web-0.0.1-SNAPSHOT.jar /root/ku8eye-web-0.0.1-SNAPSHOT.jar
+	# 8. copy shell scripts, SQL scripts, config files (could be updated in the future)
+	# db init SQL
 	COPY db_scripts /root/db_scripts
+	# shell scripts
 	COPY shell_scripts /root/shell_scripts
 	RUN chmod +x /root/shell_scripts/*.sh
+	COPY ku8eye-install-kubernetes.sh /root/ku8eye-install-kubernetes.sh
+	RUN chmod +x /root/ku8eye-install-kubernetes.sh
+	# latest jar
+	COPY ku8eye-web.jar /root/ku8eye-web.jar
 	
 	# 9. start mariadb, init db data, and start ku8eye-web app
+	# supervisor config file
 	COPY supervisord.conf /etc/supervisord.conf
-	COPY ku8eye-startup.sh /root/ku8eye-startup.sh
-	RUN chmod +x /root/ku8eye-startup.sh
 	ENTRYPOINT /usr/bin/supervisord
 
 
-**基础镜像为CentOS官方最新版：centos:latest**
+**基础镜像为CentOS官方docker镜像：centos:latest**
 
 **主要步骤：**
 ### 1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
@@ -137,11 +189,13 @@ MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseur
 ### 5. 复制 JRE1.8 到容器的 `/root/jre1.8.0_65` 目录，并设置环境变量 JAVA_HOME 和 PATH
 ### 6. 安装openssh
 ### 7. 复制安装Kubernetes所需的所有文件和ansible配置脚本到目录 `/root/kubernetes_cluster_setup`
-### 8. 复制 ku8eye-web.jar 和启动脚本到容器的 `/root` 目录
+### 8. 复制启动脚本、SQL脚本、配置文件到容器的 `/root` 目录
 ### 9. 复制配置文件 supervisord.conf 到容器的 `/etc` 目录
-supervisord.conf文件内容为：
+supervisord.conf文件内容如下：
+
 其中，设置nodaemon为true 表示 supervisord 将在前台运行
-启动了两个程序：sshd 和 一个脚本 run.sh
+
+通过supervisor将启动两个程序：`sshd`和 脚本`run.sh`
 
 	[supervisord]
 	nodaemon = true
@@ -158,41 +212,44 @@ supervisord.conf文件内容为：
 	autorestart = false
 	redirect_stderr = true
 
-其中，/root/run.sh文件的内容包括启动mysql服务，创建数据库/用户，初始化数据，最后启动web服务，内容为：
+其中，/root/run.sh文件的内容包括启动mysql服务，创建ku8eye数据库，初始化数据，最后启动tomcat，内容为：
 
 	#!/bin/sh
 	
 	# start mysqld service
-	/root/run_mysqld.sh
+	/root/shell_scripts/run_mysqld.sh
 	# wait for mysqld to startup completely
 	sleep 5
-	echo "====== mysqld_safe start done."
+	echo "======`date +"[%Y-%m-%d %H:%M:%S]"` mysqld_safe start done. ======"
 	
-	# create database and user "ku8eye"
-	echo "====== create database and user ku8eye"
-	mysql < /root/mariadb_create_ku8eye_db_and_user.sql
-	sleep 1
-	
-	# run ku8eye-web initsql.sql to create tables
-	echo "====== run ku8eye-web initsql.sql to create tables"
-	mysql -uku8eye -p123456 ku8eye < /root/initsql.sql
+	# run ku8eye-web initsql.sql to create user and tables
+	mysql < /root/db_scripts/initsql.sql
+	echo "======`date +"[%Y-%m-%d %H:%M:%S]"` create mysql tables for ku8eye-web done. ======"
 	sleep 1
 	
 	# start ku8eye-web app
-	/root/run_tomcat.sh
-	echo "====== start ku8eye-web done."
+	/root/shell_scripts/run_tomcat.sh
+	echo "======`date +"[%Y-%m-%d %H:%M:%S]"` start ku8eye-web done. ======"
+
+run_mysqld.sh脚本的内容为：
+
+	nohup mysqld_safe &
+
+run_tomcat.sh脚本的内容为：
+
+	nohup $JAVA_HOME/bin/java -jar /root/ku8eye-web.jar org.ku8eye.App > /root/tomcat.log 2>&1 &
 
 最后，设置启动命令为 `/usr/bin/supervisord`
 
 
 ### 运行docker build完成镜像的创建
-	# docker build -t="ku8eye-web:0.4" --rm .
+	# docker build -t="ku8eye-web" --rm .
 
 
 
 # ---- Ansible安装Kubernetes集群说明 ----
 
-**Ansible**是一款基于Python开发的自动化运维工具，本文通过使用 **ansible-playbook** 完成Kubernetes集群的一键安装。
+**Ansible**是一款基于Python开发的自动化运维工具，ku8eye-web通过调用 **ansible-playbook** 完成Kubernetes集群的一键安装。
 
 ## 1. Ansible 安装环境准备
 **1.1.** 准备一台Linux服务器，安装docker。
@@ -224,7 +281,7 @@ Docker：推荐 v1.9.0 及以上版本
 ## 3. Kubernetes集群安装前的准备工作
 
 ### 3.1 启动容器，进入容器
-`$ docker run -tid -p 3306:3306 -p 8080:8080 --name ku8eye-web ku8eye-web:0.4`
+`$ docker run -tid --name ku8eye-web -p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web`
 `$ docker exec -ti ku8eye-web bash`
 
 > **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
