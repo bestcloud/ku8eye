@@ -48,7 +48,7 @@ public class HostController {
 		host.setIp(ip);
 		host.setRootPasswd(rootpass);
 		host.setLocation(location);
-		host.setCores(new Byte(cores));
+		host.setCores(Short.parseShort(cores));
 		host.setMemory(Integer.parseInt(memory));
 		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
 		host.setLastUpdated(curDate);
