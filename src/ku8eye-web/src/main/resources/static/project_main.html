@@ -4,25 +4,19 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;">
-					<a onclick="fnClickAddRow();" href="javascript:void(0);"
+					<a href="javascript:void(0);"
 						class="btn btn-primary " data-toggle="modal"
-						data-target="#myModal">新增Application</a>
-						
-					<a onclick="createProject()" href="javascript:void(0);"
-						class="btn btn-primary " >新增Project</a>
-						
+						data-target="#appModal">新增Application</a>
 				</div>
-				<table id="example1" class="table table-bordered table-hover"
+				<table id="appTable" class="table table-bordered table-hover"
 					style="font-size: 12px;">
 					<thead>
 						<tr>
-							<th>id</th>
-							<th>Tenant_Id</th>
-							<th>owner</th>
-							<th>name</th>
-							<th>version</th>
-							<th>k8s_version</th>
-							<th>note</th>
+							<th>Name</th>
+							<th>Owner</th>
+							<th>Version</th>
+							<th>K8 version</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 				</table>
@@ -34,9 +28,8 @@
 	<!-- /.col -->
 </div>
 <!-- /.row -->
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel">
+<!-- Application Modal -->
+<div class="modal fade" id="appModal" tabindex="-1" role="dialog" aria-labelledby="appModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -44,7 +37,7 @@
 					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">新增Application</h4>
+				<h4 class="modal-title" id="appModalLabel">新增Application</h4>
 			</div>
 			<div class="modal-body">
 				<!-- Horizontal Form -->
@@ -53,27 +46,27 @@
 		            <form class="form-horizontal">
 		              <div class="box-body">
 		                <div class="form-group">
-		                  <label for="name" class="col-sm-2 control-label">Name</label>
+		                  <label for="name" class="col-sm-3 control-label">Name</label>
 		
-		                  <div class="col-sm-10">
+		                  <div class="col-sm-9">
 		                    <input type="text" class="form-control" id="name" >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="version" class="col-sm-2 control-label">Version</label>
-		                  <div class="col-sm-10">
+		                  <label for="version" class="col-sm-3 control-label">Version</label>
+		                  <div class="col-sm-9">
 		                    <input type="text" class="form-control" id="version"  >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="k8s-version" class="col-sm-2 control-label">Kubernetes Version</label>
-		                  <div class="col-sm-10">
+		                  <label for="k8s-version" class="col-sm-3 control-label">Ku8 Version</label>
+		                  <div class="col-sm-9">
 		                    <input type="text" class="form-control" id="k8s-version"  >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="note" class="col-sm-2 control-label">Note</label>
-		                  <div class="col-sm-10">
+		                  <label for="note" class="col-sm-3 control-label">Note</label>
+		                  <div class="col-sm-9">
 		                    <input type="textearea" class="form-control" id="note"  >
 		                  </div>
 		                </div>
@@ -87,7 +80,7 @@
 				<button type="button" class="btn btn-default" data-dismiss="modal">
 					关<span style="padding-left: 12px" />闭
 				</button>
-				<button type="button" class="btn btn-primary">
+				<button onclick="return addApplication()" type="button" class="btn btn-primary">
 					保<span style="padding-left: 12px" />存
 				</button>
 			</div>
@@ -95,35 +88,77 @@
 	</div>
 </div>
 
+<div class="modal fade" id="serModal" tabindex="-1" role="dialog" aria-labelledby="serModalLabel">
+</div>
+
 
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
 	$(document).ajaxStart(function() { Pace.restart(); });
-    $('#example1').DataTable({
+    var table = $('#appTable').DataTable({
         "ajax":"/projectlist",
         "columns": [
-        			{ "data": "id" },
-        			{ "data": "tenantId" },
+					{ "data": "name" },
         			{ "data": "owner" },
-        			{ "data": "name" },
         			{ "data": "version" },
         			{ "data": "k8sVersion" },
-        			{ "data": "note"},
-        		],
-       		"buttons": [
-       		          {
-       		              text: 'Reload',
-       		              action: function ( e, dt, node, config ) {
-       		                  dt.ajax.reload();
-       		              }
-       		          }
-       		      ]
+					{ "defaultContent": "<button class='build'>Build</button>&nbsp;<button class='view'>View</button>"}
+        		]
     });
     
+	$('#appTable tbody').on( 'click', 'button.build', function () {
+		var data = table.row($(this).parents('tr')).data();
+		$('#serModal').load('build_project.html');
+        $('#serModal').modal('toggle');
+    } );
+	
+	$('#appTable tbody').on( 'click', 'button.view', function () {
+		var data = table.row($(this).parents('tr')).data();
+        console.log('view- clicked on id '+data['name']);
+    } );
+	
+	function checkInput(){
+		var ret = true;
+		$('input', $('#appModal')).each(function () {
+			if($(this).val() === '')
+			{
+				ret = false;
+				return false;
+			}
+		});
+		return ret;
+	}
     
     function createProject()
     {
     	$(".content").load("bulid_project.html");
     }
-    
+	
+	function addApplication()
+	{
+		if(checkInput())
+		{
+			$.post("/addApplication", {name:$('#name').val(),version:$('#version').val(),k8sVersion:$('#k8s-version').val(),note:$('#note').val()}, function(success)
+			{
+				if(success)
+				{
+					alert("added");
+					table.ajax.reload();
+					$('#appModal').modal('toggle');
+					$('input', $('#appModal')).each(function () {
+						$(this).val('');
+					
+					});
+				}
+				else
+				{
+					alert("error");
+				}
+  		   	});	
+		}
+		else
+		{
+			alert("Missing info..");
+		}
+	}
 </script>
