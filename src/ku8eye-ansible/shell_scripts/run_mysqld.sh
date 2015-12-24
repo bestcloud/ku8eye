@@ -1,0 +1,1 @@
+nohup mysqld_safe &
