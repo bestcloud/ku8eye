@@ -7,22 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Project {
 
-	public String getJsonStr() {
-		try {
-			return (new ObjectMapper()).writeValueAsString(this);
-		} catch (Exception e) {
-			return null;
-		}
 
-	}
 
 	public void addService(Service s) {
 		services.add(s);
 	}
 
-	public void addPort(Port p) {
-		ports.add(p);
-	}
 
 	private String projectName;
 	private String version;
@@ -30,7 +20,7 @@ public class Project {
 	private String kuberneteVersion;
 	private String describe;
 	private List<Service> services = new ArrayList<Service>();
-	private List<Port> ports = new ArrayList<Port>();
+
 
 	public String getProjectName() {
 		return projectName;
@@ -79,13 +69,4 @@ public class Project {
 	public void setServices(List<Service> services) {
 		this.services = services;
 	}
-
-	public List<Port> getPorts() {
-		return ports;
-	}
-
-	public void setPorts(List<Port> ports) {
-		this.ports = ports;
-	}
-
 }

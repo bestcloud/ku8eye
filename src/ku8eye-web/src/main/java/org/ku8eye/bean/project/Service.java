@@ -9,7 +9,24 @@ public class Service {
 	private String tag;
 	private String replica;
 	private String version;
-	private List<Images> image =new ArrayList<Images>();
+	private List<Images> image = new ArrayList<Images>();
+	private List<Port> ports = new ArrayList<Port>();
+
+	public void addPort(Port p) {
+		ports.add(p);
+	}
+
+	public List<Port> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(List<Port> ports) {
+		this.ports = ports;
+	}
+
+	public void addImage(Images i) {
+		image.add(i);
+	}
 
 	public String getName() {
 		return name;
