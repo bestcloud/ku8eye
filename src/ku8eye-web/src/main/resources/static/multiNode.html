@@ -149,6 +149,7 @@ $("#addNode").click(function(){
 });
 
 
+
 function selectOrAddNode(_type){
 	$('#example2').DataTable({
 	    "ajax":"/host/1",
@@ -179,14 +180,24 @@ function selectOrAddNode(_type){
 
 //模版默认的值显示
 $.ajax({
-    url:"/deploycluster/selecttemplate/1",
+    url:"/deploycluster/getcurtemplate",
     type: "GET",
     dataType:"json",
     success: function(data){
+    	var li="";
     	$("#mode_h5").html("您选择了"+data.name+"模式，至少需要"+data.minNodes+"节点，建议"+data.maxNodes+"个节点");
+    	$.each(data.nodes,function(i,item){
+    		if(i==0){
+    			$("#multiIp").html(item.ip);
+    	    	$("#multiName").html(item.hostName);
+    		}else{
+    			li +="<tr><td>"+item.ip+"</td><td><Button class='del' value='"+item.hostId+"'>删除</Button></td></tr>";
+    		}
+    	});
+    	$("#multiNodes").html("<tr><td>节点</td><td>设置</td></tr>"+li);
+    	deleteNode();
     }
 });
-
 //选择节点按钮事件
 $("#selectSaveBtn").click(function(){
 		
@@ -235,67 +246,72 @@ $("#addSaveBtn").click(function(){
     });	
 	//nodes节点显示
 	setTimeout(addData, 500);
-	function addData(){
-		$.ajax({
-		    url:"/deploycluster/nodeslist?type=node",
-		    type: "GET",
-		    dataType:"json",
-		    success: function(data){
-		    	var li="";
-		    	$.each(data,function(i,item){
-		    		li +="<tr><td>"+item.ip+"</td><td><Button class='del' value='"+item.hostId+"'>删除</Button></td></tr>";
-		    	});
-		    	$("#multiNodes").html("<tr><td>节点</td><td>设置</td></tr>"+li);
-		    	//修改参数
-	        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
-	        		$("#setting").html("");
-					var dialogValue=$( this ).attr('value');
-					var dialogip=$( this ).attr('c');
-					var dialogpasswd=$( this ).attr('passwd');
-					var modifyId=$( this ).attr('count');
-					var hostName=$( this ).attr('host');
-					var arrname=dialogValue.split(";");
-					var i;
-					var li="";
-					for(i=0;i<arrname.length-1;i++){
-						var arrValue=arrname[i].split("=");
-						li +=[
-						      '<div class="form-group">',
-						      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
-						      '<div class="col-sm-10">',
-						      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
-						      '</div>',
-						      '</div>'
-						      ].join('');
-					}
-					$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
-					
-					$("#setSaveBtn").click(function(){
-						$(this).unbind('click');
-						$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
-					});
-				});
-
-	        	//删除行
-				$( '#multiNodes' ).find( 'tr .del' ).click(function() {
-					var deleteId=$(this).val();
-					$.ajax({
-				        url:"/deploycluster/deletenode/"+deleteId,
-				        type: "GET",
-				        dataType:"json",
-				        success: function(data){
-				  
-				        }  
-				    });	
-					setTimeout(addData, 500);
-					
-				});
-		    	
-		    }
-		});
-	}
-
 });
+
+
+
+function addData(){
+	$.ajax({
+	    url:"/deploycluster/nodeslist?type=node",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var li="";
+	    	$.each(data,function(i,item){
+	    		li +="<tr><td>"+item.ip+"</td><td><Button class='del' value='"+item.hostId+"'>删除</Button></td></tr>";
+	    	});
+	    	$("#multiNodes").html("<tr><td>节点</td><td>设置</td></tr>"+li);
+	    	//修改参数
+        	$( '#multiNodes' ).find( 'tr .set' ).click(function() {
+        		$("#setting").html("");
+				var dialogValue=$( this ).attr('value');
+				var dialogip=$( this ).attr('c');
+				var dialogpasswd=$( this ).attr('passwd');
+				var modifyId=$( this ).attr('count');
+				var hostName=$( this ).attr('host');
+				var arrname=dialogValue.split(";");
+				var i;
+				var li="";
+				for(i=0;i<arrname.length-1;i++){
+					var arrValue=arrname[i].split("=");
+					li +=[
+					      '<div class="form-group">',
+					      '<label class="col-sm-2 control-label" >'+arrValue[0]+'</label>',
+					      '<div class="col-sm-10">',
+					      '<input type="text" class="form-control" value="'+arrValue[1]+'" id="'+arrValue[0]+'">',
+					      '</div>',
+					      '</div>'
+					      ].join('');
+				}
+				$("#setting").html('<div class="form-group"><label class="col-sm-2 control-label">'+dialogip+dialogpasswd+'</label></div>'+li);
+				
+				$("#setSaveBtn").click(function(){
+					$(this).unbind('click');
+					$("#"+modifyId).html("ansible_ssh_user="+$("#ansible_ssh_user").val()+";ansible_ssh_pass="+$("#ansible_ssh_pass").val()+";");
+				});
+			});
+
+        	deleteNode();
+	    	
+	    }
+	});
+}
+
+function deleteNode(){
+	//删除行
+	$( '#multiNodes' ).find( 'tr .del' ).click(function() {
+		var deleteId=$(this).val();
+		$.ajax({
+	        url:"/deploycluster/deletenode/"+deleteId,
+	        type: "GET",
+	        dataType:"json",
+	        success: function(data){
+	  
+	        }  
+	    });	
+		setTimeout(addData, 500);
+	});
+}
 
 $("#nextStep").click(function(){
 	$(".content").load("modeNext.html?data=multiNode");
