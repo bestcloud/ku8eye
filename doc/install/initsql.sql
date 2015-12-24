@@ -32,7 +32,7 @@ CREATE TABLE `host` (
   `LOCATION` varchar(128) DEFAULT NULL COMMENT 'host location ,etc room ',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  `CORES` tinyint(4) DEFAULT NULL,
+  `CORES` smallint(6) DEFAULT NULL,
   `MEMORY` mediumint(6) DEFAULT NULL,
   `USAGE_FLAG` tinyint(4) DEFAULT NULL,
   `SSH_LOGIN` tinyint(4) DEFAULT NULL,

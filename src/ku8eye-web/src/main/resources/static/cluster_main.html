@@ -30,7 +30,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;">	
-					<h1>您的计算机软件未安装，请安装！</h1>
+					<h1 id="installtitle">您的计算机软件未安装，请安装！</h1>
 				</div>
 
 				<table id="example1" class="installationMode">
@@ -48,35 +48,71 @@
 <!-- /.row -->
 <script>
 //$.dailyInit();
-	  $.ajax({
-	        url:"/deploycluster/listtemplates",
-	        type: "GET",
-	        dataType:"json",
-	        success: function(data){
-	        	var count=1;
-				var tableList="";
-	            $.each(data,function(i,item){
-	            	tableList += [
-	                     count%2==1?'<tr>':'',
-	                     count%2==1?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul class="Mode"><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
-	                     count%2==0?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
-	                     count%2==0?'</tr>':''
-	                ].join('');
-	               
-	                count++;
-	            }); 
+$.ajax({
+    url:"/clusterlist/1",
+    type: "GET",
+    dataType:"json",
+    success: function(data){
+    	$.each(data,function(i,item){
+    		if(item.installType==1){
+    			install();
+    		}else{
+    			installed();
+    		}
+    	});
+    }
+}); 
+
+function install(){
+	$.ajax({
+	    url:"/deploycluster/listtemplates",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var count=1;
+			var tableList="";
+	        $.each(data,function(i,item){
+	        	tableList += [
+	                 count%2==1?'<tr>':'',
+	                 count%2==1?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul class="Mode"><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
+	                 count%2==0?'<th id="'+item.id+'" c="'+item.maxNodes+'"><ul><li><h3>'+item.name+'</h3></li><li class="mode_li">要求：最少'+item.minNodes+'节点,最大'+item.maxNodes+'节点</li><li class="mode_li">'+item.describe+'</li></ul></th>':'',
+	                 count%2==0?'</tr>':''
+	            ].join('');
 	           
-	            $("#example1").html(tableList);  
-	            
-	            $( '#example1' ).find('th').bind('click',function(){
-	            	if($( this ).attr('c')==1){
-	            		$(".content").load("singleNode.html");
-	            	}else{
-	            		$(".content").load("multiNode.html");
-	            	}
-	            	
-				});
-	        }
-	    });
+	            count++;
+	        }); 
+	       
+	        $("#example1").html(tableList);  
+	        
+	        $( '#example1' ).find('th').bind('click',function(){
+	        	if($( this ).attr('c')==1){
+	        		$(".content").load("singleNode.html");
+	        	}else{
+	        		$(".content").load("multiNode.html");
+	        	}
+	        	
+			});
+	    }
+	});
+}
+
+function installed(){
+	$("#installtitle").html("已完成安装！！！！");
+	$.ajax({
+	    url:"/deploycluster/nodeslist",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		var nodeRole="";
+	    		$.each(item.nodeRoleParams,function(m,n){
+	    			nodeRole+=m+";";
+	    		});
+	    		$("#example1").append("<tr><td>"+item.ip+"</td><td>"+nodeRole+"</td><td class='detected'>检测成功</td></tr>");
+	    	});
+	    	
+	    }
+	});
+}
 
 </script>

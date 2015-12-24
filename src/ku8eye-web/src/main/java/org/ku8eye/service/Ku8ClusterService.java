@@ -2,22 +2,19 @@ package org.ku8eye.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.ku8eye.domain.Host;
+import org.ku8eye.domain.Ku8Cluster;
 import org.ku8eye.mapping.HostMapper;
+import org.ku8eye.mapping.Ku8ClusterMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 
- * @author jackchen
- *
- */
 @Service
-public class HostService {
-
+public class Ku8ClusterService {
+	@Autowired
+	private Ku8ClusterMapper Ku8ClusterDao;
 	@Autowired
 	private HostMapper hostDao;
 
@@ -28,17 +25,12 @@ public class HostService {
 	 * @return User
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<Host> getHostsByZoneId(int zoneId) {
-		return hostDao.selectAll();
+	public Ku8Cluster getClustersByClusterId(int clusterId) {
+		return Ku8ClusterDao.selectByPrimaryKey(clusterId);
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Host getHostsByZoneString(int zoneId) {
-		return hostDao.selectByPrimaryKey(zoneId);
+	public List<Host> getClusterHosts(int clusterId) {
+		return hostDao.selectByClusterId(clusterId);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
-	public int addHost(Host host) {
-		return hostDao.insert(host);
-	}
 }

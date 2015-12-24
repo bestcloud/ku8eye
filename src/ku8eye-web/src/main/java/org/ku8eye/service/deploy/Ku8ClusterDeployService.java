@@ -74,7 +74,7 @@ public class Ku8ClusterDeployService {
 
 	private void processTemplateAutoParams(Ku8ClusterTemplate template) {
 		// etcd param
-		 Map<String, InstallParam> allGlobalParams=template.getAllGlobParameters();
+		Map<String, InstallParam> allGlobalParams = template.getAllGlobParameters();
 		HashMap<String, String> autoParams = template.getAutoComputedGlobalParams();
 		InstallNode etcdNode = findNodeHashRole(template, Ku8ClusterTemplate.NODE_ROLE_ETCD);
 		String ectdIP = etcdNode.getIp();
@@ -137,9 +137,9 @@ public class Ku8ClusterDeployService {
 		SqlSession session = null;
 		try {
 			session = sqlSessionFactory.getObject().openSession(false);
-			Statement stmt=session.getConnection().createStatement();
+			Statement stmt = session.getConnection().createStatement();
 			Ku8sSrvEndpointMapper srvEndPntMapper = session.getMapper(Ku8sSrvEndpointMapper.class);
-			stmt.executeUpdate("delete from ku8s_srv_endpoint where CLUSTER_ID= "+clusterId);
+			stmt.executeUpdate("delete from ku8s_srv_endpoint where CLUSTER_ID= " + clusterId);
 			for (InstallNode node : template.getNodes()) {
 				int hostId = node.getHostId();
 				Ku8sSrvEndpoint srvEndpnt = null;
@@ -180,7 +180,10 @@ public class Ku8ClusterDeployService {
 				String sql = "update host  set CLUSTER_ID =" + clusterId + ",USAGE_FLAG=" + Constants.HOST_USAGED
 						+ ",LAST_UPDATED= now()  where ID=" + hostId;
 				stmt.executeUpdate(sql);
-				
+				// update cluster install status
+				sql = "update ku8_cluster  set INSTALL_TYPE =" + Constants.K8S_AUTO_INSTALLED
+						+ ",LAST_UPDATED= now() ,NOTE='Auto installed'  where ID=" + clusterId;
+				stmt.executeUpdate(sql);
 			}
 			stmt.close();
 			session.commit();
