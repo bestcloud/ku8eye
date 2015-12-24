@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.ku8eye.bean.GridData;
 import org.ku8eye.domain.Host;
 import org.ku8eye.service.HostService;
+import org.ku8eye.service.Ku8ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +23,11 @@ public class HostController {
 
 	@Autowired
 	private HostService hostService;
+	@Autowired
+	private Ku8ClusterService clusterService;
 	private Logger log = Logger.getLogger(this.toString());
 
-	@RequestMapping(value = "/hostlist/{zoneId}")
+	@RequestMapping(value = "/host/{zoneId}")
 	public GridData getProjects(@PathVariable("zoneId") int zoneId) {
 		GridData grid = new GridData();
 		List<Host> pros = hostService.getHostsByZoneId(zoneId);
@@ -61,5 +64,12 @@ public class HostController {
 
 		return hostresult;
 	}
-
+	
+	
+	@RequestMapping(value = "/host/cluster-hosts/{clusterid}")
+	public List<Host> getClusterHost(@PathVariable("clusterid") int clusterid) {
+		List<Host>  host=clusterService.getClusterHosts(clusterid);
+		return host;
+	}
+  
 }
