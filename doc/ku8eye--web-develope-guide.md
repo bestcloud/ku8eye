@@ -1,22 +1,25 @@
-# ku8eye web¹¤³Ì±àÒëÔËĞĞ
+# ku8eye webå·¥ç¨‹ç¼–è¯‘è¿è¡Œ
 
-¹¤³Ì²ÉÓÃÁËspring-boot¿ò¼ÜÀ´¼ò»¯¿ª·¢ºÍ²¿Êğ£¬ÏÂÔØÔ´Âë¹¤³Ì£º
+å·¥ç¨‹é‡‡ç”¨äº†spring-bootæ¡†æ¶æ¥ç®€åŒ–å¼€å‘å’Œéƒ¨ç½²ï¼Œä¸‹è½½æºç å·¥ç¨‹ï¼š
 https://github.com/bestcloud/ku8eye/tree/master/src/ku8eye-web
-ÔÚeclipseÖĞµ¼ÈëmavenÏîÄ¿²¢Ö´ĞĞRun As¡ª¡ª> Maven Build£¬¼´¿É±àÒëÔ´Âë£¬±àÒë³É¹¦ÒÔºó£¬ÔÚtargetÄ¿Â¼ÏÂÉú³ÉÁËall in oneµÄJAR°üku8eye-web-xxxxx.jar,Ëü°üÀ¨ËùÓĞÒÀÀµ¿â£¬ÃüÁîĞĞÔËĞĞ java -jar ku8eye-web-xxxxx.jar¼´¿ÉÆô¶¯Web£¬Ëæºó£¬ÔÚä¯ÀÀÆ÷ÊäÈëhttp://localhost:8080¼´¿É·ÃÎÊ¡£
-eclipseÖĞµ÷²âµÄÊ±ºò£¬ÔËĞĞRun As¡ª¡ª>Java Application¼´¿ÉÆô¶¯Web¡£
-ÏîÄ¿±àÒëÒÀÀµJDK 7¡£
+åœ¨eclipseä¸­å¯¼å…¥mavené¡¹ç›®å¹¶æ‰§è¡ŒRun Asâ€”â€”> Maven Buildï¼Œå³å¯ç¼–è¯‘æºç ï¼Œç¼–è¯‘æˆåŠŸä»¥åï¼Œåœ¨targetç›®å½•ä¸‹ç”Ÿæˆäº†all in oneçš„JARåŒ…ku8eye-web-xxxxx.jar,å®ƒåŒ…æ‹¬æ‰€æœ‰ä¾èµ–åº“ï¼Œå‘½ä»¤è¡Œè¿è¡Œ java -jar ku8eye-web-xxxxx.jarå³å¯å¯åŠ¨Webï¼Œéšåï¼Œåœ¨æµè§ˆå™¨è¾“å…¥http://localhost:8080å³å¯è®¿é—®ã€‚
+eclipseä¸­è°ƒæµ‹çš„æ—¶å€™ï¼Œè¿è¡ŒRun Asâ€”â€”>Java Applicationå³å¯å¯åŠ¨Webã€‚
+é¡¹ç›®ç¼–è¯‘ä¾èµ–JDK 7ã€‚
 
-## ¹¤³ÌÄ¿Â¼ËµÃ÷
-src\mainÄ¿Â¼ÎªÖ÷ÒªÔ´Âë
-src\testÄ¿Â¼Îª²âÊÔÔ´Âë£¬Ö÷ÒªÎªµ¥Ôª²âÊÔ
-src\mainÄ¿Â¼ÏÂÈçÏÂ°ü½á¹¹£º
+## å·¥ç¨‹ç›®å½•è¯´æ˜
+src\mainç›®å½•ä¸ºä¸»è¦æºç 
+src\testç›®å½•ä¸ºæµ‹è¯•æºç ï¼Œä¸»è¦ä¸ºå•å…ƒæµ‹è¯•
+src\mainç›®å½•ä¸‹å¦‚ä¸‹åŒ…ç»“æ„ï¼š
 
- - org.ku8eye.domainÄ¿Â¼Îª´æ·ÅÓò¶ÔÏó£¬ÕâĞ©Óò¶ÔÏó¶ÔÓ¦mysqlÊı¾İ¿âÀïµÄÒ»¸ö±í
- - org.ku8eye.bean£¬Îª³£¹æJava Bean¶ÔÏó£¬ÓÃÓÚÊı¾İ´«µİ»ò×ª»»µÈÄ¿µÄ
- - org.ku8eye.rest£¬ÎªÌá¹©Rest·şÎñµÄJava·şÎñ¶ÔÏó£¬ÓÃÓÚÄÚ²¿»òÍâ²¿ÏµÍ³·ÃÎÊ
- - org.ku8eye.ctrl£¬ÎªSpring MVCµÄController¶ÔÏóËùÔÚµØ·½
- - org.ku8eye.service£¬ÎªSpringµÄService Bean¶ÔÏóËùÔÚµØ·½
- ½¨Òéctrl°üÓëservice°ü¿ÉÒÔ°´ÕÕÄ£¿éÃû³Æ·Ö×Ó°ü£¬±ÈÈçorg.ku8eye.ctrl.user.xxx
+ - org.ku8eye.domainç›®å½•ä¸ºå­˜æ”¾åŸŸå¯¹è±¡ï¼Œè¿™äº›åŸŸå¯¹è±¡å¯¹åº”mysqlæ•°æ®åº“é‡Œçš„ä¸€ä¸ªè¡¨
+ - org.ku8eye.beanï¼Œä¸ºå¸¸è§„Java Beanå¯¹è±¡ï¼Œç”¨äºæ•°æ®ä¼ é€’æˆ–è½¬æ¢ç­‰ç›®çš„
+ - org.ku8eye.restï¼Œä¸ºæä¾›RestæœåŠ¡çš„JavaæœåŠ¡å¯¹è±¡ï¼Œç”¨äºå†…éƒ¨æˆ–å¤–éƒ¨ç³»ç»Ÿè®¿é—®
+ - org.ku8eye.ctrlï¼Œä¸ºSpring MVCçš„Controllerå¯¹è±¡æ‰€åœ¨åœ°æ–¹
+ - org.ku8eye.serviceï¼Œä¸ºSpringçš„Service Beanå¯¹è±¡æ‰€åœ¨åœ°æ–¹
+ å»ºè®®ctrlåŒ…ä¸serviceåŒ…å¯ä»¥æŒ‰ç…§æ¨¡å—åç§°åˆ†å­åŒ…ï¼Œæ¯”å¦‚org.ku8eye.ctrl.user.xxx
 
-Ò³ÃæÎÄ¼ş£¨¾²Ì¬£¬JSP¡¢JS¡¢ImagesµÈ£©ÔòÔÚÒÔÏÂÄ¿Â¼
- - src\main\resources\static  ÔÚWebÀïÕâÊÇROOTÄ¿Â¼
+é¡µé¢æ–‡ä»¶ï¼ˆé™æ€ï¼ŒJSPã€JSã€Imagesç­‰ï¼‰åˆ™åœ¨ä»¥ä¸‹ç›®å½•
+ - src\main\resources\static  åœ¨Webé‡Œè¿™æ˜¯ROOTç›®å½•
+
+æ•°æ®åº“åˆå§‹åŒ–è„šæœ¬æ–‡ä»¶ï¼ˆinitsql.sqlï¼‰åœ¨ä»¥ä¸‹ç›®å½•
+ - src\ku8eye-ansible\db_scripts
