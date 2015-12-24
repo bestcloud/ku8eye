@@ -69,6 +69,7 @@ $.ajax({
     }
 }); 
 
+//未完成安装
 function install(installType){
 	$("#cluster").html("");
 	$("#example1").attr('class','installationMode')
@@ -94,17 +95,30 @@ function install(installType){
 	        $("#example1").html(tableList);  
 	        
 	        $( '#example1' ).find('th').bind('click',function(){
-	        	if($( this ).attr('c')==1){
+	        	if($( this ).attr('id')==0){
 	        		$(".content").load("singleNode.html");
 	        	}else{
 	        		$(".content").load("multiNode.html");
 	        	}
-	        	
+	        	selectTemplate($( this ).attr('id'));
 			});
 	    }
 	});
+	
 }
 
+//选择安装的模板
+function selectTemplate(templateId){
+	$.ajax({
+	    url:"/deploycluster/selecttemplate/"+templateId+"/1",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    }
+	}); 
+}
+
+//已完成安装
 function installed(installData){
 	$("#cluster").html("");
 	$("#example1").attr('class','table table-bordered table-hover');
