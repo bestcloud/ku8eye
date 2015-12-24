@@ -124,13 +124,13 @@ function installed(installData){
 	$("#example1").attr('class','table table-bordered table-hover');
 	$("#example1").attr('font-size','12px');
 	if(installData.installType==2){
-		$("#installtitle").html("自动完成安装！！！！");
+		$("#installtitle").html("系统检测到您已经安装Kubernetes集群（自动模式），以下是详细信息");
 	}else{
-		$("#installtitle").html("手动完成安装！！！！");	
+		$("#installtitle").html("系统检测到您已经安装Kubernetes集群（手工模式），以下是详细信息");	
 	}
 	$("#example1").html('<tr><th>id</th><th>Host Name</th><th>IP</th><th>Cores</th><th>Memory</th><th>SSH login</th><th>Usage</th><th>location</th></tr>');
 	$.ajax({
-	    url:"/host/cluster-hosts/"+installData.installType,
+	    url:"/host/cluster-hosts/1",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
