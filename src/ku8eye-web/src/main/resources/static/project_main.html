@@ -110,8 +110,7 @@
     
 	$('#appTable tbody').on( 'click', 'button.build', function () {
 		var data = table.row($(this).parents('tr')).data();
-		$('#serModal').load('build_project.html');
-        $('#serModal').modal('toggle');
+		$('.content').load('build_project.html');
     } );
 	
 	$('#appTable tbody').on( 'click', 'button.view', function () {
