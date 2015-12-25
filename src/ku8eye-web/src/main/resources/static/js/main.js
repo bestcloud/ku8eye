@@ -41,7 +41,7 @@ function setSecondLevelMenu(menus){
 	menuhtm.push("<ul class=\"treeview-menu\">");
 	$.each(menus,function(n,menudata) {
 		 
-		 menuhtm.push("<li><a class=\"smenuitem\" href='javascript:void(0)' data=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName);
+		 menuhtm.push("<li><a class=\"smenuitem\" href='javascript:void(0)' onclick='setTitle(this)' data=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName);
 		 if(menudata.subMenus.length>0){
 			 menuhtm.push("<i class=\"fa fa-angle-left pull-right\"></i></a>")
 			 menuhtm.push(setThirdLevelMenu(menudata.subMenus));
@@ -58,7 +58,7 @@ function setThirdLevelMenu(menus){
 	var menuhtm = [];
 	menuhtm.push("<ul class=\"treeview-menu\">");
 	$.each(menus,function(n,menudata) {
-		 menuhtm.push("<li><a class=\"smenuitem\" href='javascript:void(0)' data=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
+		 menuhtm.push("<li><a class=\"smenuitem\" href='javascript:void(0)' onclick='setTitle(this)' data=\""+menudata.menuUrl+"\"><i class=\"fa "+getMenuIcon(menudata.menuType)+"\"></i>"+menudata.menuName+"</a>");
 	})
 	menuhtm.push("</ul>");
 	return '' + menuhtm.join('') + '';
