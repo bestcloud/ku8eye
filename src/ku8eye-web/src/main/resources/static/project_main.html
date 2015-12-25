@@ -21,7 +21,7 @@
 					</thead>
 				</table>
 			</div>
-			<!-- /.box-body -->
+			<!-- /.box-body -->	
 		</div>
 		<!-- /.box -->
 	</div>
@@ -89,11 +89,6 @@
 		</div>
 	</div>
 </div>
-
-<div class="modal fade" id="serModal" tabindex="-1" role="dialog" aria-labelledby="serModalLabel">
-</div>
-
-
 <script type="text/javascript">
 	// To make Pace works on Ajax calls
 	$(document).ajaxStart(function() { Pace.restart(); });
@@ -107,7 +102,7 @@
 					{ "defaultContent": "<button class='build'>Build</button>&nbsp;<button class='view'>View</button>"}
         		]
     });
-    
+	
 	$('#appTable tbody').on( 'click', 'button.build', function () {
 		var data = table.row($(this).parents('tr')).data();
 		$('.content').load('build_project.html');
@@ -131,7 +126,7 @@
 	
 	function setFormTips(field)
 	{
-		$(field).parent().find(".formtips").remove().end();
+		$(field).parent().find('.formtips').remove().end();
 		var v = $(field).val();
 		if(v === '')
 		{
@@ -160,11 +155,24 @@
 	{
 		if(checkInput())
 		{
-			$.post("/addApplication", {name:$('#name').val(),version:$('#version').val(),k8sVersion:$('#k8s-version').val(),note:$('#note').val()}, function(success)
+			var _name = $('#name').val();
+			var _version = $('#version').val();
+			var _k8sVersion = $('#k8s-version').val();
+			var _note = $('#note').val();
+			
+			$.post("/addApplication", {name:_name,version:_version,k8sVersion:_k8sVersion,note:_note}, function(success)
 			{
 				if(success)
 				{
-					alert("added");
+					var $div = $('<div>');
+					$div.load('alert.html', function(){
+						$(this).find('span').html("Project <strong>" + _name + "</strong> added successfully.");
+						var child = $(this).children();
+						child.fadeTo(3000, 500).slideToggle(500, function(){
+							child.alert('close');
+						});
+						$('.content').append(child);
+					});
 					table.ajax.reload();
 					$('#appModal').modal('toggle');
 				}
