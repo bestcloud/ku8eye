@@ -1,0 +1,150 @@
+<div name="servicePanel">
+	<!-- Service -->
+	<div class="form-group">
+		<label class="col-sm-2 control-label">name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="s_name"
+				placeholder="服务名称">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">describe</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="describe"
+				placeholder="服务描述">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">replica</label>
+		<div class="col-sm-10">
+			<input type="number" class="form-control" id="replica"
+				placeholder="实例数量">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-2 control-label">version</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="s_version"
+				placeholder="服务版本号">
+		</div>
+	</div>
+	<div class="panel panel-info" name="image">
+		<div class="panel-heading">
+			Images
+			<button type="button" class="btn btn-primary"
+				onclick="addImages(this)">+</button>
+			<button type="button" class="btn btn-primary"
+				onclick="delImages(this)">-</button>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">name</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="i_name"
+					placeholder="镜像名称">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">version</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="i_version"
+					placeholder="镜像版本号">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">registry</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="registry"
+					placeholder="镜像仓库">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">imageName</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="imageName"
+					placeholder="镜像文件名">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">limits</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="limits"
+					placeholder="limits">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">cpu</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="cpu" placeholder="cpu">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">memory</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="memory"
+					placeholder="memory">
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-info" name="port">
+		<div class="panel-heading">
+			Ports
+			<button type="button" class="btn btn-primary" onclick="addPort(this)">+</button>
+			<button type="button" class="btn btn-primary" onclick="delPort(this)">-</button>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">containerPort</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="containerPort"
+					placeholder="containerPort">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">servicePort</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="servicePort"
+					placeholder="servicePort">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label">nodePort</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="nodePort"
+					placeholder="nodePort">
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	function addImages(obj) {
+		var $image = $(obj).parent(".panel-heading")
+				.parent("div[name='image']");
+		var $new_image = $image.clone();
+		$image.after($new_image);
+
+	}
+	function delImages(obj) {
+		var $this_i = $(obj).parent(".panel-heading").parent(
+				"div[name='image']");
+		var $i = $this_i.siblings("div[name='image']");
+		if ($i.length > 0) {
+			$this_i.remove();
+		}
+
+	}
+	function addPort(obj) {
+		var $port = $(obj).parent(".panel-heading").parent("div[name='port']");
+		var $new_port = $port.clone();
+		$port.after($new_port);
+	}
+	function delPort(obj) {
+		var $this_port = $(obj).parent(".panel-heading").parent(
+				"div[name='port']");
+		var $ports = $this_port.siblings("div[name='port']");
+		if ($ports.length > 0) {
+			$this_port.remove();
+		}
+
+	}
+</script>
