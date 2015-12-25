@@ -120,17 +120,7 @@
     } );
 	
 	$('input', $('#appModal')).focusout(function() {
-		$(this).parent().find(".formtips").remove().end();
-		var v = $(this).val();
-		if(v === '')
-		{
-			$(this).closest('.form-group').addClass('has-error');
-            $(this).parent().append('<span class="formtips" style="color:#dd4b39">不能为空!</span>');
-		}
-		else
-		{
-			$(this).closest('.form-group').removeClass('has-error').addClass('has-success');
-		}
+		setFormTips(this);
 	});
 	
 	$('#appModal').on('hidden.bs.modal', function () {
@@ -140,22 +130,32 @@
 		$('#addResult').hide();
 	});
 	
+	function setFormTips(field)
+	{
+		$(field).parent().find(".formtips").remove().end();
+		var v = $(field).val();
+		if(v === '')
+		{
+			$(field).closest('.form-group').addClass('has-error');
+            $(field).parent().append('<span class="formtips" style="color:#dd4b39">不能为空!</span>');
+		}
+		else
+		{
+			$(field).closest('.form-group').removeClass('has-error').addClass('has-success');
+		}
+	}
+	
 	function checkInput(){
 		var ret = true;
 		$('input', $('#appModal')).each(function () {
 			if($(this).val() === '')
 			{
+				setFormTips(this);
 				ret = false;
-				return false;
 			}
 		});
 		return ret;
 	}
-    
-    function createProject()
-    {
-    	$(".content").load("bulid_project.html");
-    }
 	
 	function addApplication()
 	{
@@ -168,20 +168,12 @@
 					alert("added");
 					table.ajax.reload();
 					$('#appModal').modal('toggle');
-					$('input', $('#appModal')).each(function () {
-						$(this).val('');
-					
-					});
 				}
 				else
 				{
 					$('#addResult').show();
 				}
   		   	});	
-		}
-		else
-		{
-			alert("Missing info..");
 		}
 	}
 </script>
