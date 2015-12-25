@@ -16,11 +16,13 @@
   <!--
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> 
   -->
+  <link rel="stylesheet" href="../css/ionicons.min.css"> 
   <!-- Theme style -->
   <link rel="stylesheet" href="../css/AdminLTE.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="../css/skins/_all-skins.min.css">
+  <link rel="stylesheet" href="../css/skins/skin-blue.min.css">
   <!-- Pace style -->
   <link rel="stylesheet" href="../plugins/pace/pace.min.css">
   
@@ -41,6 +43,7 @@
   <header class="main-header">
     <!-- Logo -->
     <a href="../index2.html" class="logo">
+    <a href="index" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>K</b>u8</span>
       <!-- logo for regular state and mobile devices -->
@@ -239,6 +242,7 @@
         <small>Loading example</small>
       </h1>
       -->
+	  <h1 id="title"></h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
         <li><a href="#">Examples</a></li>
@@ -471,7 +475,6 @@
 <script src="../plugins/slimScroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
 <script src="../plugins/fastclick/fastclick.js"></script>
-
 <!-- AdminLTE App -->
 <script src="../js/app.js"></script>
 <!-- AdminLTE for demo purposes -->
@@ -481,6 +484,35 @@
 <!-- page script -->
 <script type="text/javascript">
 	$(".copyright").html('<strong>Copyright &copy; ' + new Date().getFullYear() +'</strong> Hewlett-Packard Enterprise. All rights reserved.');
+	
+	function setTitle(link){
+		if($(link).attr("data") !== '')
+		{
+			var parent = $(link).closest("ul").parent().find('span').first().text();
+			var subparent = '';
+			var item = $(link).text();
+			
+			if(parent === '')
+			{
+				subparent = $(link).closest("ul").parent().find('a').first().text();
+				parent = $(link).closest(".treeview").find("span").text();
+			}
+			
+			$(".breadcrumb").html("<li><a href='index'><i class='fa fa-dashboard'></i> Home</a></li><li>" + parent + "</li>");
+			
+			if(subparent === '')
+			{
+				$("#title").html(parent + "<small>" + item + "</small>");
+			}
+			else
+			{
+				$("#title").html(subparent + "<small>" + item + "</small>");
+				$(".breadcrumb").append("<li>" + subparent + "</li>");
+			}
+			
+			$(".breadcrumb").append("<li class='active'>" + item + "</li>");
+		}
+	}
 	
 	// To make Pace works on Ajax calls
 	$(document).ajaxStart(function() { Pace.restart(); });
