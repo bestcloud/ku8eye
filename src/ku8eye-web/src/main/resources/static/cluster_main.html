@@ -37,7 +37,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;">	
-					<h1 id="installtitle">您的计算机软件未安装，请安装！</h1>
+					<h3 id="installtitle">您的计算机软件未安装，请安装！</h3>
 				</div>
 				<div id="cluster" style="padding:0px 0px 10px 0px;"></div>
 				<table id="example1" class="installationMode">
@@ -130,11 +130,10 @@ function installed(installData){
 	}
 	$("#example1").html('<tr><th>id</th><th>Host Name</th><th>IP</th><th>Cores</th><th>Memory</th><th>SSH login</th><th>Usage</th><th>location</th></tr>');
 	$.ajax({
-	    url:"/host/cluster-hosts/2",
+	    url:"/host/cluster-hosts/1",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	alert(data);
 	    	$.each(data,function(i,item){
 	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
 	    	});
