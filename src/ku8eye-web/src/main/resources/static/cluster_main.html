@@ -130,14 +130,29 @@ function installed(installData){
 	}
 	$("#example1").html('<tr><th>id</th><th>Host Name</th><th>IP</th><th>Cores</th><th>Memory</th><th>SSH login</th><th>Usage</th><th>location</th></tr>');
 	$.ajax({
-	    url:"/host/cluster-hosts/1",
+	    url:"/host/cluster-hosts/2",
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
+	    	alert(data);
 	    	$.each(data,function(i,item){
 	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
 	    	});
 	    	
+	    }
+	});
+	
+	$.ajax({
+	    url:"/deploycluster/getk8s-alive-nodes/1",
+	    type: "GET",
+	    dataType:"text",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
+	    	});
+	    },
+	    error:function(){
+	    	alert("报错!!!!");
 	    }
 	});
 	

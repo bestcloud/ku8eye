@@ -1,6 +1,7 @@
 package org.ku8eye.service.k8s;
 
 import java.sql.ResultSet;
+
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
@@ -21,6 +23,7 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+@Service
 public class K8sAPIService {
 	private Logger LOGGER = Logger.getLogger(K8sAPIService.class);
 	@Autowired

@@ -2,7 +2,6 @@ package org.ku8eye.ctrl.deploy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import org.ku8eye.service.deploy.AnsibleCallResult;
 import org.ku8eye.service.deploy.AnsibleResultParser;
 import org.ku8eye.service.deploy.Ku8ClusterDeployService;
 import org.ku8eye.service.deploy.ProcessCaller;
+import org.ku8eye.service.k8s.K8sAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +38,8 @@ public class Ku8ClusterDeployController {
 	private HostService hostService;
 	@Autowired
 	private Ku8ClusterDeployService deployService;
+	@Autowired
+	private K8sAPIService apiService;
 	private Logger log = Logger.getLogger(this.toString());
 
 	@RequestMapping(value = "/deploycluster/listtemplates")
@@ -332,6 +334,12 @@ public class Ku8ClusterDeployController {
 	@RequestMapping(value = "/deploycluster/getcurtemplate", method = RequestMethod.GET)
 	public Ku8ClusterTemplate getCurTemplate(ModelMap model) {
 		return (Ku8ClusterTemplate) model.get("ku8template");
+	}
+	
+	@RequestMapping(value = "/deploycluster/getk8s-alive-nodes/{clusterId}", method = RequestMethod.GET)
+	public List<String> getK8sAliveNodes(@PathVariable("clusterId") int clusterId,ModelMap model) {
+		List<String> cluster=apiService.getK8sAliveNodes(clusterId);
+		return cluster;
 	}
 
 }
