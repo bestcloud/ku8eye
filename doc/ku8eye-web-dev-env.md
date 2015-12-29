@@ -29,9 +29,11 @@ http://pan.baidu.com/s/1dEvQtFj
 ### ku8eye-web的使用方式：
 #### 1. 命令行方式
 
+进入容器：`docker exec -ti ku8eye-web bash`
+
 使用命令行完成一键安装Kubernetes集群，脚本为：
 
-`/root/ku8eye-install-kubernetes.sh $1 $2 $3`
+`/root/ku8eye-startup.sh $1 $2 $3`
 
 **需要输入的3个参数为：**
 
