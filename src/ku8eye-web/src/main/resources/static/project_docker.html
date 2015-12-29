@@ -1,0 +1,195 @@
+<style>
+	ul li{list-style-type:none;}
+	.installationMode{
+		width:100%;
+		height:100%;
+		margin:0 auto;
+	}
+	.installationMode tr td{
+		padding:4% 6% 4% 2%;
+		text-align:left;
+	}
+	.installationMode .projectdocker{
+	    width:100%;
+	    height:150px;
+		border:1px solid #E8E8E8;
+		background-color:#E8F2FC;
+	}
+	
+	.installationMode .projectdocker span{
+		width:50%;
+		float:left;
+		color:#2296C9;
+		padding:8px 0px 0px 15px;
+	}
+	.docker-dialog{
+		width:100%;
+		height:100%;
+	}	
+	.docker-dialog tr td{
+		padding:8px 4px;
+	}
+	.col-text{
+		weight:500;
+		text-align:right;
+		font-size:16px;
+		color:#3399FF;
+	}
+	.col-text1{
+		font-size:14px;
+		color:#66CCFF;
+	}	
+</style>
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div style="padding-bottom: 5px;">	
+					<input type="text" calss="" style="height:32px;width:30%;margin-right:20px;padding:2px 2px;" />
+					<button   class="btn btn-primary" >查询</button>	
+				</div>
+				<table id="example1" class="installationMode">
+					<thead>
+						
+						
+					</thead>
+				</table>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">详细信息</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Horizontal Form -->
+		          <div class="box box-info" style="margin-bottom:0px;">
+		            <!-- form start -->
+		            <form class="form-horizontal">
+		              <table style="font-size: 12px;" class="docker-dialog">
+						<thead>
+						<tr>
+							<td class="col-text">title:</td>
+							<td class="col-text1" id="docker-title"></td>
+							<td class="col-text">version:</td>
+							<td class="col-text1" id="version"></td>
+						</tr>
+						<tr>
+							<td class="col-text">versionType:</td>
+							<td class="col-text1" id="versionType"></td>
+							<td class="col-text">publicImage:</td>
+							<td class="col-text1" id="publicImage"></td>
+						</tr>
+						<tr>
+							<td class="col-text">category:</td>
+							<td class="col-text1" id="category"></td>
+							<td class="col-text">clusterId:</td>
+							<td class="col-text1" id="clusterId"></td>
+						</tr>	
+						<tr>
+							<td class="col-text">registryId:</td>
+							<td class="col-text1" id="registryId"></td>
+							<td class="col-text">status:</td>
+							<td class="col-text1" id="status"></td>
+						</tr>
+						<tr>
+							<td class="col-text">note:</td>
+							<td class="col-text1" id="note"></td>
+							<td class="col-text">lastUpdated:</td>
+							<td class="col-text1" id="lastUpdated"></td>
+						</tr>
+						<tr>
+							<td class="col-text">buildFile:</td>
+							<td class="col-text1" id="buildFile"></td>
+							<td class="col-text">autoBuild:</td>
+							<td class="col-text1" id="autoBuild"></td>
+						</tr>
+						</thead>
+						</table>
+		              <!-- /.box-body -->
+		            </form>
+		          </div>
+		          <!-- /.box -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="save">保<span style="padding-left: 12px" />存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$.ajax({
+    url:"/dockerimg/search?key=123",
+    type: "GET",
+    dataType:"json",
+    success: function(data){
+    	var count=0;
+		var tableList="";
+        $.each(data.data,function(i,item){
+        	if(count==0){
+        		tableList+="<tr>";
+        	}
+        	count++;
+        	tableList += [
+					'<td>',
+					'<div class="projectdocker">',
+					'<image src="img/credit/paypal.png" style="width:100%;height:40px;"/>',
+					'<div><span>'+item.title+'</span>',
+					item.versionType==1?'<span>生产版</span></div>':'<span>开发版</span></div>',
+					'<div>',
+					item.publicImage==1?'<span>公共镜像</span>':'<span>私有镜像</span>',
+					'<span>镜像大小：200M</span></div>',
+					'<a class="asdfg" c="'+item.id+'" style="font-size:16px;float:right;padding:15px 15px 0px 0px;color:#2296C9;"  data-toggle="modal" data-target="#myModal">查看详情......</a> ',
+					'</div>',
+					'</td>'
+            ].join('');
+        	if(count==3){
+        		tableList+="</tr>";
+        		count=0;
+        	}
+        }); 
+        $("#example1").html(tableList);  
+        
+        $( '#example1' ).find('a').bind('click',function(){
+        	var dockerId=$( this ).attr('c');
+        	$.each(data.data,function(m,n){
+        		if(n.id==dockerId){
+        			$("#docker-title").html(n.title);
+        			$.each(n,function(a,b){
+        				if(a!="title"){
+        					$("#"+a).html(b);
+        				}
+        				if(a=="publicImage"){
+        					b==0?$("#publicImage").html("私有镜像"):$("#publicImage").html("公共镜像");
+        				}
+        				if(a=="versionType"){
+        					b==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
+        				}
+        				
+        			});
+        		}
+        	});
+		});
+    }
+});
+
+	
+</script>
