@@ -3,22 +3,22 @@
 		<div class="form-group">
 			<div class="col-sm-10">
 				<h3>
-					<span class="label label-default">&nbsp;&nbsp;&nbsp;Project
+					<span class="label label-default">&nbsp;&nbsp;&nbsp;Application
 						&nbsp;&nbsp;&nbsp;</span>
 				</h3>
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label">project name</label>
+			<label class="col-sm-2 control-label">Application Name</label>
 			<div class="col-sm-8">
-				<input type="text" class="form-control" id="projectName"
+				<input type="text" class="form-control" id="appName"
 					placeholder="项目名称">
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label">version</label>
+			<label class="col-sm-2 control-label">Version</label>
 			<div class="col-sm-8">
 				<input type="text" class="form-control" id="version"
 					placeholder="项目版本号">
@@ -26,14 +26,14 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label">author</label>
+			<label class="col-sm-2 control-label">Author</label>
 			<div class="col-sm-8">
 				<input type="text" class="form-control" id="author"
 					placeholder="所有人">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">kubernete version</label>
+			<label class="col-sm-2 control-label">K8s Version</label>
 			<div class="col-sm-8">
 				<input type="text" class="form-control" id="kuberneteVersion"
 					placeholder="kubernete版本">
@@ -41,10 +41,10 @@
 		</div>
 
 		<div class="form-group">
-			<label class="col-sm-2 control-label">describe</label>
+			<label class="col-sm-2 control-label">Notes</label>
 			<div class="col-sm-8">
-				<input type="text" class="form-control" id="describe"
-					placeholder="描述">
+				<input type="text" class="form-control" id="note"
+					placeholder="笔记">
 			</div>
 		</div>
 		<!-- service -->
@@ -66,7 +66,7 @@
 	</form>
 
 	<div class="modal-footer">
-		<button onclick="return false;" type="button" class="btn btn-primary">
+		<button onclick="return createApplication()" type="button" class="btn btn-primary">
 			保<span style="padding-left: 12px" />存
 		</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal"
@@ -78,20 +78,82 @@
 
 </div>
 
+<script src="../js/project.js"></script>
 <script>
-	$(function() {
-		loadData();
-
-	})
+	var _id = sessionStorage.getItem("appID");
+	
+	$(document).ready(function(){
+		sessionStorage.removeItem("appID");
+		if(_id !== null)
+		{
+			$.ajax({
+				url: "/getApplication",
+				type: "GET",
+				dataType: "json",
+				data: {id:_id},
+				success: function(data){
+					console.log(data);
+					$("#appName").val(data['name']);
+					$("#version").val(data['version']);
+					$("#author").val(data['owner']);
+					$("#kuberneteVersion").val(data['k8sVersion']);
+					$("#note").val(data['note']);
+				}
+			});
+		}
+		else
+		{
+			alert("no session found, error");
+		}
+	});
+	
+	function checkInput(){
+		return true;
+	}
+	
+	function createApplication()
+	{
+		if(checkInput())
+		{
+			var _jsonStr = $proObj;
+			console.log(_jsonStr);
+			$.ajax({
+				url: "/createApplication",
+				type: "POST",
+				dataType: "json",
+				data: {
+					id:_id,
+					jsonStr:JSON.stringify(_jsonStr)
+				},
+				success: function(response){
+					console.log(response);
+					if(response['status'] > -1)
+					{
+						back();
+						var _appName = $("#appName").val()
+						var _div = $('<div>');
+						_div.load('alert.html', function(){
+							$(this).find('#title').html(response['message']);
+							$(this).find('#message').html("Project <strong>" + _appName + "</strong> updated successfully.");
+							var child = $(this).children();
+							child.fadeTo(3000, 500).slideToggle(500, function(){
+								child.alert('close');
+							});
+							$('.content').append(child);
+						});
+					}
+					else
+					{
+						alert("failed");
+					}
+				}
+			});
+		}
+	}
+	
 	function loadData() {
 		$("#service_panel_0").load("./service_project.html?d1=112");
 		$('#service_panel_0').toggle(1000);
-		$("#projectName").val($proObj.projectName);
-		$("#version").val($proObj.version);
-		$("#author").val($proObj.author);
-		$("#kuberneteVersion").val($proObj.kuberneteVersion);
-		$("#describe").val($proObj.describe);
-
 	}
 
 	function hide_show(obj) {
@@ -99,7 +161,7 @@
 		$($ob.attr("data-target")).toggle(1000);
 	}
 	function back() {
-		$('.content').load('project_main.html');
+		$('.content').load('application_main.html');
 	}
 
 	function add() {
