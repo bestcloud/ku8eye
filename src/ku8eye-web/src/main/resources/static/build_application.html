@@ -92,12 +92,13 @@
 				dataType: "json",
 				data: {id:_id},
 				success: function(data){
-					console.log(data);
 					$("#appName").val(data['name']);
 					$("#version").val(data['version']);
 					$("#author").val(data['owner']);
 					$("#kuberneteVersion").val(data['k8sVersion']);
 					$("#note").val(data['note']);
+					
+					loadData();
 				}
 			});
 		}
@@ -116,7 +117,6 @@
 		if(checkInput())
 		{
 			var _jsonStr = $proObj;
-			console.log(_jsonStr);
 			$.ajax({
 				url: "/createApplication",
 				type: "POST",
@@ -126,7 +126,6 @@
 					jsonStr:JSON.stringify(_jsonStr)
 				},
 				success: function(response){
-					console.log(response);
 					if(response['status'] > -1)
 					{
 						back();

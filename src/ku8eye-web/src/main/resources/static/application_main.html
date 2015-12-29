@@ -176,7 +176,6 @@
 					{
 						var _div = $('<div>');
 						_div.load('alert.html', function(){
-							console.log($(this));
 							$(this).find('#title').html(response['message']);
 							$(this).find('#message').html("Project <strong>" + _name + "</strong> added successfully.");
 							var child = $(this).children();
