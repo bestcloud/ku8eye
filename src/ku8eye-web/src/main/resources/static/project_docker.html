@@ -84,40 +84,40 @@
 		              <table style="font-size: 12px;" class="docker-dialog">
 						<thead>
 						<tr>
-							<td class="col-text">title:</td>
+							<td class="col-text">名称:</td>
 							<td class="col-text1" id="docker-title"></td>
-							<td class="col-text">version:</td>
+							<td class="col-text">版本:</td>
 							<td class="col-text1" id="version"></td>
 						</tr>
 						<tr>
-							<td class="col-text">versionType:</td>
+							<td class="col-text">版本类型:</td>
 							<td class="col-text1" id="versionType"></td>
-							<td class="col-text">publicImage:</td>
+							<td class="col-text">镜像类型:</td>
 							<td class="col-text1" id="publicImage"></td>
 						</tr>
 						<tr>
-							<td class="col-text">category:</td>
-							<td class="col-text1" id="category"></td>
-							<td class="col-text">clusterId:</td>
+							<td class="col-text">注册表Id:</td>
+							<td class="col-text1" id="registryId"></td>
+							<td class="col-text">集群Id:</td>
 							<td class="col-text1" id="clusterId"></td>
 						</tr>	
 						<tr>
-							<td class="col-text">registryId:</td>
-							<td class="col-text1" id="registryId"></td>
-							<td class="col-text">status:</td>
+							<td class="col-text">自动创建:</td>
+							<td class="col-text1" id="autoBuild"></td>
+							<td class="col-text">状态:</td>
 							<td class="col-text1" id="status"></td>
 						</tr>
 						<tr>
-							<td class="col-text">note:</td>
-							<td class="col-text1" id="note"></td>
-							<td class="col-text">lastUpdated:</td>
-							<td class="col-text1" id="lastUpdated"></td>
+							<td class="col-text">构建文件:</td>
+							<td class="col-text1" id="buildFile"></td>
+							<td class="col-text">类别:</td>
+							<td class="col-text1" id="category"></td>
 						</tr>
 						<tr>
-							<td class="col-text">buildFile:</td>
-							<td class="col-text1" id="buildFile"></td>
-							<td class="col-text">autoBuild:</td>
-							<td class="col-text1" id="autoBuild"></td>
+							<td class="col-text">更新时间:</td>
+							<td class="col-text1" id="lastUpdated"></td>
+							<td class="col-text">备注:</td>
+							<td class="col-text1" id="note"></td>
 						</tr>
 						</thead>
 						</table>
@@ -183,6 +183,17 @@ $.ajax({
         				if(a=="versionType"){
         					b==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
         				}
+        				if(a=="lastUpdated"){
+        					var date = new Date(b);   
+        					var Y = date.getFullYear() + '-';
+        					var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        					var D = (date.getDate() < 10 ? '0'+(date.getDate()) : date.getDate()) + ' ';
+        					var h = (date.getHours() < 10 ? '0'+(date.getHours()) : date.getHours()) + ':';
+        					var m = (date.getMinutes() < 10 ? '0'+(date.getMinutes()) : date.getMinutes()) + ':';
+        					var s = (date.getSeconds() < 10 ? '0'+(date.getSeconds()) : date.getSeconds());
+        					$("#lastUpdated").html(Y+M+D+h+m+s)
+        				
+        				}
         				
         			});
         		}
@@ -191,5 +202,4 @@ $.ajax({
     }
 });
 
-	
 </script>
