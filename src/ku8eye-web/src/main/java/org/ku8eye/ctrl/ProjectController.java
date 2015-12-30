@@ -5,11 +5,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.ku8eye.bean.GridData;
 import org.ku8eye.bean.project.Project;
 import org.ku8eye.domain.Ku8Project;
 import org.ku8eye.domain.User;
 import org.ku8eye.service.ProjectService;
+import org.ku8eye.util.AjaxReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,61 +19,93 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RestController
 @SessionAttributes("user")
 public class ProjectController {
 	
+	private static final Logger log = Logger.getLogger(ProjectController.class);
+	
 	@Autowired
 	private ProjectService projectService;
 	
-	static final ObjectMapper om=new ObjectMapper();
-	
-	@RequestMapping(value="/projectlist")
-	public GridData getProjects(){
+	@RequestMapping(value="/getApplications")
+	public GridData getApplications(){
         GridData grid = new GridData();
-		List<Ku8Project> pros = projectService.getAllProjects();
-		grid.setData(pros);
+		List<Ku8Project> apps = projectService.getAllApplications();
+		grid.setData(apps);
         return grid;
 	}
 	
-	@RequestMapping(value="/createProject2")
-	public String createPorjects(String creatJson) throws Exception
+	@RequestMapping(value="/getApplication")
+	public Ku8Project getApplication(int id){
+		return projectService.getApplication(id);
+	}
+	
+	@RequestMapping(value="/createApplication")
+	public AjaxReponse createApplication(int id, String jsonStr, ModelMap model)
 	{
-		 Project pr=om.readValue(creatJson, Project.class);
+		System.out.println("received str:" + jsonStr);
 		
+		User user = (User) model.get("user");
 		
-		return "";
+		if(user == null)
+		{
+			log.error("ERROR USER NOT LOGGED IN");
+			return new AjaxReponse(-1, "USER NOT LOGGED");
+		}
+		
+		if(jsonStr != null && jsonStr.length() > 0)
+		{
+			 Project p = Project.getFromJSON(jsonStr);
+			 
+			 int tenantId = user.getTenantId();
+			 String owner = p.getAuthor(); //TODO CHECK
+			 String name = p.getProjectName();
+			 String version = p.getVersion();
+			 String k8sVersion = p.getK8sVersion();
+			 String note = p.getNote();
+			 String yamlSpec = jsonStr;
+			 
+			 if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || note.isEmpty())
+			 {
+				log.error("EMPTY FIELDS");
+				return new AjaxReponse(-1, "EMPTY FIELDS");
+			 }
+			 
+			 projectService.updateApplication(id, tenantId, owner, name, version, k8sVersion, note, yamlSpec);
+			
+			 return new AjaxReponse(1, "UPDATED");
+		}
+		return new AjaxReponse(-1, "FAILED");
 	}
 	
 	@RequestMapping(value="/addApplication")
-	public boolean addApplication(HttpServletRequest request,
+	public AjaxReponse addApplication(HttpServletRequest request,
 			@RequestParam("name") String name,
 			@RequestParam("version") String version,
 			@RequestParam("k8sVersion") String k8sVersion,
 			@RequestParam("note") String note,
 			ModelMap model) {
-
+		
 		User user = (User) model.get("user");
 		
 		if(user == null)
 		{
-			System.err.println("ERROR USER NOT LOGGED IN");
-			return false;
+			log.error("ERROR USER NOT LOGGED IN");
+			return new AjaxReponse(-1, "USER NOT LOGGED");
 		}
 		
 		if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || note.isEmpty())
 		{
-			System.err.println("EMPTY FIELDS");
-			return false;
+			log.error("EMPTY FIELDS");
+			return new AjaxReponse(-1, "EMPTY FIELDS");
 		}
 		
-		int res = projectService.addProject(user.getTenantId(), user.getUserId(), name, version, k8sVersion, note);
+		int res = projectService.addApplication(user.getTenantId(), user.getUserId(), name, version, k8sVersion, note);
 		
 		if(res == -1)
-			return false;
+			return new AjaxReponse(res, "ADD FAILED");
 		else
-			return true;
+			return new AjaxReponse(res, "ADDED");
 	}
 }
