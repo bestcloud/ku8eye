@@ -1,12 +1,16 @@
 package org.ku8eye;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.ku8eye.service.deploy.Ku8InstallTool;
+import org.ku8eye.util.SystemUtil;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.boot.SpringApplication;
@@ -16,9 +20,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-public class App {
+public class App extends WebMvcConfigurerAdapter {
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		try {
+			Properties props=SystemUtil.getSpringAppProperties();
+			 registry.addResourceHandler("/external/**").addResourceLocations(props.getProperty("ku8.externalRes"));
+			 super.addResourceHandlers(registry);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	   
+       
+
+        super.addResourceHandlers(registry);
+	}
+
 	@Bean
 	@ConfigurationProperties(prefix = "spring.datasource")
 	public DataSource primaryDataSource() {
@@ -59,19 +81,18 @@ public class App {
 	}
 
 	public static void main(String[] args) throws Exception {
-		int index=findArg(args, "tool");
-		if ( index> 0) {
-			String[] newArgs=new String[args.length-index-1];
-			System.arraycopy(args, index+1, newArgs, 0, newArgs.length);
+		int index = findArg(args, "tool");
+		if (index > 0) {
+			String[] newArgs = new String[args.length - index - 1];
+			System.arraycopy(args, index + 1, newArgs, 0, newArgs.length);
 			System.out.println(Arrays.toString(newArgs));
 			Ku8InstallTool.main(newArgs);
 			return;
 		}
-     
+
 		SpringApplication app = new SpringApplication(App.class);
 		app.setWebEnvironment(true);
 		app.setShowBanner(false);
-
 		Set<Object> set = new HashSet<Object>();
 		// set.add("classpath:applicationContext.xml");
 		app.setSources(set);
