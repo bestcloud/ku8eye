@@ -24,12 +24,12 @@
 		<javaClientGenerator targetPackage="org.ku8eye.mapping"
 			targetProject="ku8eye-web" type="ANNOTATEDMAPPER">
 		</javaClientGenerator>
-		<table tableName="ku8_res_partion" >
+		<table tableName="ku8_rc_inst" >
 		<!-- 
 		<columnOverride column="JSON_SPEC" jdbcType="VARCHAR" />
 		<columnOverride column="PREV_JSON_SPEC" jdbcType="VARCHAR" />
 		 -->
-		</table>
+				</table>
 
 	</context>
 </generatorConfiguration>

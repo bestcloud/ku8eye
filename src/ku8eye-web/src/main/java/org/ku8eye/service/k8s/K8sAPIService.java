@@ -51,6 +51,7 @@ public class K8sAPIService {
 			System.out.println(node.getMetadata().getName());
 			nodeIps.add(node.getSpec().toString());
 		}
+		
 		return nodeIps;
 
 	}

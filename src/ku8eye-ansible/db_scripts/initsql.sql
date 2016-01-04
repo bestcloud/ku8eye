@@ -132,9 +132,11 @@ INSERT INTO `ku8_project` VALUES ('4', null, null, 'demo2 app', 'blank', '1.0', 
 DROP TABLE IF EXISTS `ku8_service`;
 CREATE TABLE `ku8_service` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+   `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
   `OWNER` char(16) DEFAULT NULL COMMENT 'creater :userid',
   `NAME` varchar(128) NOT NULL COMMENT ' service name ',
+  `REPLICA` tinyint(4) DEFAULT NULL COMMENT 'service replica ',
   `ICON_URL` varchar(128) NOT NULL COMMENT ' service icon url ',
   `VERSION` char(16) DEFAULT '1.0' COMMENT ' project version',
   `K8S_VERSION` char(16) DEFAULT '1.0' COMMENT 'kubernetes  version',
@@ -143,37 +145,12 @@ CREATE TABLE `ku8_service` (
   `RES_PARTION_ID`  int(11) DEFAULT NULL  COMMENT 'deployed in this resource partion ',
   `JSON_SPEC` text COMMENT 'JSON spec content',
   `PREV_JSON_SPEC` text COMMENT 'prievious json spec content',
+  `FLAG` tinyint(4) DEFAULT 0 ,
   `STATUS` tinyint(4) DEFAULT 0 ,
    `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
-
-
--- ----------------------------
--- Table structure for `ku8_service_inst`
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_service_inst`;
-CREATE TABLE `ku8_service_inst` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
-  `KU8_SERVICE_ID` int(11) DEFAULT NULL COMMENT 'service Id ,only for public micro service',
-  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
-  `RES_PARTION_ID`  int(11) DEFAULT NULL  COMMENT 'deployed in this resource partion ',
-  `SERVICE_NAME` varchar(32) DEFAULT NULL COMMENT 'service name',
-  `REPLICA` tinyint(4) DEFAULT NULL COMMENT 'service replica ',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `STATUS` tinyint(4) DEFAULT 0 ,
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of ku8_proj_service_inst
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for `ku8_rc_inst`
@@ -186,10 +163,11 @@ CREATE TABLE `ku8_rc_inst` (
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
   `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'deployed in this resource partition',
-  `RES_PARTION_ID`  int(11) DEFAULT NULL  COMMENT 'deployed in this resource partion ',
+  `RES_PARTION_ID` int(11) DEFAULT NULL COMMENT 'deployed in this resource partion ',
   `RC_NAME` varchar(64) DEFAULT NULL COMMENT 'RC name ',
   `POD_LABEL` varchar(64) DEFAULT NULL COMMENT 'RC selector POD Label ',
-  `STATUS` tinyint(4) DEFAULT 0 ,
+  `FLAG` tinyint(4) DEFAULT 0 ,
+  `STATUS` tinyint(4) DEFAULT '0',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
@@ -198,8 +176,6 @@ CREATE TABLE `ku8_rc_inst` (
 -- ----------------------------
 -- Records of ku8_rc_inst
 -- ----------------------------
-
-
 -- ----------------------------
 -- Table structure for `ku8_res_partion`
 -- ----------------------------

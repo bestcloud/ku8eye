@@ -34,14 +34,14 @@ public interface Ku8RcInstMapper {
         "KU8_SERVICE_ID, TENANT_ID, ",
         "ZONE_ID, CLUSTER_ID, ",
         "RES_PARTION_ID, RC_NAME, ",
-        "POD_LABEL, STATUS, ",
-        "NOTE, LAST_UPDATED)",
+        "POD_LABEL, FLAG, ",
+        "STATUS, NOTE, LAST_UPDATED)",
         "values (#{id,jdbcType=INTEGER}, #{projectid,jdbcType=INTEGER}, ",
         "#{ku8ServiceId,jdbcType=INTEGER}, #{tenantId,jdbcType=INTEGER}, ",
         "#{zoneId,jdbcType=INTEGER}, #{clusterId,jdbcType=INTEGER}, ",
         "#{resPartionId,jdbcType=INTEGER}, #{rcName,jdbcType=VARCHAR}, ",
-        "#{podLabel,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, ",
-        "#{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
+        "#{podLabel,jdbcType=VARCHAR}, #{flag,jdbcType=TINYINT}, ",
+        "#{status,jdbcType=TINYINT}, #{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP})"
     })
     int insert(Ku8RcInst record);
 
@@ -54,7 +54,7 @@ public interface Ku8RcInstMapper {
     @Select({
         "select",
         "ID, PROJECTID, KU8_SERVICE_ID, TENANT_ID, ZONE_ID, CLUSTER_ID, RES_PARTION_ID, ",
-        "RC_NAME, POD_LABEL, STATUS, NOTE, LAST_UPDATED",
+        "RC_NAME, POD_LABEL, FLAG, STATUS, NOTE, LAST_UPDATED",
         "from ku8_rc_inst",
         "where ID = #{id,jdbcType=INTEGER}"
     })
@@ -68,6 +68,7 @@ public interface Ku8RcInstMapper {
         @Result(column="RES_PARTION_ID", property="resPartionId", jdbcType=JdbcType.INTEGER),
         @Result(column="RC_NAME", property="rcName", jdbcType=JdbcType.VARCHAR),
         @Result(column="POD_LABEL", property="podLabel", jdbcType=JdbcType.VARCHAR),
+        @Result(column="FLAG", property="flag", jdbcType=JdbcType.TINYINT),
         @Result(column="STATUS", property="status", jdbcType=JdbcType.TINYINT),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
@@ -83,7 +84,7 @@ public interface Ku8RcInstMapper {
     @Select({
         "select",
         "ID, PROJECTID, KU8_SERVICE_ID, TENANT_ID, ZONE_ID, CLUSTER_ID, RES_PARTION_ID, ",
-        "RC_NAME, POD_LABEL, STATUS, NOTE, LAST_UPDATED",
+        "RC_NAME, POD_LABEL, FLAG, STATUS, NOTE, LAST_UPDATED",
         "from ku8_rc_inst"
     })
     @Results({
@@ -96,6 +97,7 @@ public interface Ku8RcInstMapper {
         @Result(column="RES_PARTION_ID", property="resPartionId", jdbcType=JdbcType.INTEGER),
         @Result(column="RC_NAME", property="rcName", jdbcType=JdbcType.VARCHAR),
         @Result(column="POD_LABEL", property="podLabel", jdbcType=JdbcType.VARCHAR),
+        @Result(column="FLAG", property="flag", jdbcType=JdbcType.TINYINT),
         @Result(column="STATUS", property="status", jdbcType=JdbcType.TINYINT),
         @Result(column="NOTE", property="note", jdbcType=JdbcType.VARCHAR),
         @Result(column="LAST_UPDATED", property="lastUpdated", jdbcType=JdbcType.TIMESTAMP)
@@ -118,6 +120,7 @@ public interface Ku8RcInstMapper {
           "RES_PARTION_ID = #{resPartionId,jdbcType=INTEGER},",
           "RC_NAME = #{rcName,jdbcType=VARCHAR},",
           "POD_LABEL = #{podLabel,jdbcType=VARCHAR},",
+          "FLAG = #{flag,jdbcType=TINYINT},",
           "STATUS = #{status,jdbcType=TINYINT},",
           "NOTE = #{note,jdbcType=VARCHAR},",
           "LAST_UPDATED = #{lastUpdated,jdbcType=TIMESTAMP}",
