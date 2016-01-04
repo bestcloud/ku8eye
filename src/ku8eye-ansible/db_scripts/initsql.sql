@@ -152,30 +152,7 @@ CREATE TABLE `ku8_service` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for `ku8_rc_inst`
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_rc_inst`;
-CREATE TABLE `ku8_rc_inst` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
-  `KU8_SERVICE_ID` int(11) DEFAULT NULL COMMENT 'ku8 service id ,only for public micro service',
-  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'deployed in this resource partition',
-  `RES_PARTION_ID` int(11) DEFAULT NULL COMMENT 'deployed in this resource partion ',
-  `RC_NAME` varchar(64) DEFAULT NULL COMMENT 'RC name ',
-  `POD_LABEL` varchar(64) DEFAULT NULL COMMENT 'RC selector POD Label ',
-  `FLAG` tinyint(4) DEFAULT 0 ,
-  `STATUS` tinyint(4) DEFAULT '0',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records of ku8_rc_inst
--- ----------------------------
 -- ----------------------------
 -- Table structure for `ku8_res_partion`
 -- ----------------------------
