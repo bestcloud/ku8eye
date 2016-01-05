@@ -5,7 +5,7 @@ MAINTAINER ku8eye.bestcloud@github
 ENV TZ Asia/Shanghai
 
 # set http proxy if needed
-ENV http_proxy="http://<proxy_ip>:<proxy_port>" https_proxy="http://<proxy_ip>:<proxy_port>"
+# ENV http_proxy="http://<proxy_ip>:<proxy_port>" https_proxy="http://<proxy_ip>:<proxy_port>"
 
 # 1. install ansible (from Internet)
 RUN yum clean all && \

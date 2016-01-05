@@ -61,10 +61,15 @@ public class UIService {
 		Menu firstMenu4 = new Menu("projects", "My Applications", "", MENU_TYPE_PROJECT_GROUP);
 		menus.add(firstMenu4);
 
-		Menu childMenu = new Menu("project-list", "List ", "project_main.html", MENU_TYPE_PROJECT_NODE);
+		Menu childMenu = new Menu("project-docker", "Docker ", "application_docker.html", MENU_TYPE_PROJECT_NODE);
+		firstMenu4.getSubMenus().add(childMenu);
+		
+		childMenu = new Menu("project-list", "List ", "project_main.html", MENU_TYPE_PROJECT_NODE);
+		childMenu = new Menu("project-list", "List ", "application_main.html", MENU_TYPE_PROJECT_NODE);
+
 		firstMenu4.getSubMenus().add(childMenu);
 
-		childMenu = new Menu("project-report", "Report ", "project_report.html", MENU_TYPE_PROJECT_NODE);
+		childMenu = new Menu("project-report", "Report ", "application_report.html", MENU_TYPE_PROJECT_NODE);
 		firstMenu4.getSubMenus().add(childMenu);
 		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
 		int zoneId = 1;

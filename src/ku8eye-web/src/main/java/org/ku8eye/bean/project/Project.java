@@ -1,72 +1,118 @@
 package org.ku8eye.bean.project;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
+import org.ku8eye.util.JSONUtil;
 
-public class Project {
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
+public class Project
+{
+	private static final Logger log = Logger.getLogger(JSONUtil.class);
 
-
-	public void addService(Service s) {
-		services.add(s);
+	public static Project getFromJSON(String json)
+	{
+		try
+		{
+			return JSONUtil.mapper.readValue(json, Project.class);
+		}
+		catch (JsonParseException e)
+		{
+			log.error("Couldn't parse Project from String, " + e);
+			e.printStackTrace();
+		}
+		catch (JsonMappingException e)
+		{
+			log.error("Json mapping error in Project, " + e);
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			log.error("IO Error in Project, " + e);
+			e.printStackTrace();
+		}
+		return null;
 	}
 
+	public void addService(Service s)
+	{
+		services.add(s);
+	}
 
 	private String projectName;
 	private String version;
 	private String author;
-	private String kuberneteVersion;
-	private String describe;
+	private String k8sVersion;
+	private String notes;
 	private List<Service> services = new ArrayList<Service>();
-
-
-	public String getProjectName() {
+	
+	public String getProjectName()
+	{
 		return projectName;
 	}
 
-	public void setProjectName(String projectName) {
+	public void setProjectName(String projectName)
+	{
 		this.projectName = projectName;
 	}
 
-	public String getVersion() {
+	public String getVersion()
+	{
 		return version;
 	}
 
-	public void setVersion(String version) {
+	public void setVersion(String version)
+	{
 		this.version = version;
 	}
 
-	public String getAuthor() {
+	public String getAuthor()
+	{
 		return author;
 	}
 
-	public void setAuthor(String author) {
+	public void setAuthor(String author)
+	{
 		this.author = author;
 	}
 
-	public String getKuberneteVersion() {
-		return kuberneteVersion;
+	public String getK8sVersion()
+	{
+		return k8sVersion;
 	}
 
-	public void setKuberneteVersion(String kuberneteVersion) {
-		this.kuberneteVersion = kuberneteVersion;
+	public void setK8sVersion(String k8sVersion)
+	{
+		this.k8sVersion = k8sVersion;
 	}
 
-	public String getDescribe() {
-		return describe;
+	public String getNotes()
+	{
+		return notes;
 	}
 
-	public void setDescribe(String describe) {
-		this.describe = describe;
+	public void setNotes(String notes)
+	{
+		this.notes = notes;
 	}
 
-	public List<Service> getServices() {
+	public List<Service> getServices()
+	{
 		return services;
 	}
 
-	public void setServices(List<Service> services) {
+	public void setServices(List<Service> services)
+	{
 		this.services = services;
+	}
+
+	@Override
+	public String toString()
+	{
+		return projectName;
 	}
 }

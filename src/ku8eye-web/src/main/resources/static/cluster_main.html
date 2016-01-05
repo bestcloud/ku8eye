@@ -37,7 +37,7 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div style="padding-bottom: 5px;">	
-					<h1 id="installtitle">您的计算机软件未安装，请安装！</h1>
+					<h3 id="installtitle">您的计算机软件未安装，请安装！</h3>
 				</div>
 				<div id="cluster" style="padding:0px 0px 10px 0px;"></div>
 				<table id="example1" class="installationMode">
@@ -138,6 +138,20 @@ function installed(installData){
 	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
 	    	});
 	    	
+	    }
+	});
+	
+	$.ajax({
+	    url:"/deploycluster/getk8s-alive-nodes/1",
+	    type: "GET",
+	    dataType:"text",
+	    success: function(data){
+	    	$.each(data,function(i,item){
+	    		$("#example1").append("<tr><td>"+item.id+"</td><td>"+item.hostName+"</td><td>"+item.ip+"</td><td>"+item.cores+"</td><td>"+item.memory+"</td><td>"+item.sshLogin+"</td><td>"+item.usageFlag+"</td><td>"+item.location+"</td></tr>");
+	    	});
+	    },
+	    error:function(){
+	    	alert("报错!!!!");
 	    }
 	});
 	
