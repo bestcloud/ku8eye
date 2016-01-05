@@ -53,7 +53,7 @@
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					Service
-					<button type="button" class="btn btn-primary" onclick="add()">+</button>
+					
 					<button type="button" class="btn btn-primary" onclick="del(this)">-</button>
 					<button type="button" class="btn btn-primary"
 						data-parent="#selector" data-toggle="collapse"
@@ -66,8 +66,12 @@
 	</form>
 
 	<div class="modal-footer">
+	<button type="button" class="btn btn-primary" onclick="add()">添加服务</button>
 		<button onclick="return false;" type="button" class="btn btn-primary">
 			保<span style="padding-left: 12px" />存
+		</button>
+		<button onclick="return false;" type="button" class="btn btn-primary">
+			保存并发布
 		</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal"
 			onclick="back()">
@@ -79,7 +83,29 @@
 </div>
 
 <script>
-
+function buildJson()
+{
+	/*
+	var $json=$proObj.clone();
+	$json.projectName=$("#projectName").val();
+	$json.version=$("#version").val();
+	$json.author=$("#author").val();
+	$json.kuberneteVersion=$("#kuberneteVersion").val();
+	$json.describe=$("#describe").val();
+	//get all service
+	var $services = $("div[name='servicePanel']");
+	
+	for(int i=0;i<$services.length;i++)
+	{
+		var $service =$services.eq(i);
+		
+		
+		
+	}
+	*/
+	
+	
+}
 
 
 	$(function() {
