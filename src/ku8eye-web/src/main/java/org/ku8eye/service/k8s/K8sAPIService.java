@@ -51,6 +51,7 @@ public class K8sAPIService {
 			System.out.println(node.getMetadata().getName());
 			nodeIps.add(node.getSpec().toString());
 		}
+		
 		return nodeIps;
 
 	}
@@ -163,12 +164,19 @@ public class K8sAPIService {
 	public static void main(String[] args) {
 		K8sAPIService service = new K8sAPIService() {
 			public KubernetesClient getClient(int clusterId) {
-				Config config = new ConfigBuilder().withMasterUrl("http://192.168.18.133:8080").build();
+				Config config = new ConfigBuilder().withMasterUrl("http://10.255.242.203:1180/").withHttpProxy("http://10.1.128.200:9000").build();
 				return new DefaultKubernetesClient(config);
 			}
 		};
 		for (String ip : service.getK8sAliveNodes(1)) {
 			System.out.println(ip);
+			System.out.println("END");
+			
+			ServiceList slist = service.getServices(1,"default");
+			for (io.fabric8.kubernetes.api.model.Service s : slist.getItems())
+			{
+				System.out.println(s.toString());
+			}
 		}
 	}
 }
