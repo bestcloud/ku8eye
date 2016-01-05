@@ -16,7 +16,7 @@ public class ProjectTest
 		{
 			Project p = new Project();
 			p.setAuthor("author");
-			p.setNote("note");
+			p.setNotes("note");
 			p.setK8sVersion("1");
 			p.setProjectName("project name");
 			p.setVersion("1");
