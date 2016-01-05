@@ -79,6 +79,9 @@
 </div>
 
 <script>
+
+
+
 	$(function() {
 		loadData();
 
@@ -86,6 +89,7 @@
 	function loadData() {
 		$("#service_panel_0").load("./service_project.html?d1=112");
 		$('#service_panel_0').toggle(1000);
+		
 		$("#projectName").val($proObj.projectName);
 		$("#version").val($proObj.version);
 		$("#author").val($proObj.author);
@@ -114,7 +118,6 @@
 					"service_panel_" + id);
 			$service.after($new_service);
 		}
-
 	}
 
 	function del(obj) {

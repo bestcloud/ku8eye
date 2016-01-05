@@ -122,7 +122,6 @@
 				.parent("div[name='image']");
 		var $new_image = $image.clone();
 		$image.after($new_image);
-
 	}
 	function delImages(obj) {
 		var $this_i = $(obj).parent(".panel-heading").parent(
@@ -131,7 +130,6 @@
 		if ($i.length > 0) {
 			$this_i.remove();
 		}
-
 	}
 	function addPort(obj) {
 		var $port = $(obj).parent(".panel-heading").parent("div[name='port']");
