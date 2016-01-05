@@ -31,7 +31,12 @@ public class ImageService {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<DockerImage> searchImages(String imageName) {
-		return imgeDao.selectAll();
+		return imgeDao.selectByPrimary("%"+imageName+"%");
+	}
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public DockerImage getImagesId(int dockerId) {
+		return imgeDao.selectByPrimaryKey(dockerId);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
