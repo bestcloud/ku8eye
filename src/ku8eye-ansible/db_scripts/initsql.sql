@@ -68,6 +68,8 @@ CREATE TABLE `ku8s_srv_endpoint` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `ku8eye`.`docker_image` (`ID`, `TITLE`, `IMAGE_NAME`, `VERSION`, `VERSION_TYPE`, `PUBLIC_IMAGE`, `SIZE`, `category`, `CLUSTER_ID`, `REGISTRY_ID`, `IMAGE_ICON_URL`, `STATUS`, `BUILD_FILE`, `AUTO_BUILD_COMMAND`, `AUTO_BUILD`, `NOTE`) VALUES ('1', 'MYSQL', 'MYSQL', '5.6', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+
 -- ----------------------------
 -- Records of ku8s_srv_endpoint
 -- ----------------------------
