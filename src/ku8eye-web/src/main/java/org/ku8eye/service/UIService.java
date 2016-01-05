@@ -91,7 +91,9 @@ public class UIService {
 		// cluster info menu
 		Menu firstMenuSub3 = new Menu("cls_inf", "Cluster Inf", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
 		firstMenus1.getSubMenus().add(firstMenuSub3);
-
+		//service info menu
+		Menu firstMenuSub4 = new Menu("kuber-service", "Service", "service.html", MENU_TYPE_ZONE);
+		firstMenus1.getSubMenus().add(firstMenuSub4);
 		return menus;
 
 	}

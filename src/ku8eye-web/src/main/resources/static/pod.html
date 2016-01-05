@@ -1,0 +1,57 @@
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-header">
+                <div class="input-group input-group-sm">
+                 	<a href="javascript:void(0);" id="back" class="btn btn-primary" data-dismiss="modal">返回</a>
+                </div>
+            </div>
+			<div class="box-body">
+				<table id="podTable" class="table table-bordered table-hover"
+					style="font-size:12px;" width="100%">
+					<thead>
+						<tr>
+							<th>名称</th>
+							<th>创建时间</th>
+							<th>节点名称</th>
+							<th>当前状态</th>
+							<th>虚拟地址</th>
+							<th>物理地址</th>
+							<th>标签</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function($){
+    	$("#back").click(function(){
+    		$(".content").load("service.html");
+    	});
+	})
+	var selector = sessionStorage.getItem("selector");
+	sessionStorage.removeItem("selector");
+	var table = $('#podTable').DataTable({
+	    "ajax":{
+	    	url:"/getPodsBySelector",
+	    	data:{"selector":selector}
+		},
+	    "columns": [
+					{ "data": "name" },
+	    			{ "data": "creationTimestamp" },
+	    			{ "data": "nodeName" },
+	    			{ "data": "status_phase" },
+	    			{ "data": "podIP" },
+	    			{ "data": "hostIP" },
+	    			{ "data": "labels","render": function(data, type, row) {
+                        var map = '';  
+						for(var key in data){
+                        	 map+= key+"-"+data[key]+'<br>';
+                     	}
+                     	return map;
+                  	}}
+	    		]
+	});
+</script>
