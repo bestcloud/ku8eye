@@ -1,7 +1,6 @@
 package org.ku8eye;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -29,16 +28,15 @@ public class App extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		try {
-			Properties props=SystemUtil.getSpringAppProperties();
-			 registry.addResourceHandler("/external/**").addResourceLocations(props.getProperty("ku8.externalRes"));
-			 super.addResourceHandlers(registry);
+			Properties props = SystemUtil.getSpringAppProperties();
+			registry.addResourceHandler(Constants.EXTERNAL_URL_ROOT + "/**")
+					.addResourceLocations(props.getProperty("ku8.externalRes"));
+			super.addResourceHandlers(registry);
 		} catch (IOException e) {
 			System.out.println(e);
 		}
-	   
-       
 
-        super.addResourceHandlers(registry);
+		super.addResourceHandlers(registry);
 	}
 
 	@Bean
