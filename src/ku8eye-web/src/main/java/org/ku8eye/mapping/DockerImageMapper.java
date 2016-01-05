@@ -33,19 +33,21 @@ public interface DockerImageMapper {
         "insert into docker_image (ID, TITLE, ",
         "IMAGE_NAME, VERSION, ",
         "VERSION_TYPE, PUBLIC_IMAGE, ",
-        "category, CLUSTER_ID, ",
-        "REGISTRY_ID, IMAGE_ICON_URL, ",
-        "STATUS, AUTO_BUILD_COMMAND, ",
-        "AUTO_BUILD, NOTE, ",
-        "LAST_UPDATED, BUILD_FILE)",
+        "SIZE, category, ",
+        "CLUSTER_ID, REGISTRY_ID, ",
+        "IMAGE_ICON_URL, STATUS, ",
+        "AUTO_BUILD_COMMAND, AUTO_BUILD, ",
+        "NOTE, LAST_UPDATED, ",
+        "BUILD_FILE)",
         "values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, ",
         "#{imageName,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, ",
         "#{versionType,jdbcType=TINYINT}, #{publicImage,jdbcType=TINYINT}, ",
-        "#{category,jdbcType=VARCHAR}, #{clusterId,jdbcType=INTEGER}, ",
-        "#{registryId,jdbcType=INTEGER}, #{imageIconUrl,jdbcType=VARCHAR}, ",
-        "#{status,jdbcType=TINYINT}, #{autoBuildCommand,jdbcType=VARCHAR}, ",
-        "#{autoBuild,jdbcType=TINYINT}, #{note,jdbcType=VARCHAR}, ",
-        "#{lastUpdated,jdbcType=TIMESTAMP}, #{buildFile,jdbcType=LONGVARCHAR})"
+        "#{size,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, ",
+        "#{clusterId,jdbcType=INTEGER}, #{registryId,jdbcType=INTEGER}, ",
+        "#{imageIconUrl,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, ",
+        "#{autoBuildCommand,jdbcType=VARCHAR}, #{autoBuild,jdbcType=TINYINT}, ",
+        "#{note,jdbcType=VARCHAR}, #{lastUpdated,jdbcType=TIMESTAMP}, ",
+        "#{buildFile,jdbcType=LONGVARCHAR})"
     })
     int insert(DockerImage record);
 
@@ -57,9 +59,9 @@ public interface DockerImageMapper {
      */
     @Select({
         "select",
-        "ID, TITLE, IMAGE_NAME, VERSION, VERSION_TYPE, PUBLIC_IMAGE, category, CLUSTER_ID, ",
-        "REGISTRY_ID, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, NOTE, LAST_UPDATED, ",
-        "BUILD_FILE",
+        "ID, TITLE, IMAGE_NAME, VERSION, VERSION_TYPE, PUBLIC_IMAGE, SIZE, category, ",
+        "CLUSTER_ID, REGISTRY_ID, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, ",
+        "NOTE, LAST_UPDATED, BUILD_FILE",
         "from docker_image",
         "where ID = #{id,jdbcType=INTEGER}"
     })
@@ -70,6 +72,7 @@ public interface DockerImageMapper {
         @Result(column="VERSION", property="version", jdbcType=JdbcType.VARCHAR),
         @Result(column="VERSION_TYPE", property="versionType", jdbcType=JdbcType.TINYINT),
         @Result(column="PUBLIC_IMAGE", property="publicImage", jdbcType=JdbcType.TINYINT),
+        @Result(column="SIZE", property="size", jdbcType=JdbcType.INTEGER),
         @Result(column="category", property="category", jdbcType=JdbcType.VARCHAR),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="REGISTRY_ID", property="registryId", jdbcType=JdbcType.INTEGER),
@@ -91,9 +94,9 @@ public interface DockerImageMapper {
      */
     @Select({
         "select",
-        "ID, TITLE, IMAGE_NAME, VERSION, VERSION_TYPE, PUBLIC_IMAGE, category, CLUSTER_ID, ",
-        "REGISTRY_ID, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, NOTE, LAST_UPDATED, ",
-        "BUILD_FILE",
+        "ID, TITLE, IMAGE_NAME, VERSION, VERSION_TYPE, PUBLIC_IMAGE, SIZE, category, ",
+        "CLUSTER_ID, REGISTRY_ID, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, ",
+        "NOTE, LAST_UPDATED, BUILD_FILE",
         "from docker_image"
     })
     @Results({
@@ -103,6 +106,7 @@ public interface DockerImageMapper {
         @Result(column="VERSION", property="version", jdbcType=JdbcType.VARCHAR),
         @Result(column="VERSION_TYPE", property="versionType", jdbcType=JdbcType.TINYINT),
         @Result(column="PUBLIC_IMAGE", property="publicImage", jdbcType=JdbcType.TINYINT),
+        @Result(column="SIZE", property="size", jdbcType=JdbcType.INTEGER),
         @Result(column="category", property="category", jdbcType=JdbcType.VARCHAR),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="REGISTRY_ID", property="registryId", jdbcType=JdbcType.INTEGER),
@@ -129,6 +133,7 @@ public interface DockerImageMapper {
           "VERSION = #{version,jdbcType=VARCHAR},",
           "VERSION_TYPE = #{versionType,jdbcType=TINYINT},",
           "PUBLIC_IMAGE = #{publicImage,jdbcType=TINYINT},",
+          "SIZE = #{size,jdbcType=INTEGER},",
           "category = #{category,jdbcType=VARCHAR},",
           "CLUSTER_ID = #{clusterId,jdbcType=INTEGER},",
           "REGISTRY_ID = #{registryId,jdbcType=INTEGER},",

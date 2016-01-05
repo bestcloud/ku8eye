@@ -2398,6 +2398,7 @@ a:focus {
   border-color: #00acd6;
 }
 .alert-right {
+  min-width:200px;
   max-width:400px;
   position:fixed;
   bottom:35px;
