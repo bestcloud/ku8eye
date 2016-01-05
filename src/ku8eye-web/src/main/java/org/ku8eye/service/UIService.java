@@ -58,45 +58,68 @@ public class UIService {
 	public List<Menu> generateMenus(User curUser) {
 		List<Menu> menus = new ArrayList<Menu>();
 		// projects menu
-		Menu firstMenu4 = new Menu("projects", "My Applications", "", MENU_TYPE_PROJECT_GROUP);
-		menus.add(firstMenu4);
+		Menu appMenu = new Menu("projects", "My Applications", "",
+				MENU_TYPE_PROJECT_GROUP);
 
-		Menu childMenu = new Menu("project-docker", "Docker ", "application_docker.html", MENU_TYPE_PROJECT_NODE);
-		firstMenu4.getSubMenus().add(childMenu);
-		
-		childMenu = new Menu("project-list", "List ", "project_main.html", MENU_TYPE_PROJECT_NODE);
-		childMenu = new Menu("project-list", "List ", "application_main.html", MENU_TYPE_PROJECT_NODE);
+		Menu dockerMenu = new Menu("project-docker", "Docker ",
+				"application_docker.html", MENU_TYPE_PROJECT_NODE);
+		appMenu.getSubMenus().add(dockerMenu);
+		// childMenu = new Menu("project-list", "List ", "project_main.html",
+		// MENU_TYPE_PROJECT_NODE);
+		Menu listAppMenu = new Menu("project-list", "List ",
+				"application_main.html", MENU_TYPE_PROJECT_NODE);
+		appMenu.getSubMenus().add(listAppMenu);
+		Menu appRepotMenu = new Menu("project-report", "Report ",
+				"application_report.html", MENU_TYPE_PROJECT_NODE);
+		appMenu.getSubMenus().add(appRepotMenu);
 
-		firstMenu4.getSubMenus().add(childMenu);
-
-		childMenu = new Menu("project-report", "Report ", "application_report.html", MENU_TYPE_PROJECT_NODE);
-		firstMenu4.getSubMenus().add(childMenu);
 		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
 		int zoneId = 1;
+		
+		
+		Menu microServiceMenu = new Menu("microServiceMenu", "Micro Service", "",	MENU_TYPE_ZONE);
+		
+		Menu microServiceListMenu = new Menu("microServiceListMenu", "List", "service.html",
+				MENU_TYPE_CLUSTER_NODE);
+		microServiceMenu.getSubMenus().add(microServiceListMenu);
+		
 		// cluster menu
-		Menu firstMenus1 = new Menu("clsdef", "K8s Cluster", "", MENU_TYPE_ZONE);
+		Menu k8sClusterMenu = new Menu("clsdef", "K8s Cluster", "",
+				MENU_TYPE_ZONE);
 		// 菜单1 第二级 submenu
-		Menu firstMenuSub1 = new Menu("1_1", "Resource Partions", "", MENU_TYPE_CLUSTER_GROUP);
-		firstMenus1.getSubMenus().add(firstMenuSub1);
+		Menu resourcePartionsMenu = new Menu("1_1", "Resource Partions", "",
+				MENU_TYPE_CLUSTER_GROUP);
+
 		// 菜单1 第三级 菜单即第二级的子菜单
-		childMenu = new Menu("respartion_main", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
-		firstMenuSub1.getSubMenus().add(childMenu);
-		childMenu = new Menu("respartion_report", "Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
-		firstMenuSub1.getSubMenus().add(childMenu);
+		Menu resourcePartionsListMenu = new Menu("respartion_main", "List ",
+				"respartion_main.html", MENU_TYPE_CLUSTER_NODE);
+		resourcePartionsMenu.getSubMenus().add(resourcePartionsListMenu);
+		Menu resourcePartionsReportMenu = new Menu("respartion_report",
+				"Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
+		resourcePartionsMenu.getSubMenus().add(resourcePartionsReportMenu);
 
 		// host pool sub menu
-		Menu firstMenuSub2 = new Menu("hostp1", "Host Pool", "", MENU_TYPE_HOST_GROUP);
-		firstMenus1.getSubMenus().add(firstMenuSub2);
-		menus.add(firstMenus1);
-		childMenu = new Menu("host-list", "List ", "host_main.html", MENU_TYPE_HOST_NODE);
-		firstMenuSub2.getSubMenus().add(childMenu);
-		
-		childMenu = new Menu("host-report", "Report ", "host_report.html", MENU_TYPE_HOST_NODE);
-		firstMenuSub2.getSubMenus().add(childMenu);
-		// cluster info menu
-		Menu firstMenuSub3 = new Menu("cls_inf", "Cluster Inf", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
-		firstMenus1.getSubMenus().add(firstMenuSub3);
+		Menu hostPoolMenu = new Menu("hostp1", "Host Pool", "",
+				MENU_TYPE_HOST_GROUP);
 
+		Menu hostPoolListMenu = new Menu("host-list", "List ",
+				"host_main.html", MENU_TYPE_HOST_NODE);
+		hostPoolMenu.getSubMenus().add(hostPoolListMenu);
+
+		Menu hostPoolReportMenu = new Menu("host-report", "Report ",
+				"host_report.html", MENU_TYPE_HOST_NODE);
+		hostPoolMenu.getSubMenus().add(hostPoolReportMenu);
+		// cluster info menu
+		Menu clusterInfMenu = new Menu("cls_inf", "Cluster Inf",
+				"cluster_main.html", MENU_TYPE_PROJECT_NODE);
+		
+
+		menus.add(appMenu);
+		menus.add(microServiceMenu);		
+		k8sClusterMenu.getSubMenus().add(hostPoolMenu);
+		k8sClusterMenu.getSubMenus().add(resourcePartionsMenu);
+		k8sClusterMenu.getSubMenus().add(clusterInfMenu);
+		menus.add(k8sClusterMenu);
 		return menus;
 
 	}
