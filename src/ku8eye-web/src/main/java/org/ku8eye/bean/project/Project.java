@@ -47,7 +47,7 @@ public class Project
 	private String version;
 	private String author;
 	private String k8sVersion;
-	private String note;
+	private String notes;
 	private List<Service> services = new ArrayList<Service>();
 	
 	public String getProjectName()
@@ -90,14 +90,14 @@ public class Project
 		this.k8sVersion = k8sVersion;
 	}
 
-	public String getNote()
+	public String getNotes()
 	{
-		return note;
+		return notes;
 	}
 
-	public void setNote(String note)
+	public void setNotes(String notes)
 	{
-		this.note = note;
+		this.notes = notes;
 	}
 
 	public List<Service> getServices()

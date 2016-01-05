@@ -1,0 +1,197 @@
+<div class="row">
+<div class="col-xs-12">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Add Application</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Application Name</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="name"
+					placeholder="项目名称"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Version</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="version"
+					placeholder="项目版本号"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">K8s Version</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="k8s-version"
+					placeholder="K8s 版本"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Note</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="note"
+					placeholder="笔记"/>
+                    </div>
+                </div>
+                <!-- service -->
+                <div class="form-group" name="service">
+                    <span class="col-sm-2"/>
+                    <div class="col-sm-7">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+								Service&nbsp;
+								<div class="btn-group">
+                                    <button type="button" class="btn btn-primary" onclick="addService()">+</button>
+                                    <button type="button" class="btn btn-primary" onclick="delService(this)">-</button>
+                                    <button type="button" class="btn btn-primary" data-parent="#selector" data-toggle="collapse"data-target="#service_panel_0" onclick="hide_show(this)">></button>
+                                </div>
+                            </div>
+                            <div class="panel-body" id="service_panel_0"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer clearfix">
+                <span class="col-sm-2"/>
+                <div class="col-sm-7 no-padding">
+                    <button onclick="return addApplication()" type="button" class="btn btn-primary">
+						保<span style="padding-left: 12px" />存
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="back()">
+						返<span style="padding-left: 12px" />回
+					</button>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+    </div>
+</div>	
+</div>
+<!-- /.row -->
+<script src="../js/project.js"></script>
+<script>
+	$(document).ready(function(){
+		loadData();
+	});
+
+	function checkInput(){
+		var ret = true;
+		$('input', $('.form-group')).each(function () {
+			if($(this).val() === '')
+			{
+				setFormTips(this);
+				ret = false;
+			}
+		});
+		return ret;
+	}
+	
+	function addApplication()
+	{
+		if(checkInput())
+		{
+			var _name = $('#name').val();
+			var _version = $('#version').val();
+			var _k8sVersion = $('#k8s-version').val();
+			var _note = $('#note').val();
+			var _jsonStr = $proObj;
+			
+			$.ajax({
+				url: "/addApplication",
+				type: "POST",
+				dataType: "json",
+				data: {
+					name:_name,
+					version:_version,
+					k8sVersion:_k8sVersion,
+					note:_note,
+					jsonStr:JSON.stringify(_jsonStr)
+				},
+				success: function(response){
+					if(response['status'] > -1)
+					{
+						back();
+						var _appName = $("#appName").val()
+						var _div = $('<div>');
+						_div.load('alert_success.html', function(){
+							$(this).find('#title').html(response['message']);
+							$(this).find('#message').html("Project <strong>" + _name + "</strong> updated successfully.");
+							var child = $(this).children();
+							child.fadeTo(3000, 500).slideToggle(500, function(){
+								child.alert('close');
+							});
+							$('.content').append(child);
+						});
+					}
+					else
+					{
+						var _div = $('<div>');
+						_div.load('alert_error.html', function(){
+							$(this).find('#title').html("ERROR");
+							$(this).find('#message').html(response['message']);
+							var child = $(this).children();
+							child.fadeTo(3000, 500).slideToggle(500, function(){
+								child.alert('close');
+							});
+							$('.content').append(child);
+						});
+					}
+				}
+			});
+		}
+	}
+	
+	$('input', $('.form-group')).focusout(function() {
+		setFormTips(this);
+	});
+	
+	function setFormTips(field)
+	{
+		$(field).parent().find('.formtips').remove().end();
+		var v = $(field).val();
+		if(v === '')
+		{
+			$(field).closest('.form-group').addClass('has-error');
+            $(field).parent().append('<span class="formtips" style="color:#dd4b39">不能为空!</span>');
+		}
+		else
+		{
+			$(field).closest('.form-group').removeClass('has-error').addClass('has-success');
+		}
+	}
+	
+	function loadData() {
+		$("#service_panel_0").load("./service_project.html?d1=112");
+		$('#service_panel_0').toggle(1000);
+	}
+
+	function hide_show(obj) {
+		$ob = $(obj);
+		$($ob.attr("data-target")).toggle(1000);
+	}
+	
+	function back() {
+		$('.content').load('application_main.html');
+	}
+
+	function addService() {
+		var $services = $(".form-group[name='service']");
+		if ($services.length > 0) {
+			var $service = $services.eq(0);
+			var $new_service = $service.clone();
+			var id = $services.length + 1;
+			$new_service.children("div").children(".panel-heading").children("button").attr("data-target", "#service_panel_" + id);
+			$new_service.children("div").children(".panel-body").attr("id", "service_panel_" + id);
+			$service.after($new_service);
+		}
+
+	}
+
+	function delService(obj) {
+		if ($(".form-group[name='service']").length > 1) {
+			$(obj).closest(".form-group[name='service']").slideUp("normal", function() { $(this).remove(); } );
+		}
+	}
+</script>

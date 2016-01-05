@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.ku8eye.bean.GridData;
 import org.ku8eye.bean.project.Project;
+import org.ku8eye.domain.DockerImage;
 import org.ku8eye.domain.Ku8Project;
 import org.ku8eye.domain.User;
 import org.ku8eye.service.ProjectService;
@@ -33,6 +34,14 @@ public class ProjectController {
         GridData grid = new GridData();
 		List<Ku8Project> apps = projectService.getAllApplications();
 		grid.setData(apps);
+        return grid;
+	}
+
+	@RequestMapping(value="/getImages")
+	public GridData getImages(){
+        GridData grid = new GridData();
+		List<DockerImage> images = projectService.getAllDockerImages();
+		grid.setData(images);
         return grid;
 	}
 	
@@ -63,16 +72,16 @@ public class ProjectController {
 			 String name = p.getProjectName();
 			 String version = p.getVersion();
 			 String k8sVersion = p.getK8sVersion();
-			 String note = p.getNote();
+			 String notes = p.getNotes();
 			 String yamlSpec = jsonStr;
 			 
-			 if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || note.isEmpty())
+			 if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || notes.isEmpty())
 			 {
 				log.error("EMPTY FIELDS");
 				return new AjaxReponse(-1, "EMPTY FIELDS");
 			 }
 			 
-			 projectService.updateApplication(id, tenantId, owner, name, version, k8sVersion, note, yamlSpec);
+			 projectService.updateApplication(id, tenantId, owner, name, version, k8sVersion, notes, yamlSpec);
 			
 			 return new AjaxReponse(1, "UPDATED");
 		}
@@ -80,12 +89,7 @@ public class ProjectController {
 	}
 	
 	@RequestMapping(value="/addApplication")
-	public AjaxReponse addApplication(HttpServletRequest request,
-			@RequestParam("name") String name,
-			@RequestParam("version") String version,
-			@RequestParam("k8sVersion") String k8sVersion,
-			@RequestParam("note") String note,
-			ModelMap model) {
+	public AjaxReponse addApplication(HttpServletRequest request, String name, String version, String k8sVersion, String note, String jsonStr, ModelMap model) {
 		
 		User user = (User) model.get("user");
 		
@@ -95,13 +99,13 @@ public class ProjectController {
 			return new AjaxReponse(-1, "USER NOT LOGGED");
 		}
 		
-		if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || note.isEmpty())
+		if(name.isEmpty() || version.isEmpty() || k8sVersion.isEmpty() || note.isEmpty() || jsonStr.isEmpty())
 		{
 			log.error("EMPTY FIELDS");
 			return new AjaxReponse(-1, "EMPTY FIELDS");
 		}
 		
-		int res = projectService.addApplication(user.getTenantId(), user.getUserId(), name, version, k8sVersion, note);
+		int res = projectService.addApplication(user.getTenantId(), user.getUserId(), name, version, k8sVersion, note, jsonStr);
 		
 		if(res == -1)
 			return new AjaxReponse(res, "ADD FAILED");

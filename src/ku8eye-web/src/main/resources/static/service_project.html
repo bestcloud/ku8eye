@@ -1,150 +1,176 @@
 <div name="servicePanel">
 	<!-- Service -->
 	<div class="form-group">
-		<label class="col-sm-2 control-label">name</label>
-		<div class="col-sm-10">
+		<label class="col-sm-3 control-label">name</label>
+		<div class="col-sm-7">
 			<input type="text" class="form-control" id="s_name"
 				placeholder="服务名称">
 		</div>
 	</div>
 
 	<div class="form-group">
-		<label class="col-sm-2 control-label">describe</label>
-		<div class="col-sm-10">
+		<label class="col-sm-3 control-label">describe</label>
+		<div class="col-sm-7">
 			<input type="text" class="form-control" id="describe"
 				placeholder="服务描述">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-2 control-label">replica</label>
-		<div class="col-sm-10">
+		<label class="col-sm-3 control-label">replica</label>
+		<div class="col-sm-7">
 			<input type="number" class="form-control" id="replica"
 				placeholder="实例数量">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-2 control-label">version</label>
-		<div class="col-sm-10">
+		<label class="col-sm-3 control-label">version</label>
+		<div class="col-sm-7">
 			<input type="text" class="form-control" id="s_version"
 				placeholder="服务版本号">
 		</div>
 	</div>
 	<div class="panel panel-info" name="image">
 		<div class="panel-heading">
-			Images
-			<button type="button" class="btn btn-primary"
-				onclick="addImages(this)">+</button>
-			<button type="button" class="btn btn-primary"
-				onclick="delImages(this)">-</button>
+			Images&nbsp;
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary" onclick="addImages(this)">+</button>
+				<button type="button" class="btn btn-primary" onclick="delImages(this)">-</button>
+			</div>
 		</div>
+		<div class="panel-body">
 		<div class="form-group">
-			<label class="col-sm-2 control-label">name</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="i_name"
-					placeholder="镜像名称">
+			<label class="col-sm-3 control-label">Image</label>
+			<div class="col-sm-7">
+				<select class="form-control" id="img_image"/>
+				<div class="row text-muted well well-sm no-shadow no-margin">
+					<div class="col-sm-6">
+						<strong>Version </strong><span id="img_version"/>
+					</div>
+					<div class="col-sm-6">
+						<strong>Registry </strong><span id="img_registry"/>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">version</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="i_version"
-					placeholder="镜像版本号">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-2 control-label">registry</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="registry"
-					placeholder="镜像仓库">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-2 control-label">imageName</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="imageName"
-					placeholder="镜像文件名">
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-2 control-label">limits</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="limits"
+			<label class="col-sm-3 control-label">limits</label>
+			<div class="col-sm-7">
+				<input type="text" class="form-control" id="img_limits"
 					placeholder="limits">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">cpu</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="cpu" placeholder="cpu">
+			<label class="col-sm-3 control-label">cpu</label>
+			<div class="col-sm-7">
+				<input type="text" class="form-control" id="img_cpu" placeholder="cpu">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">memory</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="memory"
+			<label class="col-sm-3 control-label">memory</label>
+			<div class="col-sm-7">
+				<input type="text" class="form-control" id="img_memory"
 					placeholder="memory">
 			</div>
+		</div>
 		</div>
 	</div>
 	<div class="panel panel-info" name="port">
 		<div class="panel-heading">
 			Ports
-			<button type="button" class="btn btn-primary" onclick="addPort(this)">+</button>
-			<button type="button" class="btn btn-primary" onclick="delPort(this)">-</button>
 		</div>
+		<div class="panel-body">
 		<div class="form-group">
-			<label class="col-sm-2 control-label">containerPort</label>
-			<div class="col-sm-10">
+			<label class="col-sm-3 control-label">containerPort</label>
+			<div class="col-sm-7">
 				<input type="text" class="form-control" id="containerPort"
 					placeholder="containerPort">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">servicePort</label>
-			<div class="col-sm-10">
+			<label class="col-sm-3 control-label">servicePort</label>
+			<div class="col-sm-7">
 				<input type="text" class="form-control" id="servicePort"
 					placeholder="servicePort">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">nodePort</label>
-			<div class="col-sm-10">
+			<label class="col-sm-3 control-label">nodePort</label>
+			<div class="col-sm-7">
 				<input type="text" class="form-control" id="nodePort"
 					placeholder="nodePort">
 			</div>
 		</div>
+		</div>
+	</div>
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			Environment Variables
+		</div>
+		<div class="panel-body">
+		<div class="form-group">
+			<label class="col-sm-3">Name</label>
+			<label class="col-sm-4">Value</label>
+		</div>
+		<div class="form-group" name="envVariable">
+			<div class="col-sm-3">
+				<input type="text" class="form-control" id="envName"
+					placeholder="Name">
+			</div>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" id="envValue"
+					placeholder="Value">
+			</div>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary" onclick="addEnvVariable(this)">+</button>
+				<button type="button" class="btn btn-primary" onclick="delEnvVariable(this)">-</button>
+			</div>
+		</div>
+		</div>
 	</div>
 </div>
 <script>
-	function addImages(obj) {
-		var $image = $(obj).parent(".panel-heading")
-				.parent("div[name='image']");
-		var $new_image = $image.clone();
-		$image.after($new_image);
+	var _image;
+	var _images;
+	
+	$(document).ready(function(){
+		$.ajax({
+			type: "GET",
+			data: {},
+			url: '/getImages',
+			dataType: 'json',
+			success: function(images) {
+				_images = images;
+				$("#img_image").empty();
+				$.each(images.data, function(i, image) {
+					$("#img_image").append($("<option/>").attr("value", i).text(image['title']));
+				});	
+				$("#img_image").val(0).change();
+			}
+        });
+	});
+	
+	$('#img_image').on('change', function() {
+		_image = _images.data[this.value];
+		$('#img_version').text(_image['version']);
+		$('#img_registry').text(_image['registryId']);
+	});
 
+	function addImages(obj) {
+		var $image = $(obj).closest("div[name='image']");
+		$image.after($image.clone());
 	}
 	function delImages(obj) {
-		var $this_i = $(obj).parent(".panel-heading").parent(
-				"div[name='image']");
-		var $i = $this_i.siblings("div[name='image']");
-		if ($i.length > 0) {
-			$this_i.remove();
+		if ($("div[name='image']").length > 1) {
+			$(obj).closest("div[name='image']").slideUp("normal", function() { $(this).remove(); } );
 		}
-
 	}
-	function addPort(obj) {
-		var $port = $(obj).parent(".panel-heading").parent("div[name='port']");
-		var $new_port = $port.clone();
-		$port.after($new_port);
+	function addEnvVariable(obj) {
+		var $env = $(obj).closest("div[name='envVariable']");
+		$env.after($env.clone());
 	}
-	function delPort(obj) {
-		var $this_port = $(obj).parent(".panel-heading").parent(
-				"div[name='port']");
-		var $ports = $this_port.siblings("div[name='port']");
-		if ($ports.length > 0) {
-			$this_port.remove();
+	function delEnvVariable(obj) {
+		if ($("div[name='envVariable']").length > 1) {
+			$(obj).closest("div[name='envVariable']").slideUp("normal", function() { $(this).remove(); } );
 		}
-
 	}
 </script>

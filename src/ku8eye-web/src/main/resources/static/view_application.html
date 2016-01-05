@@ -1,0 +1,263 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">View Application</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <dl class="dl-horizontal">
+                    <dt class="col-md-3">Application Name</dt>
+                    <dd id="name"/>
+                    <dt class="col-md-3">Version</dt>
+                    <dd id="version"/>
+                    <dt class="col-md-3">Owner</dt>
+                    <dd id="owner"/>
+                    <dt class="col-md-3">Ku8s Version</dt>
+                    <dd id="k8sVersion"/>
+                    <dt class="col-md-3">Note</dt>
+                    <dd id="note"/>
+                </dl>
+            </div>
+            <!-- service -->
+            <div class="row">
+                <span class="col-md-1"/>
+                <div class="col-md-8" style="border:1px solid #DDD;">
+                    <!-- Custom Tabs -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#service_1" data-toggle="tab" aria-expanded="true">Service 1</a>
+                            </li>
+                            <li class="">
+                                <a href="#service_2" data-toggle="tab" aria-expanded="false">Service 2</a>
+                            </li>
+                            <li class="">
+                                <a href="#service_3" data-toggle="tab" aria-expanded="false">Service 3</a>
+                            </li>
+                            <li class="pull-right">
+                                <a href="#" class="text-muted">
+                                    <i class="fa fa-gear"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="service_1">
+                                <!-- title row -->
+                                <div class="row">
+                                    <div class="col-xs-7">
+										Service Description
+									</div>
+                                    <div class="col-xs-5">
+                                        <button type="button" class="btn btn-sm btn-danger pull-right" style="margin-right: 5px;">
+                                            <i class="fa fa-stop"></i> Stop
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-success pull-right" style="margin-right: 5px;">
+                                            <i class="fa fa-play"></i> Start
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-default pull-right" style="margin-right: 5px;" data-toggle="modal" data-target="#envModal">View Variables</button>
+                                    </div>
+                                    <!-- /.col -->
+                                </div>
+                                <!-- info row -->
+                                <div class="box-footer">
+                                    <div class="col-xs-6">
+                                        <ul class="nav nav-stacked">
+                                            <li style="padding: 5px 15px;">Replica 
+                                                <span class="pull-right badge bg-blue">31</span>
+                                            </li>
+                                            <li style="padding: 5px 15px;">Version 
+                                                <span class="pull-right badge bg-aqua">5</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <ul class="nav nav-stacked">
+                                            <li style="padding: 5px 15px;">Container Port 
+                                                <span class="pull-right badge bg-aqua">1000</span>
+                                            </li>
+                                            <li style="padding: 5px 15px;">Service Port 
+                                                <span class="pull-right badge bg-green">2000</span>
+                                            </li>
+                                            <li style="padding: 5px 15px;">Node Port 
+                                                <span class="pull-right badge bg-red">3000</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /.row -->
+                                <!-- Table row -->
+                                <table id="service_table_1" class="table table-bordered table-hover" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Pod Name</th>
+                                            <th>Image</th>
+                                            <th>Limits</th>
+                                            <th>CPU</th>
+                                            <th>Memory</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Pod 1</td>
+                                            <td>MySQL</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>2048</td>
+                                            <td>
+                                                <button class='btn btn-primary btn-xs'>Start</button>&nbsp;
+                                                <button class='btn btn-primary btn-xs'>Stop</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Pod 2</td>
+                                            <td>MySQL</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>2048</td>
+                                            <td>
+                                                <button class='btn btn-primary btn-xs'>Start</button>&nbsp;
+                                                <button class='btn btn-primary btn-xs'>Stop</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- /.row -->
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="service_2">
+							The European languages are members of the same family. Their separate existence is a myth.
+							For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
+							in their grammar, their pronunciation and their most common words. Everyone realizes why a
+							new common language would be desirable: one could refuse to pay expensive translators. To
+							achieve this, it would be necessary to have uniform grammar, pronunciation and more common
+							words. If several languages coalesce, the grammar of the resulting language is more simple
+							and regular than that of the individual languages.
+							 </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="service_3">
+							Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+							Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+							when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+							It has survived not only five centuries, but also the leap into electronic typesetting,
+							remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
+							sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
+							like Aldus PageMaker including versions of Lorem Ipsum.
+							</div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                    <!-- nav-tabs-custom -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="modal-footer clearfix">
+                <span class="col-sm-2"/>
+                <div class="col-sm-7 no-padding">
+                    <button onclick="return createApplication()" type="button" class="btn btn-primary">
+					保<span style="padding-left: 12px" />存
+					</button>
+                    <button type="button" class="btn btn-default" onclick="back()">
+					返<span style="padding-left: 12px" />回
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+    </div>
+</div>
+<!-- /.row -->
+<div class="modal fade" id="envModal" tabindex="-1" role="dialog" aria-labelledby="envModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="appModalLabel">Environment Variables</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Horizontal Form -->
+		          <div class="box box-info" style="margin-bottom:0px;">
+		            <!-- form start -->
+		            <form class="form-horizontal">
+		              <div class="box-body">
+		                <div class="form-group">
+		                  <label class="col-sm-4">Name</label>
+		                  <label class="col-sm-7">Value</label>
+		                </div>
+		                <div class="form-group">
+		                  <div class="col-sm-4">
+							<div class="row text-muted well well-sm no-shadow no-margin">
+							env_name_1
+							</div>
+		                  </div>
+		                  <div class="col-sm-7">
+							<div class="row text-muted well well-sm no-shadow no-margin">
+							env_value_1
+							</div>
+		                  </div>
+		                </div>
+						<div class="form-group">
+		                  <div class="col-sm-4">
+							<div class="row text-muted well well-sm no-shadow no-margin">
+							env_name_2
+							</div>
+		                  </div>
+		                  <div class="col-sm-7">
+							<div class="row text-muted well well-sm no-shadow no-margin">
+							env_value_2
+							</div>
+		                  </div>
+		                </div>
+		              </div>
+		              <!-- /.box-body -->
+		            </form>
+		          </div>
+		          <!-- /.box -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">
+					关<span style="padding-left: 12px" />闭
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="../js/project.js"></script>
+<script>
+	var _id = sessionStorage.getItem("appID");
+	
+	$(document).ready(function(){
+		sessionStorage.removeItem("appID");
+		if(_id !== null)
+		{
+			$.ajax({
+				url: "/getApplication",
+				type: "GET",
+				dataType: "json",
+				data: {id:_id},
+				success: function(data){
+					console.log(data);
+					$("#name").html(data['name']);
+					$("#version").html(data['version']);
+					$("#owner").html(data['owner']);
+					$("#k8sVersion").html(data['k8sVersion']);
+					$("#note").html(data['note']);
+				}
+			});
+		}
+		else
+		{
+			alert("no session found, error");
+		}
+	});
+	
+	function back() {
+		$('.content').load('application_main.html');
+	}
+</script>
