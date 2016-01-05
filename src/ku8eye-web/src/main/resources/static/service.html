@@ -4,6 +4,7 @@
 			<div class="box-header">
                 <div class="input-group input-group-sm">
                 	<a href="javascript:void(0);" class="btn btn-primary" id="add">新增Service</a>
+                	<a href="javascript:void(0);" class="btn btn-primary" id="testPod">testPod</a>
                 </div>
             </div>
 			<div class="box-body">
@@ -11,14 +12,14 @@
 					style="font-size: 12px;" width="100%">
 					<thead>
 						<tr>
-							<th>Service名字</th>
-							<th>ReplicationController名字</th>
-							<th>Pod 数量</th>
-							<th>创建时间</th>
-							<th>实际地址</th>
-							<th>端口</th>
-							<th>标签</th>
-							<th>操作</th>
+							<th>Service Name</th>
+							<th>RC Name</th>
+							<th>Pod Replicas</th>
+							<th>Service CreationTimestamp</th>
+							<th>Service ClusterIP</th>
+							<th>Ports</th>
+							<th>Labels</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 				</table>
@@ -40,38 +41,41 @@
         			{ "data": "ports","render": function(data, type, row) {
                         var plist = "";
 					  	for(var i=0;i<data.length;i++){
-							plist += data[i].protocol+'-'+data[i].targetPort+"-"+data[i].nodePort+'<br>';
+							plist += 'containerPort:'+data[i].containerPort+'-servicePort:'+data[i].servicePort+"-nodePort:"+data[i].nodePort+'<br>';
 					 	}
 						return plist;
                     }},
         			{ "data": "labels","render": function(data, type, row) {
                         var map = '';  
 						for(var key in data){
-                        	 map+= key+"-"+data[key]+'<br>';
+                        	 map+= 'key:'+key+"-value:"+data[key]+'<br>';
                      	}
                      	return map;
                   	}},
-					{ "defaultContent": "<button class='btn btn-primary btn-sm search'>查询Pod</button>&nbsp;<button class='btn btn-primary btn-sm edit'>修改</button>&nbsp;<button class='btn btn-primary btn-sm deal'>删除</button>"}
+					{ "defaultContent": "<button class='btn btn-primary btn-sm search'>View</button>&nbsp;<button class='btn btn-primary btn-sm edit'>Update</button>&nbsp;<button class='btn btn-primary btn-sm deal'>Del</button>"}
         		]
 	});
 
     $('#add').on('click', function () {
     	$('.content').load('serviceAdd.html');
     } );
-
+    
+    $('#testPod').on('click', function () {
+    	$('.content').load('pod.html');
+    } );
 	$('#serviceTable tbody').on( 'click', 'button.search', function () {
 		var data = table.row($(this).parents('tr')).data();
 		$('.content').load('pod.html');
 		sessionStorage.setItem("selector", data['selector']);
     } );
 
-    $('#serviceTable tbody').on( 'click', 'button.edit', function () {
+    $('#serviceTable tbody').on('click', 'button.edit', function () {
 		var data = table.row($(this).parents('tr')).data();
 		sessionStorage.setItem("selector", data['selector']);
 		$('.content').load('serviceAdd.html');
     } );
 
-    $('#serviceTable tbody').on( 'click', 'button.deal', function () {
+    $('#serviceTable tbody').on('click', 'button.deal', function () {
 		var data = table.row($(this).parents('tr')).data();
 		var serviceName = data['serviceName'];
 		$.ajax({
@@ -92,86 +96,4 @@
 		});
     } );
 	
-	$('input', $('#appModal')).focusout(function() {
-		setFormTips(this);
-	});
-	
-	$('#appModal').on('hidden.bs.modal', function () {
-		$(this).find('input,textarea,select').val('').end();
-		$(this).find('.form-group').removeClass('has-error').removeClass('has-success').end();
-		$(this).find(".formtips").remove().end();
-		$('#addResult').hide();
-	});
-	
-	function setFormTips(field)
-	{
-		$(field).parent().find('.formtips').remove().end();
-		var v = $(field).val();
-		if(v === '')
-		{
-			$(field).closest('.form-group').addClass('has-error');
-            $(field).parent().append('<span class="formtips" style="color:#dd4b39">不能为空!</span>');
-		}
-		else
-		{
-			$(field).closest('.form-group').removeClass('has-error').addClass('has-success');
-		}
-	}
-	
-	function checkInput(){
-		var ret = true;
-		$('input', $('#appModal')).each(function () {
-			if($(this).val() === '')
-			{
-				setFormTips(this);
-				ret = false;
-			}
-		});
-		return ret;
-	}
-	
-	function addApplication()
-	{
-		if(checkInput())
-		{
-			var _name = $('#name').val();
-			var _version = $('#version').val();
-			var _k8sVersion = $('#k8s-version').val();
-			var _note = $('#note').val();
-			
-			$.ajax({
-				url: "/addApplication",
-				type: "POST",
-				dataType: "json",
-				data: {
-					name:_name,
-					version:_version,
-					k8sVersion:_k8sVersion,
-					note:_note
-				},
-				success: function(response){
-					if(response['status'] > -1)
-					{
-						var _div = $('<div>');
-						_div.load('alert.html', function(){
-							$(this).find('#title').html(response['message']);
-							$(this).find('#message').html("Project <strong>" + _name + "</strong> added successfully.");
-							var child = $(this).children();
-							child.fadeTo(3000, 500).slideToggle(500, function(){
-								child.alert('close');
-							});
-							$('.content').append(child);
-						});
-						table.ajax.reload();
-						$('#appModal').modal('toggle');
-					}
-					else
-					{
-						$('#resultDetails').html(response['message'])
-						$('#addResult').show();
-					}
-				}
-			});
-		}
-	}
 </script>

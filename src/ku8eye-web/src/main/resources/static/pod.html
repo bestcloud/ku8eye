@@ -1,57 +1,97 @@
 <div class="row">
-	<div class="col-xs-12">
-		<div class="box">
-			<div class="box-header">
-                <div class="input-group input-group-sm">
-                 	<a href="javascript:void(0);" id="back" class="btn btn-primary" data-dismiss="modal">返回</a>
-                </div>
-            </div>
-			<div class="box-body">
-				<table id="podTable" class="table table-bordered table-hover"
-					style="font-size:12px;" width="100%">
-					<thead>
-						<tr> 
-							<th>名称</th>
-							<th>创建时间</th>
-							<th>节点名称</th>
-							<th>当前状态</th>
-							<th>虚拟地址</th>
-							<th>物理地址</th>
-							<th>标签</th>
-						</tr>
-					</thead>
-				</table>
+	<div class="box box-info">
+		<div class="box-body">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					Service
+					<a href="javascript:void(0);" id="back" class="btn btn-primary" data-dismiss="modal">返回</a>
+					<a href="javascript:void(0);" id="back" class="btn btn-danger" data-dismiss="modal">Stop</a>
+					<a href="javascript:void(0);" id="back" class="btn btn-success" data-dismiss="modal">Start</a>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-6">
+							<ul class="nav nav-stacked">
+								<li style="padding: 5px 15px;">Replica <span class="pull-right badge bg-blue">31</span>
+								</li>
+								<li style="padding: 5px 15px;">Version <span class="pull-right badge bg-aqua">5</span>
+								</li>
+							</ul>
+						</div>
+						<div class="col-xs-6">
+							<ul class="nav nav-stacked">
+								<li style="padding: 5px 15px;">Container Port <span class="pull-right badge bg-aqua">1000</span>
+								</li>
+								<li style="padding: 5px 15px;">Service Port <span class="pull-right badge bg-green">2000</span>
+								</li>
+								<li style="padding: 5px 15px;">Node Port <span class="pull-right badge bg-red">3000</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="box-header">
+							</div>
+							<div class="box-body">
+								<table id="podTable" class="table table-bordered table-hover" style="font-size: 12px;" width="100%">
+									<thead>
+										<tr>
+											<th>名称</th>
+											<th>创建时间</th>
+											<th>节点名称</th>
+											<th>当前状态</th>
+											<th>虚拟地址</th>
+											<th>物理地址</th>
+											<th>标签</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
 <script type="text/javascript">
-	$(function($){
-    	$("#back").click(function(){
-    		$(".content").load("service.html");
-    	});
+	$(function($) {
+		$("#back").click(function() {
+			$(".content").load("service.html");
+		});
 	})
 	var selector = sessionStorage.getItem("selector");
 	sessionStorage.removeItem("selector");
 	var table = $('#podTable').DataTable({
-	    "ajax":{
-	    	url:"/getPodsBySelector",
-	    	data:{"selector":selector}
+		"ajax" : {
+			url : "/getPodsBySelector",
+			data : {
+				"selector" : selector
+			}
 		},
-	    "columns": [
-					{ "data": "name" },
-	    			{ "data": "creationTimestamp" },
-	    			{ "data": "nodeName" },
-	    			{ "data": "status_phase" },
-	    			{ "data": "podIP" },
-	    			{ "data": "hostIP" },
-	    			{ "data": "labels","render": function(data, type, row) {
-                        var map = '';  
-						for(var key in data){
-                        	 map+= key+"-"+data[key]+'<br>';
-                     	}
-                     	return map;
-                  	}}
-	    		]
+		"columns" : [ {
+			"data" : "name"
+		}, {
+			"data" : "creationTimestamp"
+		}, {
+			"data" : "nodeName"
+		}, {
+			"data" : "status_phase"
+		}, {
+			"data" : "podIP"
+		}, {
+			"data" : "hostIP"
+		}, {
+			"data" : "labels",
+			"render" : function(data, type, row) {
+				var map = '';
+				for ( var key in data) {
+					map += "key:" + key + "-value" + data[value] + '<br>';
+				}
+				return map;
+			}
+		} ]
 	});
 </script>

@@ -7,81 +7,6 @@
 						<h3 class="panel-title">Service</h3>
 					</div>
 					<div class="panel-body">
-						<div class="form-group">
-							<label class="col-xs-3 control-label">name</label>
-							<div class="col-xs-8">
-								<input type="text" class="form-control" name="name" placeholder="服务名称">
-							</div>
-						</div>
-						<div class="panel panel-info" name="label">
-							<div class="panel-heading">
-								Label
-								<button type="button" class="btn btn-primary" onclick="addLabel(this)">+</button>
-								<button type="button" class="btn btn-primary" onclick="delLabel(this)">-</button>
-							</div>
-							<div class="panel-body">
-								<div class="form-group">
-									<label class="col-xs-3 control-label">key</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="label[key][]" placeholder="key">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-xs-3 control-label">value</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="label[value][]" placeholder="value">
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="panel panel-info" name="selector">
-							<div class="panel-heading">
-								Selector
-								<button type="button" class="btn btn-primary" onclick="addSelector(this)">+</button>
-								<button type="button" class="btn btn-primary" onclick="delSelector(this)">-</button>
-							</div>
-							<div class="panel-body">
-								<div class="form-group">
-									<label class="col-xs-3 control-label">key</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="selector[key][]" placeholder="key">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-xs-3 control-label">value</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="selector[value][]" placeholder="value">
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="panel panel-info" name="port">
-							<div class="panel-heading">
-								Ports
-								<button type="button" class="btn btn-primary" onclick="addPort(this)">+</button>
-								<button type="button" class="btn btn-primary" onclick="delPort(this)">-</button>
-							</div>
-							<div class="panel-body">
-								<div class="form-group">
-									<label class="col-xs-3 control-label">containerPort</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="port[containerPort][]" placeholder="containerPort">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-xs-3 control-label">servicePort</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="port[servicePort][]" placeholder="servicePort">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-xs-3 control-label">nodePort</label>
-									<div class="col-xs-8">
-										<input type="text" class="form-control" name="port[nodePort][]" placeholder="nodePort">
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</form>
@@ -101,6 +26,7 @@
 </div>
 <script type="text/javascript">
 	$(function($){
+		$('form>div>div.panel-body').load('./service_project.html?'+$.now());
 		if(sessionStorage.getItem("selector")){
 			$.ajax({
 				url: "/getServiceBySelector",
@@ -109,7 +35,7 @@
 				data: {selector:sessionStorage.getItem("selector")},
 				success: function(response){
 					if(response['status']){
-						//alert('需要确定BO');
+						// todo 将返回数据赋值到 form中
 					}
 					else{
 						alert(response['message']);
@@ -154,44 +80,4 @@
 			$(".content").load("service.html");
 		});
 	})
-	function addPort(obj) {
-		var $port = $(obj).parent(".panel-heading").parent("div[name='port']");
-		var $new_port = $port.clone();
-		$port.after($new_port);
-	}
-	function delPort(obj) {
-		var $this_port = $(obj).parent(".panel-heading").parent(
-				"div[name='port']");
-		var $ports = $this_port.siblings("div[name='port']");
-		if ($ports.length > 0) {
-			$this_port.remove();
-		}
-	}
-	function addLabel(obj) {
-		var $label = $(obj).parent(".panel-heading").parent("div[name='label']");
-		var $new_label = $label.clone();
-		$label.after($new_label);
-	}
-	function delLabel(obj) {
-		var $this_label = $(obj).parent(".panel-heading").parent(
-				"div[name='label']");
-		var $labels = $this_label.siblings("div[name='label']");
-		if ($labels.length > 0) {
-			$this_label.remove();
-		}
-	}
-	function addSelector(obj) {
-		var $selector = $(obj).parent(".panel-heading").parent(
-				"div[name='selector']");
-		var $new_selector = $selector.clone();
-		$selector.after($new_selector);
-	}
-	function delSelector(obj) {
-		var $this_selector = $(obj).parent(".panel-heading").parent(
-				"div[name='selector']");
-		var $selectors = $this_selector.siblings("div[name='selector']");
-		if ($selectors.length > 0) {
-			$this_selector.remove();
-		}
-	}
 </script>
