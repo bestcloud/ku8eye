@@ -66,7 +66,7 @@ public class ProjectService {
 		ku8p.setVersion(version);
 		ku8p.setK8sVersion(k8sVersion);
 		ku8p.setNote(note);
-		ku8p.setYamlSpec(yamlSpec);
+		ku8p.setJsonSpec(yamlSpec);
 		ku8p.setLastUpdated(new Date());
 		
 		return projectDao.updateByPrimaryKey(ku8p);

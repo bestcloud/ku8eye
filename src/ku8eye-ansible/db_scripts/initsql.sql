@@ -95,25 +95,6 @@ CREATE TABLE `ku8_cluster` (
 INSERT INTO `ku8_cluster` VALUES ('1', '1', '1', 'test cluster', 'test', '1.0', '1', null, '2015-11-19 14:13:46');
 
 -- ----------------------------
--- Table structure for `ku8_group`
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_group`;
-CREATE TABLE `ku8_group` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
-  `NAME` char(32) NOT NULL COMMENT ' group name ',
-  `LABEL` varchar(64) DEFAULT NULL COMMENT 'group label',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of ku8_group
--- ----------------------------
-
--- ----------------------------
 -- Table structure for `ku8_project`
 -- ----------------------------
 DROP TABLE IF EXISTS `ku8_project`;
@@ -122,10 +103,17 @@ CREATE TABLE `ku8_project` (
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
   `OWNER` char(16) DEFAULT NULL COMMENT 'creater :userid',
   `NAME` varchar(128) NOT NULL COMMENT ' project name ',
+  `ICON_URL` varchar(128)  NULL COMMENT ' project icon url ',
   `VERSION` char(16) DEFAULT '1.0' COMMENT ' project version',
   `K8S_VERSION` char(16) DEFAULT '1.0' COMMENT 'kubernetes  version',
-  `YAML_SPEC` text COMMENT 'YAML spec content',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `APP_TYPE` tinyint(4) DEFAULT 0  COMMENT 'application type ,0 means normal applicatio ,1 means micro service cluster',
+  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
+  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
+  `RES_PARTION_ID`  int(11) DEFAULT NULL  COMMENT 'deployed in this resource partion ',
+  `JSON_SPEC` text COMMENT 'JSON spec content',
+  `PREV_JSON_SPEC` text COMMENT 'prievious json spec content',
+  `STATUS` tinyint(4) DEFAULT 0 ,
+   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -133,77 +121,37 @@ CREATE TABLE `ku8_project` (
 -- ----------------------------
 -- Records of ku8_project
 -- ----------------------------
-INSERT INTO `ku8_project` VALUES ('1', '1', 'hpcms', 'demo project', '1.0', '1.0', null, null, '2015-11-19 14:09:13');
-INSERT INTO `ku8_project` VALUES ('2', '2', 'guest', 'demo2 project', '1.0', '1.0', null, null, '2015-11-19 14:12:44');
+INSERT INTO `ku8_project` VALUES ('3', null, null, 'demo app', 'blank', '1.0', '1.0', '0', '1', '1', null, null, null, '0', null, '2015-12-31 15:32:12');
+INSERT INTO `ku8_project` VALUES ('4', null, null, 'demo2 app', 'blank', '1.0', '1.0', '0', '1', '1', null, null, null, '0', null, '2015-12-31 15:32:25');
+
+
 
 -- ----------------------------
--- Table structure for `ku8_proj_instance`
+-- Table structure for `ku8_service`
 -- ----------------------------
-DROP TABLE IF EXISTS `ku8_proj_instance`;
-CREATE TABLE `ku8_proj_instance` (
+DROP TABLE IF EXISTS `ku8_service`;
+CREATE TABLE `ku8_service` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
+   `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
   `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
-  `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
-  `STATUS` tinyint(4) DEFAULT NULL COMMENT 'instance status OK, ERR,DELETED',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of ku8_proj_instance
--- ----------------------------
-
--- ----------------------------
--- Table structure for `ku8_proj_rc_inst`
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_proj_rc_inst`;
-CREATE TABLE `ku8_proj_rc_inst` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
-  `PROJECT_INSTANCE_ID` int(11) DEFAULT NULL COMMENT 'project instance Id ',
-  `PROJECT_SERVICE_ID` int(11) DEFAULT NULL COMMENT 'project service Id ',
-  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
-  `RC_NAME` varchar(64) DEFAULT NULL COMMENT 'RC name ',
-  `POD_LABEL` varchar(64) DEFAULT NULL COMMENT 'RC selector POD Label ',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of ku8_proj_rc_inst
--- ----------------------------
-
--- ----------------------------
--- Table structure for `ku8_proj_service_inst`
--- ----------------------------
-DROP TABLE IF EXISTS `ku8_proj_service_inst`;
-CREATE TABLE `ku8_proj_service_inst` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `PROJECTID` int(11) DEFAULT NULL COMMENT 'project Id ',
-  `PROJECT_INSTANCE_ID` int(11) DEFAULT NULL COMMENT 'project instance Id ',
-  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
-  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
-  `KU8_GROUP_ID` int(11) DEFAULT NULL COMMENT 'belong to which group of cluster ',
-  `NAMESPACE` char(16) DEFAULT NULL COMMENT 'deployed in this namespace',
-  `SERVICE_NAME` varchar(32) DEFAULT NULL COMMENT 'service name',
+  `OWNER` char(16) DEFAULT NULL COMMENT 'creater :userid',
+  `NAME` varchar(128) NOT NULL COMMENT ' service name ',
   `REPLICA` tinyint(4) DEFAULT NULL COMMENT 'service replica ',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `ICON_URL` varchar(128) NOT NULL COMMENT ' service icon url ',
+  `VERSION` char(16) DEFAULT '1.0' COMMENT ' project version',
+  `K8S_VERSION` char(16) DEFAULT '1.0' COMMENT 'kubernetes  version',
+  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
+  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
+  `RES_PARTION_ID`  int(11) DEFAULT NULL  COMMENT 'deployed in this resource partion ',
+  `JSON_SPEC` text COMMENT 'JSON spec content',
+  `PREV_JSON_SPEC` text COMMENT 'prievious json spec content',
+  `FLAG` tinyint(4) DEFAULT 0 ,
+  `STATUS` tinyint(4) DEFAULT 0 ,
+   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records of ku8_proj_service_inst
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for `ku8_res_partion`
@@ -293,7 +241,7 @@ INSERT INTO `zone` VALUES ('1', 'beijing', null, '2015-11-19 13:54:43');
 
 
 -- ----------------------------
--- Table structure for `docker_image`
+-- Table structure for docker_image
 -- ----------------------------
 DROP TABLE IF EXISTS `docker_image`;
 CREATE TABLE `docker_image` (
@@ -303,6 +251,7 @@ CREATE TABLE `docker_image` (
   `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
   `VERSION_TYPE` tinyint(4) DEFAULT '0',
   `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
+  `SIZE` int(11)  DEFAULT 0,
   `category` varchar(32) NOT NULL COMMENT 'image category ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong whitch cluster',
   `REGISTRY_ID` int(11) NOT NULL,
@@ -314,12 +263,57 @@ CREATE TABLE `docker_image` (
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of docker_image
 -- ----------------------------
-INSERT INTO `docker_image` VALUES ('1', 'MySQL Server 5.6', 'mysqlserver', '5.6', '1', '0', 'database', '1', '0', '/icons/images/mysql.png', '0', null, null, '0', null, null);
-INSERT INTO `docker_image` VALUES ('2', 'Java 8 ', 'jdk', '8.0', '1', '0', 'plantform', '1', '0', '/icons/images/java.png', '0', null, null, '0', null, null);
-INSERT INTO `docker_image` VALUES ('3', 'Redis 2', 'redis', '2.0', '1', '0', 'middleware', '1', '0', '/icons/images/redis.png', '0', null, null, '0', null, null);
-INSERT INTO `docker_image` VALUES ('4', 'Memcache 1.4', 'memcache', '1.4.25', '1', '0', 'middleware', '1', '0', '/icons/images/memcache.png', '0', null, null, '0', null, null);
+INSERT INTO `docker_image` VALUES ('1', 'MySQL Server 5.6', 'mysqlserver', '5.6', '1', '0', 204800, 'database', '1', '0', '/icons/images/mysql.png', '0', null, null, '0', null, '2015-12-02 11:14:04');
+INSERT INTO `docker_image` VALUES ('2', 'Java 8 ', 'jdk', '8.0', '1', '0', 307200, 'plantform', '1', '0', '/icons/images/java.png', '0', null, null, '0', null, '2015-12-01 11:14:15');
+INSERT INTO `docker_image` VALUES ('3', 'Redis 2', 'redis', '2.0', '1', '0', 451481, 'middleware', '1', '0', '/icons/images/redis.png', '0', null, null, '0', null, '2015-12-04 11:14:40');
+INSERT INTO `docker_image` VALUES ('4', 'Memcache 1.4', 'memcache', '1.4.25', '1', '0', 448518, 'middleware', '1', '0', '/icons/images/memcache.png', '0', null, null, '0', null, '2015-12-18 11:14:54');
+
+DROP TABLE IF EXISTS `docker_image`;
+CREATE TABLE `docker_image` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `TITLE` varchar(64) NOT NULL COMMENT 'image display title ',
+  `IMAGE_NAME` varchar(64) NOT NULL COMMENT 'image name ',
+  `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
+  `VERSION_TYPE` tinyint(4) DEFAULT '0',
+  `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
+  `SIZE` int(11)  DEFAULT 0,
+  `category` varchar(32) NOT NULL COMMENT 'image category ',
+  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong whitch cluster',
+  `REGISTRY_ID` int(11) NOT NULL,
+  `IMAGE_ICON_URL` varchar(128) DEFAULT NULL COMMENT 'image icon url ',
+  `STATUS` tinyint(4) DEFAULT '0',
+  `BUILD_FILE` text,
+  `AUTO_BUILD_COMMAND` varchar(512) DEFAULT NULL,
+  `AUTO_BUILD` tinyint(4) DEFAULT '0',
+  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+
+
+-- ----------------------------
+-- Table structure for `ku8_service_template`
+-- ----------------------------
+DROP TABLE IF EXISTS `ku8_service_template`;
+CREATE TABLE `ku8_service_template` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+  `TENANT_ID` int(11) DEFAULT NULL COMMENT 'tenant ',
+  `OWNER` char(16) DEFAULT NULL COMMENT 'creater :userid',
+  `NAME` varchar(128) NOT NULL COMMENT ' template name ',
+  `ICON_URL` varchar(128) NOT NULL COMMENT ' service icon url ',
+  `VERSION` char(16) DEFAULT '1.0' COMMENT ' project version',
+  `K8S_VERSION` char(16) DEFAULT '1.0' COMMENT 'kubernetes  version',
+  `ZONE_ID` int(11) DEFAULT NULL COMMENT 'belongs which zone ',
+  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong to which cluster ',
+  `JSON_SPEC` text COMMENT 'JSON spec content',
+  `PREV_JSON_SPEC` text COMMENT 'prievious json spec content',
+   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
