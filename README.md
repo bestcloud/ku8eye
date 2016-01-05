@@ -1,7 +1,7 @@
 ![ImageLoadFailed](./res/ku8eye.png)
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-http://pan.baidu.com/s/1dEvQtFj
+http://pan.baidu.com/s/1gdYk4CV
 
 更新历史：
 
