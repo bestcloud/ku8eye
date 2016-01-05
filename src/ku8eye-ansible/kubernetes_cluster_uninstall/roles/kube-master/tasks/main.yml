@@ -1,0 +1,69 @@
+---
+
+# uninstallation steps:
+# 1. stop kube services
+# 2. delete kube files
+
+
+# stop and disable kube-apiserver service
+- name: stop and disable kube-apiserver service
+  service: name=kube-apiserver enabled=no state=stopped
+  ignore_errors: True
+
+# stop and disable kube-controller-manager service
+- name: stop and disable kube-controller-manager service
+  service: name=kube-controller-manager enabled=no state=stopped
+  ignore_errors: True
+
+# stop and disable kube-scheduler service
+- name: stop and disable kube-scheduler service
+  service: name=kube-scheduler enabled=no state=stopped
+  ignore_errors: True
+
+
+# delete kube-apiserver.service
+- file: path=/usr/lib/systemd/system/kube-apiserver.service state=absent
+  ignore_errors: True
+
+# delete kube-controller-manager.service
+- file: path=/usr/lib/systemd/system/kube-controller-manager.service state=absent
+  ignore_errors: True
+
+# delete kube-scheduler.service
+- file: path=/usr/lib/systemd/system/kube-scheduler.service state=absent
+  ignore_errors: True
+
+
+# delete /usr/bin/kube-apiserver
+- file: path=/usr/bin/kube-apiserver state=absent
+  ignore_errors: True
+
+# delete /usr/bin/kube-controller-manager
+- file: path=/usr/bin/kube-controller-manager state=absent
+  ignore_errors: True
+
+# delete /usr/bin/kube-scheduler
+- file: path=/usr/bin/kube-scheduler state=absent
+  ignore_errors: True
+
+# delete /usr/bin/kubectl
+- file: path=/usr/bin/kubectl state=absent
+  ignore_errors: True
+
+# delete /usr/bin/hyperkube
+- file: path=/usr/bin/hyperkube state=absent
+  ignore_errors: True
+
+
+# delete /var/run/kubernetes
+- file: path=/var/run/kubernetes state=absent
+  ignore_errors: True
+
+# delete /etc/kubernetes
+- file: path=/etc/kubernetes state=absent
+  ignore_errors: True
+
+
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+

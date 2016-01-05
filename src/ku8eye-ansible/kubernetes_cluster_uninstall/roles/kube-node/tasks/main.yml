@@ -1,0 +1,109 @@
+---
+
+# on every node:
+# uninstallation steps:
+# 1. stop docker service
+# 2. delete docker files
+# 3. remove docker0 bridge
+# 4. stop kube services
+# 5. delete kube files
+
+
+
+#################################### docker ###################################
+
+# check if docker exists
+- stat: path=/usr/bin/docker
+  register: docker_file
+
+
+# stop and disable docker service
+- name: stop and disable docker service
+  service: name=docker enabled=no state=stopped
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker.service
+- file: path=/usr/lib/systemd/system/docker.service state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker.socket
+- file: path=/usr/lib/systemd/system/docker.socket state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker config file
+- file: path=/etc/sysconfig/docker state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+
+# delete /usr/bin/docker
+- file: path=/usr/bin/docker state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker runtime files
+- file: path={{docker_runtime_root_dir}} state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+
+# delete docker0 bridge
+- name: delete docker0 bridge
+  command: ip link del docker0
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+
+################################ kubelet & kube-proxy #########################
+
+# stop and disable kubelet service
+- name: stop and disable kubelet service
+  service: name=kubelet enabled=no state=stopped
+  ignore_errors: True
+
+# stop and disable kube-proxy service
+- name: stop and disable kube-proxy service
+  service: name=kube-proxy enabled=no state=stopped
+  ignore_errors: True
+
+
+# delete kubelet.service
+- file: path=/usr/lib/systemd/system/kubelet.service state=absent
+  ignore_errors: True
+
+# delete kube-proxy.service
+- file: path=/usr/lib/systemd/system/kube-proxy.service state=absent
+  ignore_errors: True
+
+
+# delete /usr/bin/kubelet
+- file: path=/usr/bin/kubelet state=absent
+  ignore_errors: True
+
+# delete /usr/bin/kube-proxy
+- file: path=/usr/bin/kube-proxy state=absent
+  ignore_errors: True
+
+
+# delete /var/run/kubernetes
+- file: path=/var/run/kubernetes state=absent
+  ignore_errors: True
+
+# delete /etc/kubernetes
+- file: path=/etc/kubernetes state=absent
+  ignore_errors: True
+
+# delete /var/log/kubernetes
+- file: path=/var/log/kubernetes state=absent
+  ignore_errors: True
+
+# delete /var/lib/kubelet
+- file: path=/var/lib/kubelet state=absent
+  ignore_errors: True
+

@@ -1,7 +1,7 @@
 # ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
-http://pan.baidu.com/s/1dEvQtFj
+http://pan.baidu.com/s/1gdYk4CV
 
 ### 安装部署的架构图如下图所示。
 ###**注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。**###
@@ -51,6 +51,8 @@ http://pan.baidu.com/s/1dEvQtFj
 
 #### 2. 网页方式
 打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面，对Kubernetes集群进行操作了。
+
+登录账号：guest/123456
 
 点击左侧“K8s Cluster”菜单，选择“Cluster Inf”进行安装。
 
