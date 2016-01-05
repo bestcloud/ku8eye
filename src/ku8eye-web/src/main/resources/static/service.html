@@ -1,0 +1,99 @@
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-header">
+                <div class="input-group input-group-sm">
+                	<a href="javascript:void(0);" class="btn btn-primary" id="add">新增Service</a>
+                	<a href="javascript:void(0);" class="btn btn-primary" id="testPod">testPod</a>
+                </div>
+            </div>
+			<div class="box-body">
+				<table id="serviceTable" class="table table-bordered table-hover"
+					style="font-size: 12px;" width="100%">
+					<thead>
+						<tr>
+							<th>Service Name</th>
+							<th>RC Name</th>
+							<th>Pod Replicas</th>
+							<th>Service CreationTimestamp</th>
+							<th>Service ClusterIP</th>
+							<th>Ports</th>
+							<th>Labels</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ajaxStart(function() { Pace.restart(); });
+
+    var table = $('#serviceTable').DataTable({
+        "ajax":"/getServices",
+        "columns": [
+					{ "data": "serviceName" },
+        			{ "data": "rcName" },
+        			{ "data": "podNum" },
+        			{ "data": "creationTimestamp" },
+        			{ "data": "clusterIP" },
+        			{ "data": "ports","render": function(data, type, row) {
+                        var plist = "";
+					  	for(var i=0;i<data.length;i++){
+							plist += 'containerPort:'+data[i].containerPort+'-servicePort:'+data[i].servicePort+"-nodePort:"+data[i].nodePort+'<br>';
+					 	}
+						return plist;
+                    }},
+        			{ "data": "labels","render": function(data, type, row) {
+                        var map = '';  
+						for(var key in data){
+                        	 map+= 'key:'+key+"-value:"+data[key]+'<br>';
+                     	}
+                     	return map;
+                  	}},
+					{ "defaultContent": "<button class='btn btn-primary btn-sm search'>View</button>&nbsp;<button class='btn btn-primary btn-sm edit'>Update</button>&nbsp;<button class='btn btn-primary btn-sm deal'>Del</button>"}
+        		]
+	});
+
+    $('#add').on('click', function () {
+    	$('.content').load('serviceAdd.html');
+    } );
+    
+    $('#testPod').on('click', function () {
+    	$('.content').load('pod.html');
+    } );
+	$('#serviceTable tbody').on( 'click', 'button.search', function () {
+		var data = table.row($(this).parents('tr')).data();
+		$('.content').load('pod.html');
+		sessionStorage.setItem("selector", data['selector']);
+    } );
+
+    $('#serviceTable tbody').on('click', 'button.edit', function () {
+		var data = table.row($(this).parents('tr')).data();
+		sessionStorage.setItem("selector", data['selector']);
+		$('.content').load('serviceAdd.html');
+    } );
+
+    $('#serviceTable tbody').on('click', 'button.deal', function () {
+		var data = table.row($(this).parents('tr')).data();
+		var serviceName = data['serviceName'];
+		$.ajax({
+			url: "/dealService",
+			type: "POST",
+			dataType: "json",
+			data: {
+				name:serviceName
+			},
+			success: function(response){
+				if(response['status']){
+					table.ajax.reload(null,false);
+				}
+				else{
+					alert(response['message']);
+				}
+			}
+		});
+    } );
+	
+</script>

@@ -1,0 +1,83 @@
+<div class="row">
+	<div class="box box-info">
+		<div class="box-body">
+			<form class="form-horizontal" role="form">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h3 class="panel-title">Service</h3>
+					</div>
+					<div class="panel-body">
+					</div>
+				</div>
+			</form>
+			<div class="modal-footer clearfix">
+				<span class="col-sm-2" />
+				<div class="col-sm-7 no-padding">
+					<button id="submit" type="button" class="btn btn-primary">
+						保<span style="padding-left: 12px" />存
+					</button>
+					<button type="button" id="back" class="btn btn-default" data-dismiss="modal" >
+						返<span style="padding-left: 12px" />回
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function($){
+		$('form>div>div.panel-body').load('./service_project.html?'+$.now());
+		if(sessionStorage.getItem("selector")){
+			$.ajax({
+				url: "/getServiceBySelector",
+				type: "POST",
+				dataType: "json",
+				data: {selector:sessionStorage.getItem("selector")},
+				success: function(response){
+					if(response['status']){
+						// todo 将返回数据赋值到 form中
+					}
+					else{
+						alert(response['message']);
+					}
+				}
+			});
+			$("#submit").click(function(){
+				$.ajax({
+					url: "/updateService",
+					type: "POST",
+					dataType: "json",
+					data: $("form").serialize(),
+					success: function(response){
+						if(response['status']){
+							alert('修改成功');
+						}
+						else{
+							alert(response['message']);
+						}
+					}
+				});
+			});
+		}else{
+			$("#submit").click(function(){
+				$.ajax({
+					url: "/addService",
+					type: "POST",
+					dataType: "json",
+					data: $("form").serialize(),
+					success: function(response){
+						if(response['status']){
+							alert('添加成功');
+						}
+						else{
+							alert(response['message']);
+						}
+					}
+				});
+			});
+		}
+		$("#back").click(function(){
+			$(".content").load("service.html");
+		});
+	})
+</script>
