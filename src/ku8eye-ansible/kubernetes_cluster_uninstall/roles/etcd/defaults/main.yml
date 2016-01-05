@@ -1,0 +1,4 @@
+---
+peer_ip: 192.168.1.201
+etcd_data_dir: /var/lib/etcd/etcd_data
+keep_etcd_data: true

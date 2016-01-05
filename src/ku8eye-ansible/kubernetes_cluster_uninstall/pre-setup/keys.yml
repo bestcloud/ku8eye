@@ -1,0 +1,29 @@
+# Using this module REQUIRES the sshpass package to be installed!
+#
+# This REQUIRES you have created a ~/.ssh/id_rsa.pub public key
+#
+# Place the root password for all nodes in ~/rootpassword, run this playbook,
+# and it will put your public key on all the nodes.  Then delete rootpassword!
+#
+# You can also comment out the "vars" section and use --ask-pass on the command
+# line.
+#
+# All ansible modules will fail if the host is not in the ssh known_hosts.
+# Normally ansible just asks if the host key is acceptable.  BUT when using
+# password instead of public key authentication it will not ask and will instead
+# fail.
+#
+# You can solve this by running a meaningless play to first get the ssh host
+# key, then lay down the public key. Something like:
+#       ansible-playbook -i inventory ping.yml
+# Then answer yes as you check the host keys.
+#
+# You also could set the environment variable ANSIBLE_HOST_KEY_CHECKING=False
+# when running this playbook.  You would have to answer the host key questions
+# the next time you run ansible.
+#
+---
+- hosts: all
+  tasks:
+    - name: Push rsa public key to all machines
+      authorized_key: user={{ ansible_ssh_user }} key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

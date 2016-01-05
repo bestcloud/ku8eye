@@ -3,7 +3,8 @@
   tasks:
     - name: stop firewalld service
       command: systemctl stop firewalld
+      ignore_errors: True
 
     - name: disable firewalld service
       command: systemctl disable firewalld
-
+      ignore_errors: True

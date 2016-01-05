@@ -5,13 +5,9 @@
 		height:100%;
 		margin:0 auto;
 	}
-	.installationMode tr td{
-		padding:4% 6% 4% 2%;
-		text-align:left;
-	}
 	.installationMode .projectdocker{
-	    width:100%;
-	    height:150px;
+	    margin:20px 15px 20px 15px;
+	    height:100%;
 		border:1px solid #E8E8E8;
 		background-color:#E8F2FC;
 	}
@@ -29,6 +25,10 @@
 	.docker-dialog tr td{
 		padding:8px 4px;
 	}
+   .projectdocker{
+		float:left;
+		width:30%;
+	}
 	.col-text{
 		weight:500;
 		text-align:right;
@@ -38,6 +38,9 @@
 	.col-text1{
 		font-size:14px;
 		color:#66CCFF;
+	}
+	.images-control{
+		width:80%;
 	}	
 </style>
 
@@ -46,16 +49,15 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
-				<div style="padding-bottom: 5px;">	
-					<input type="text" calss="" style="height:32px;width:30%;margin-right:20px;padding:2px 2px;" />
-					<button   class="btn btn-primary" >查询</button>	
+				<div style="padding-bottom: 5px;margin-left:20px;">	
+					
+					<input id="dockerName" type="text" style="height:32px;width:29%;margin:0px 5px 0px 40px;padding:2px 2px;" />
+					<button id="selectDocker"  class="btn btn-primary" >查询</button>	
+					<a class="btn btn-primary " data-toggle="modal" data-target="#myModal2">添加镜像</a> 
 				</div>
-				<table id="example1" class="installationMode">
-					<thead>
-						
-						
-					</thead>
-				</table>
+				<ul id="example1" class="installationMode">
+					
+				</ul>
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -96,17 +98,18 @@
 							<td class="col-text1" id="publicImage"></td>
 						</tr>
 						<tr>
+							<td class="col-text">大小（M）:</td>
+							<td class="col-text1" id="size"></td>
+							<td class="col-text">状态:</td>
+							<td class="col-text1" id="status"></td>
+						</tr>
+						<tr>
 							<td class="col-text">注册表Id:</td>
 							<td class="col-text1" id="registryId"></td>
 							<td class="col-text">集群Id:</td>
 							<td class="col-text1" id="clusterId"></td>
 						</tr>	
-						<tr>
-							<td class="col-text">自动创建:</td>
-							<td class="col-text1" id="autoBuild"></td>
-							<td class="col-text">状态:</td>
-							<td class="col-text1" id="status"></td>
-						</tr>
+						
 						<tr>
 							<td class="col-text">构建文件:</td>
 							<td class="col-text1" id="buildFile"></td>
@@ -114,8 +117,12 @@
 							<td class="col-text1" id="category"></td>
 						</tr>
 						<tr>
+							<td class="col-text">自动创建:</td>
+							<td class="col-text1" id="autoBuild"></td>
 							<td class="col-text">更新时间:</td>
 							<td class="col-text1" id="lastUpdated"></td>
+						</tr>
+						<tr>
 							<td class="col-text">备注:</td>
 							<td class="col-text1" id="note"></td>
 						</tr>
@@ -135,71 +142,219 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">添加镜像</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Horizontal Form -->
+		          <div class="box box-info" style="margin-bottom:0px;">
+		            <!-- form start -->
+		            <form class="form-horizontal">
+		              <div class="box-body">
+		                <div class="control-group">
+                			<label class="control-label">文档</label>
+                		<div class="controls">
+                    		<div id="queue"></div>
+                    		<input id="file_upload" name="fileAttach" type="file"  >
+                			</div>
+            			</div>
+            		<div class="form-actions">
+                	<button type="button" class="btn btn-primary" onclick="startUpload()" >
+               			 上 传
+                	</button>
+            		</div>
+		              
+		              
+		              
+		              
+		                <div class="form-group">
+		                  <label for="FilePath" class="col-sm-2 control-label">FilePath</label>
+		                  <div class="col-sm-10">
+		                    <input type="file" class="images-control" id="FilePath" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="size" class="col-sm-2 control-label">size</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="size" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="title" class="col-sm-2 control-label">title</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="title" >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="version" class="col-sm-2 control-label">version</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="version"  >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="versionType" class="col-sm-2 control-label">versionType</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="versionType"  >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="publicImage" class="col-sm-2 control-label">publicImage</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="publicImage"  >
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="category" class="col-sm-2 control-label">category</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="category"  >
+		                  </div>
+		                </div>
+		               
+		                <div class="form-group">
+		                  <label for="imageIconUrl" class="col-sm-2 control-label">imageIconUrl</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="imageIconUrl"  >
+		                  </div>
+		                </div>
+		              <!-- /.box-body -->
+		            </form>
+		          </div>
+		          <!-- /.box -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="addDockerSave">保<span style="padding-left: 12px" />存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
-$.ajax({
-    url:"/dockerimg/search?key=123",
-    type: "GET",
-    dataType:"json",
-    success: function(data){
-    	var count=0;
-		var tableList="";
-        $.each(data.data,function(i,item){
-        	if(count==0){
-        		tableList+="<tr>";
-        	}
-        	count++;
-        	tableList += [
-					'<td>',
-					'<div class="projectdocker">',
-					'<image src="img/credit/paypal.png" style="width:100%;height:40px;"/>',
-					'<div><span>'+item.title+'</span>',
-					item.versionType==1?'<span>生产版</span></div>':'<span>开发版</span></div>',
-					'<div>',
-					item.publicImage==1?'<span>公共镜像</span>':'<span>私有镜像</span>',
-					'<span>镜像大小：200M</span></div>',
-					'<a class="asdfg" c="'+item.id+'" style="font-size:16px;float:right;padding:15px 15px 0px 0px;color:#2296C9;"  data-toggle="modal" data-target="#myModal">查看详情......</a> ',
-					'</div>',
-					'</td>'
-            ].join('');
-        	if(count==3){
-        		tableList+="</tr>";
-        		count=0;
-        	}
-        }); 
-        $("#example1").html(tableList);  
-        
-        $( '#example1' ).find('a').bind('click',function(){
-        	var dockerId=$( this ).attr('c');
-        	$.each(data.data,function(m,n){
-        		if(n.id==dockerId){
-        			$("#docker-title").html(n.title);
-        			$.each(n,function(a,b){
-        				if(a!="title"){
-        					$("#"+a).html(b);
-        				}
-        				if(a=="publicImage"){
-        					b==0?$("#publicImage").html("私有镜像"):$("#publicImage").html("公共镜像");
-        				}
-        				if(a=="versionType"){
-        					b==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
-        				}
-        				if(a=="lastUpdated"){
-        					var date = new Date(b);   
-        					var Y = date.getFullYear() + '-';
-        					var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-        					var D = (date.getDate() < 10 ? '0'+(date.getDate()) : date.getDate()) + ' ';
-        					var h = (date.getHours() < 10 ? '0'+(date.getHours()) : date.getHours()) + ':';
-        					var m = (date.getMinutes() < 10 ? '0'+(date.getMinutes()) : date.getMinutes()) + ':';
-        					var s = (date.getSeconds() < 10 ? '0'+(date.getSeconds()) : date.getSeconds());
-        					$("#lastUpdated").html(Y+M+D+h+m+s)
-        				
-        				}
-        				
-        			});
-        		}
-        	});
-		});
-    }
+dockerImage();
+$("#selectDocker").click(function(){
+	dockerImage();
+});
+
+function dockerImage(){
+	var ImageName=$("#dockerName").val();	
+	$.ajax({
+	    url:"/dockerimg/search?key="+ImageName,
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var count=0;
+			var tableList="";
+	        $.each(data.data,function(i,item){
+	        	if(count==0){
+	        		tableList+="<li>";
+	        	}
+	        	count++;
+	        	tableList += [
+						'<div class="projectdocker">',
+						'<image src="img/credit/paypal.png" style="width:100%;height:40px;"/>',
+						'<div><span>'+item.title+'</span>',
+						item.versionType==1?'<span>生产版</span></div>':'<span>开发版</span></div>',
+						'<div>',
+						item.publicImage==1?'<span>公共镜像</span>':'<span>私有镜像</span>',
+						'<span>镜像大小：'+Math.round((item.size)/1024)+'M</span></div>',
+						'<a c="'+item.id+'" style="margin-bottom:10px;font-size:16px;float:right;padding:15px 15px 0px 0px;color:#2296C9;"  data-toggle="modal" data-target="#myModal">查看详情......</a> ',
+						'</div>',
+	            ].join('');
+	        	if(count==3){
+	        		tableList+="</li>";
+	        		count=0;
+	        	}
+	        }); 
+	        $("#example1").html(tableList);  
+	        $( '#example1' ).find('a').bind('click',function(){
+	        	var dockerId=$( this ).attr('c');
+	        	$.ajax({
+	        	    url:"/dockerimg/"+dockerId,
+	        	    type: "GET",
+	        	    dataType:"json",
+	        	    success: function(data){
+	        	    	$.each(data,function(a,b){
+	        	    		$("#docker-title").html(data.title);
+	        	    		if(a!="title"){
+	        					$("#"+a).html(b);
+	        				}
+	        				a=="publicImage"&&b==0?$("#publicImage").html("私有镜像"):$("#publicImage").html("公共镜像");
+	        				a=="versionType"&&b==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
+	        				a=="size"?$("#size").html(Math.round(b/1024)+"M"):'';
+	        				if(a=="lastUpdated"){
+	        					var date = new Date(b);   
+	        					var Y = date.getFullYear() + '-';
+	        					var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	        					var D = (date.getDate() < 10 ? '0'+(date.getDate()) : date.getDate()) + ' ';
+	        					var h = (date.getHours() < 10 ? '0'+(date.getHours()) : date.getHours()) + ':';
+	        					var m = (date.getMinutes() < 10 ? '0'+(date.getMinutes()) : date.getMinutes()) + ':';
+	        					var s = (date.getSeconds() < 10 ? '0'+(date.getSeconds()) : date.getSeconds());
+	        					$("#lastUpdated").html(Y+M+D+h+m+s)
+	        				}
+	        	    	});
+	        	    }
+	        	});
+
+	        });
+	    },
+	    error:function(){
+	    	alert("报错！！！！！！");
+	    }
+	});
+
+}
+
+$("#addDockerSave").click(function(){
+	alert("添加");
+	$('#file_upload').uploadify('upload','*');
+});
+
+$(function() {
+    $("#file_upload").uploadify({
+        height          : 25,
+        swf             : '../js/uploadify.swf',
+       //后端处理action
+        uploader        : '/dockerimg/uploadImage',
+        width           : 120,
+        //fileTypeExts  : '*.doc; *.ppt;*.xls;',
+        fileObjName     : 'fileAttach', //文件上传name
+        auto            : false, //文件选中后是否自动提交
+          multi    : false, //是否多选
+       //文件上传完毕后消息框是否自动消失，默认true
+        removeCompleted : false,  
+        //文件上传完毕后消息框消失延迟时间,默认3 仅removeCompleted=true生效
+        //removeTimeout   : 3,
+        //文件上传大小限制           
+        //fileSizeLimit : 999, 
+        //文件队列传输完毕 queueDate [uploadsSuccessful,uploadsErrored]
+        onQueueComplete : function(queueData){
+                        alert('success:'+queueData.uploadsSuccessful+'fail:'+queueData.uploadsErrored)
+        },
+         //单文件传输成功           
+        onUploadSuccess:function(file, data, response){ 
+        	alert("chengogng");
+        	alert(data);
+            alert('singleSuccess,fileName:'+file.name);
+        },
+       //单文件传输失败
+        onUploadError : function(file, errorCode, errorMsg, errorString) { 
+        	alert("传输失败");
+            //eg:The file mozjs.dll errorCode -200 errorCode -200 errorMsg 302 errorString HTTP Error (302)
+            alert('The file ' + file.name + ' errorCode ' + errorCode+ ' errorCode ' + errorCode+ ' errorMsg ' + errorMsg+ ' errorString ' + errorString);
+        },
+        //按钮显示名称
+        buttonText    : "选择文件"                                                         
+    });
 });
 
 </script>

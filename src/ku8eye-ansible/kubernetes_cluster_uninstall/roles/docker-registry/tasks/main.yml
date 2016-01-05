@@ -1,0 +1,59 @@
+---
+
+# uninstallation steps:
+# 1. stop docker service
+# 2. delete docker files
+# 3. remove docker0 bridge
+
+
+# check if docker exists
+- stat: path=/usr/bin/docker
+  register: docker_file
+
+
+# stop and disable docker service
+- name: stop and disable docker service
+  service: name=docker enabled=no state=stopped
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker.service
+- file: path=/usr/lib/systemd/system/docker.service state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker.socket
+- file: path=/usr/lib/systemd/system/docker.socket state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker config file
+- file: path=/etc/sysconfig/docker state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+
+# delete /usr/bin/docker
+- file: path=/usr/bin/docker state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+# delete docker runtime files
+- file: path={{docker_runtime_root_dir}} state=absent
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+
+# delete docker0 bridge
+- name: delete docker0 bridge
+  command: ip link del docker0
+  when: docker_file.stat.exists == True
+  ignore_errors: True
+
+
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+  when: docker_file.stat.exists == True
+
