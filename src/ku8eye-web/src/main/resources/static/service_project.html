@@ -102,7 +102,7 @@
 		</div>
 		</div>
 	</div>
-	<div class="panel panel-info">
+	<div class="panel panel-info" >
 		<div class="panel-heading">
 			Environment Variables
 		</div>
@@ -131,8 +131,18 @@
 		</div>
 		</div>
 	</div>
+
+	
 </div>
 <script>
+
+
+function addImages(obj) {
+		var $image = $(obj).parent(".panel-heading")
+				.parent("div[name='image']");
+		var $new_image = $image.clone();
+		$image.after($new_image);
+	}
 	var _image;
 	var _images;
 	
@@ -162,6 +172,7 @@
 	function addImages(obj) {
 		var $image = $(obj).closest("div[name='image']");
 		$image.after($image.clone());
+
 	}
 	function delImages(obj) {
 		if ($("div[name='image']").length > 1) {

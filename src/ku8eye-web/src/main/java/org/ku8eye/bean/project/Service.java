@@ -3,9 +3,7 @@ package org.ku8eye.bean.project;
 import io.fabric8.kubernetes.api.model.EnvVar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Service {
 	private String name;
@@ -118,3 +116,4 @@ public class Service {
 	}
 
 }
+

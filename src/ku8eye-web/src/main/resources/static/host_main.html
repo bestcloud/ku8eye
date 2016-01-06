@@ -132,7 +132,6 @@
 	       		      ]
 	    });
 	}
-	var log="";
 	$('form :input').blur(function(){
         var $parent = $(this).parent();
         $parent.find(".formtips").remove();
@@ -141,8 +140,6 @@
                if( this.value=="" || this.value.length > 32 ){
                    var errorMsg = '不能为空！';
                    $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-               }else{
-            	   log+="t";
                }
         }
         //验证ip
@@ -151,8 +148,6 @@
            if( this.value=="" ||!re.test($("#ip").val())){
                  var errorMsg = '请输入正确的IP地址.';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-           }else{
-        	   log+="t";
            }
         }
         
@@ -161,8 +156,6 @@
            if( this.value=="" || this.value.length <5 ){
                  var errorMsg = '请输入至少4位的密码.';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-           }else{
-        	   log+="t";
            }
         }
       
@@ -171,8 +164,6 @@
            if(this.value=="" || this.value.length > 4){
                  var errorMsg = '长度不能超过4位。';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-           }else{
-        	   log+="t";
            }
         }
       //验证memory
@@ -181,8 +172,6 @@
            if( this.value=="" ||!z.test($("#memory").val())){
                  var errorMsg = '请输入0-9数字';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-           }else{
-        	   log+="t";
            }
         }
       //验证location
@@ -190,8 +179,6 @@
            if( this.value==""){
                  var errorMsg = '不能为空！.';
                  $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-           }else{
-        	   log+="t";
            }
         }
         

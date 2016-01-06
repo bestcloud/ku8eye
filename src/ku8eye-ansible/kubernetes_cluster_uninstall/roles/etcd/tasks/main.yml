@@ -1,0 +1,40 @@
+---
+
+# uninstallation steps:
+# 1. stop etcd service
+# 2. delete etcd files
+
+
+# stop and disable etcd service
+- name: stop and disable etcd service
+  service: name=etcd enabled=no state=stopped
+  ignore_errors: True
+
+# delete etcd.service
+- file: path=/usr/lib/systemd/system/etcd.service state=absent
+  ignore_errors: True
+
+# delete etcd config file
+- file: path=/etc/etcd/etcd.conf state=absent
+  ignore_errors: True
+
+# delete etcd runtime dir
+- file: path=/var/lib/etcd state=absent
+  ignore_errors: True
+
+# delete /usr/bin/etcd
+- file: path=/usr/bin/etcd state=absent
+  ignore_errors: True
+
+# delete /usr/bin/etcdctl
+- file: path=/usr/bin/etcdctl state=absent
+  ignore_errors: True
+
+# delete etcd_data_dir
+- file: path={{etcd_data_dir}} state=absent
+  when: not keep_etcd_data
+  ignore_errors: True
+
+
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload

@@ -1,7 +1,6 @@
 package org.ku8eye;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -10,6 +9,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.ku8eye.service.deploy.Ku8InstallTool;
+import org.ku8eye.service.image.ImageTool;
 import org.ku8eye.util.SystemUtil;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -29,16 +29,18 @@ public class App extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		try {
-			Properties props=SystemUtil.getSpringAppProperties();
-			 registry.addResourceHandler("/external/**").addResourceLocations(props.getProperty("ku8.externalRes"));
-			 super.addResourceHandlers(registry);
+			Properties props = SystemUtil.getSpringAppProperties();
+			String extFile = props.getProperty("ku8.externalRes");
+			if (extFile != null) {
+				registry.addResourceHandler(Constants.EXTERNAL_URL_ROOT + "/**").addResourceLocations(extFile + "/");
+				System.out.println("mapping external resources " + extFile);
+				super.addResourceHandlers(registry);
+			}
 		} catch (IOException e) {
 			System.out.println(e);
 		}
-	   
-       
 
-        super.addResourceHandlers(registry);
+		super.addResourceHandlers(registry);
 	}
 
 	@Bean
@@ -89,7 +91,14 @@ public class App extends WebMvcConfigurerAdapter {
 			Ku8InstallTool.main(newArgs);
 			return;
 		}
-
+		index = findArg(args, "image");
+		if (index > 0) {
+			String[] newArgs = new String[args.length - index - 1];
+			System.arraycopy(args, index + 1, newArgs, 0, newArgs.length);
+			System.out.println(Arrays.toString(newArgs));
+			ImageTool.main(newArgs);
+			return;
+		}
 		SpringApplication app = new SpringApplication(App.class);
 		app.setWebEnvironment(true);
 		app.setShowBanner(false);
