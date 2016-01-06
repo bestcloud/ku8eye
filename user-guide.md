@@ -63,6 +63,9 @@ http://pan.baidu.com/s/1bopnMYr
 `docker exec -it ku8eye-web bash`
 运行进行包导入命令：
 `/root/ku8-packages-import.sh /ku8_ext_files/ku8_images/ku8_images.gz`
+下面是此命令的详细说明：
+第一个参数为要导入的gz包文件（完整路径）
+第二个参数如果0，表示上传到共有Registry里的镜像，否则是clusterId，表示上传到该clusterId对应的私库里。第二个参数如果没输入，则默认是1.
 镜像包导入成功以后，就可以进行下面的操作了。
 
 ## 3. 创建ku8微服务

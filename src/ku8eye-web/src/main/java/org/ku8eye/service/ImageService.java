@@ -38,10 +38,17 @@ public class ImageService {
 	public DockerImage getImagesId(int dockerId) {
 		return imgeDao.selectByPrimaryKey(dockerId);
 	}
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public String deleteImagesId(int dockerId) {
+		imgeDao.deleteByPrimaryKey(dockerId);
+		return "SUCCESS:";
+	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public String createImage(DockerImage image, String imageFile) {
+	public String createImage(DockerImage image) {
 		int id = imgeDao.insert(image);
 		return "SUCCESS:";
 	}
+	
 }

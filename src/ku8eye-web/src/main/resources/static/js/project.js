@@ -1,32 +1,4 @@
-var $proObj = {
-	"projectName" : "project name",
-	"version" : "1",
-	"author" : "author",
-	"k8sVersion" : "1",
-	"note" : "note",
-	"services" : [ {
-		"name" : "service name",
-		"describe" : "describe",
-		"tag" : "tag",
-		"replica" : "12",
-		"version" : "0.1",
-		"image" : [ {
-			"name" : "name",
-			"version" : "0.1",
-			"registry" : "d:/registry",
-			"imageName" : "imageName",
-			"command" : "bin",
-			"quotas_limits" : "100",
-			"quotas_cpu" : "quotas_cpu",
-			"quotas_memory" : "1230mb"
-		} ],
-		"ports" : [ {
-			"containerPort" : "8080",
-			"servicePort" : "8080",
-			"nodePort" : "8080"
-		} ]
-	} ]
-}
+var $proObj={"projectName":"projectname","version":"1","author":"author","k8sVersion":"1","notes":"note","services":[{"name":"servicename","describe":"describe","tag":"tag","replica":"12","version":"0.1","containerPort":1100,"servicePort":1300,"nodePort":1200,"image":[{"name":"name","version":"0.1","registry":"d:/registry","imageName":"imageName","command":"bin","quotas_limits":"100","quotas_cpu":"quotas_cpu","quotas_memory":"1230mb"}],"envVariable":[{"name":"var1name","value":"val1val"}]}]}
 
 function createServiceJson() {
 	var $ServiceJson = {};
