@@ -42,9 +42,6 @@ public class ImageTool {
 		opt = new Option("p", "file", true, "json file");
 		opt.setRequired(true);
 		options.addOption(opt);
-		opt = new Option("r", "registyrid", true, "registyrid");
-		opt.setRequired(false);
-		options.addOption(opt);
 		opt = new Option("c", "clusterid", true, "clusterid");
 		opt.setRequired(false);
 		options.addOption(opt);
@@ -64,7 +61,6 @@ public class ImageTool {
 				.substring(filePath.lastIndexOf(File.separator) + 1);// 最外层的文件夹名
 		String jsonFilePath = filePath + File.separator + name + ".json";// json文件路径（json文件名为其父文件名加后缀）
 
-		int registyrId = Integer.parseInt(commandLine.getOptionValue("r"));
 		int clusterId = Integer.parseInt(commandLine.getOptionValue("c"));
 		File file = new File(jsonFilePath);
 		if (!file.exists()) {
@@ -78,7 +74,6 @@ public class ImageTool {
 			ImageShell imageShell = imageShellArray[i];
 			String path = imageShell.getPath();
 			DockerImage dockerImage = imageShell.getImage();
-			dockerImage.setRegistryId(registyrId);
 			dockerImage.setClusterId(clusterId);
 
 			System.out.println("deal:'" + dockerImage.getImageName() + "'");

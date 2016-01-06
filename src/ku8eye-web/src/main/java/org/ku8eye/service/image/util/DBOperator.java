@@ -150,20 +150,20 @@ public class DBOperator {
 		try {
 			conn = getConnection();
 			stmt = conn.createStatement();
-			if (dockerImage.getRegistryId() == null) {
-				String sql = "select id,service_url from ku8s_srv_endpoint where cluster_id="
-						+ dockerImage.getClusterId()
-						+ " and service_type=3 limit 1";
+			if (dockerImage.getClusterId() == 0) {
+				String sql = "select id,service_url from ku8s_srv_endpoint where id=0";
 				rs = stmt.executeQuery(sql);
 				while (rs.next()) {
 					dockerImage.setRegistryId(rs.getInt("id"));
 					url = (rs.getString("service_url"));
 				}
 			} else {
-				String sql = "select service_url from ku8s_srv_endpoint where id="
-						+ dockerImage.getRegistryId();
+				String sql = "select id,service_url from ku8s_srv_endpoint where cluster_id="
+						+ dockerImage.getClusterId()
+						+ " and service_type=3 limit 1";
 				rs = stmt.executeQuery(sql);
 				while (rs.next()) {
+					dockerImage.setRegistryId(rs.getInt("id"));
 					url = (rs.getString("service_url"));
 				}
 			}
