@@ -53,7 +53,7 @@
 					
 					<input id="dockerName" type="text" style="height:32px;width:29%;margin:0px 5px 0px 40px;padding:2px 2px;" />
 					<button id="selectDocker"  class="btn btn-primary" >查询</button>	
-					<a class="btn btn-primary " data-toggle="modal" data-target="#myModal2">添加镜像</a> 
+					<a class="btn btn-primary " id="addDocker" data-toggle="modal" data-target="#myModal2">添加镜像</a> 
 				</div>
 				<ul id="example1" class="installationMode">
 					
@@ -134,9 +134,10 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="deleDocker">删<span style="padding-left: 12px" />除
 				</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="save">保<span style="padding-left: 12px" />存
+				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
 				</button>
 			</div>
 		</div>
@@ -160,71 +161,98 @@
 		            <!-- form start -->
 		            <form class="form-horizontal">
 		              <div class="box-body">
-		                <div class="control-group">
-                			<label class="control-label">文档</label>
-                		<div class="controls">
-                    		<div id="queue"></div>
-                    		<input id="file_upload" name="fileAttach" type="file"  >
-                			</div>
-            			</div>
-            		<div class="form-actions">
-                	<button type="button" class="btn btn-primary" onclick="startUpload()" >
-               			 上 传
-                	</button>
-            		</div>
-		              
-		              
-		              
-		              
 		                <div class="form-group">
-		                  <label for="FilePath" class="col-sm-2 control-label">FilePath</label>
+		                  <label for="FilePath" class="col-sm-2 control-label">文件路径</label>
 		                  <div class="col-sm-10">
-		                    <input type="file" class="images-control" id="FilePath" >
+		                    <select id="addPathUrl" class="images-control">
+		                    	
+		                    </select>
+		                  </div>
+		                </div>
+		                
+		                <div class="form-group">
+		                  <label for="title" class="col-sm-2 control-label">标题</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="addtitle" >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="size" class="col-sm-2 control-label">size</label>
+		                  <label for="title" class="col-sm-2 control-label">镜像名称</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="size" >
+		                    <input type="text" class="images-control" id="addimageName" >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="title" class="col-sm-2 control-label">title</label>
+		                  <label for="version" class="col-sm-2 control-label">版本</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="title" >
+		                    <input type="text" class="images-control" id="addversion"  >
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="version" class="col-sm-2 control-label">version</label>
+		                  <label for="versionType" class="col-sm-2 control-label">版本类型</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="version"  >
+		                   	<select id="addversionType">
+		                   		<option value="0">开发版</option>
+		                   		<option value="1">生产版</option>
+		                   	</select>
 		                  </div>
 		                </div>
 		                <div class="form-group">
-		                  <label for="versionType" class="col-sm-2 control-label">versionType</label>
+		                  <label for="publicImage" class="col-sm-2 control-label">镜像类型</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="versionType"  >
-		                  </div>
-		                </div>
-		                <div class="form-group">
-		                  <label for="publicImage" class="col-sm-2 control-label">publicImage</label>
-		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="publicImage"  >
-		                  </div>
-		                </div>
-		                <div class="form-group">
-		                  <label for="category" class="col-sm-2 control-label">category</label>
-		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="category"  >
+		                    <select id="addpublicImage">
+		                   		<option value="0">私有镜像</option>
+		                   		<option value="1">公共镜像</option>
+		                   	</select>
 		                  </div>
 		                </div>
 		               
 		                <div class="form-group">
-		                  <label for="imageIconUrl" class="col-sm-2 control-label">imageIconUrl</label>
+		                  <label for="imageIconUrl" class="col-sm-2 control-label">选择图片</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="imageIconUrl"  >
+		                   <select id="addImageUrl" class="images-control">
+		                    	
+		                   </select>
 		                  </div>
 		                </div>
+		                <div class="form-group">
+		                  <label for="image" class="col-sm-2 control-label"></label>
+		                  <div class="col-sm-10" id="showimage">
+		                  		
+		               
+		                  </div>
+		                </div>
+		                <div class="form-group">
+		                  <label for="title" class="col-sm-2 control-label">类别</label>
+		                  <div class="col-sm-10">
+		                    <input type="text" class="images-control" id="addcategory" >
+		                  </div>
+		                </div>
+		                
+		                <div class="form-group">
+		                  <label for="title" class="col-sm-2 control-label">文件内容</label>
+		                  <div class="col-sm-10">
+		                  	<textarea rows="5" cols="50" id="addbuild_file" style="text-align:left;">
+		                  	</textarea>
+		                  </div>
+		                </div>
+		                
+		                <div class="form-group">
+		                  <label for="title" class="col-sm-2 control-label">自动创建</label>
+		                  <div class="col-sm-10">
+		                  	<textarea rows="5" cols="50" id="addauto_build_command" style="text-align:left;">
+		                  	</textarea>
+		                  </div>
+		                </div>
+		                
+		                
+		                <div class="control-group">
+		                	<label for="category" class="col-sm-2 control-label">上传图片</label>
+		                  	<div class="col-sm-10">
+		                    	<input type="button" id="file_upload" name="fileAttach" type="file"/>
+		                  	</div>
+                			
+            			</div>
 		              <!-- /.box-body -->
 		            </form>
 		          </div>
@@ -261,7 +289,7 @@ function dockerImage(){
 	        	count++;
 	        	tableList += [
 						'<div class="projectdocker">',
-						'<image src="img/credit/paypal.png" style="width:100%;height:40px;"/>',
+						'<image src="http://localhost:8080/external/logo_pic/'+item.imageIconUrl+'" style="width:100%;height:40px;"/>',
 						'<div><span>'+item.title+'</span>',
 						item.versionType==1?'<span>生产版</span></div>':'<span>开发版</span></div>',
 						'<div>',
@@ -304,6 +332,17 @@ function dockerImage(){
 	        	    	});
 	        	    }
 	        	});
+	        	
+	        	$("#deleDocker").click(function(){
+	        		$.ajax({
+		        	    url:"/dockerimg/deletedocker/"+dockerId,
+		        	    type: "GET",
+		        	    dataType:"text",
+		        	    success: function(data){
+		        	    	dockerImage();
+		        	    }
+		        	});
+	        	});
 
 	        });
 	    },
@@ -313,23 +352,154 @@ function dockerImage(){
 	});
 
 }
-
-$("#addDockerSave").click(function(){
-	alert("添加");
+$("#sumbit").click(function(){
 	$('#file_upload').uploadify('upload','*');
+	addImageUrl();
 });
 
+$('form :input').blur(function(){
+    var $parent = $(this).parent();
+    $parent.find(".formtips").remove();
+    //验证title
+    if( $(this).is('#addtitle') ){
+           if( this.value==""){
+               var errorMsg = '不能为空！';
+               $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+           }
+    }
+    //验证imageName
+    if( $(this).is('#addimageName') ){
+       if( this.value==""){
+             var errorMsg = '不能为空！';
+             $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+       }
+    }
+    
+  //验证version
+    if( $(this).is('#addversion') ){
+       if( this.value==""){
+             var errorMsg = '不能为空！';
+             $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+       }
+    }
+  
+  //验证category
+    if( $(this).is('#addcategory') ){
+       if(this.value==""){
+             var errorMsg = '不能为空！';
+             $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
+       }
+    }
+  
+    
+}).keyup(function(){
+  $(this).triggerHandler("blur");
+}).focus(function(){
+    $(this).triggerHandler("blur");
+});
+
+
+$("#addDockerSave").click(function(){
+	var _addPathUrl=$("#addPathUrl option:checked").text();
+	var _size=$("#addPathUrl option:checked").val();
+	var _addtitle=$("#addtitle").val();
+	var _addversion=$("#addversion").val();
+	var _addversionType=$("#addversionType option:checked").val();
+	var _addpublicImage=$("#addpublicImage option:checked").val();
+	var _addImageUrl=$("#addImageUrl option:checked").text();
+	var _addImageName=$("#addimageName").val();
+	var _addcategory=$("#addcategory").val();
+	var _addbuild_file=$("#addbuild_file").val();
+	var _addauto_build_command=$("#addauto_build_command").val();
+
+	$("form :input.form-control").trigger('blur');
+    var numError = $('form .onError').length;
+    if(numError){
+        return false;
+    }else{
+    	$.ajax({
+    	    url:"/dockerimg/create",
+    	    type: "GET",
+    	    data:{
+    	    	addPathUrl:_addPathUrl,
+    	    	addtitle:_addtitle,
+    	    	addversion:_addversion,
+    	    	addversionType:_addversionType,
+    	    	addpublicImage:_addpublicImage,
+    	    	addImageUrl:_addImageUrl,
+    	    	addImageName:_addImageName,
+    	    	size:_size,
+    	    	addcategory:_addcategory,
+    	    	addbuild_file:_addbuild_file,
+    	    	addauto_build_command:_addauto_build_command
+    	    },
+    	    dataType:"text",
+    	    success: function(data){
+    	    	if(data=="SUCCESS:"){
+    	    		dockerImage();
+    	    	}
+    	    },
+    	    error:function(){
+    	    	alert("报错");
+    	    }
+    	});
+    	
+    }	
+});
+
+function addImageUrl(){
+	$.ajax({
+	    url:"/extresources/listuploadedimages",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var pathurl="";
+	    	$.each(data,function(i,item){
+	    		pathurl+="<option value="+item+">"+i+"</option>"
+	    	});
+	    	$("#addPathUrl").html(pathurl);
+	    },
+	    error:function(){
+	    	alert("报错");
+	    }
+	});
+	$.ajax({
+	    url:"/extresources/listlogosurl",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var imageurl="";
+	    	$.each(data,function(i,item){
+	    		var _imageName=item.split("/");
+	    		imageurl+="<option>"+_imageName[3]+"</option>";
+	    		//imageurl+="<option><image src='../img/success.png'/>werwer</option>";
+	    	});
+	    	$("#addImageUrl").html(imageurl);
+	    	var addImageUrl=$("#addImageUrl option:checked").text();
+    		$("#showimage").html("<image src='http://localhost:8080/external/logo_pic/"+addImageUrl+"'/>");
+	    	$("#addImageUrl").change(function(){
+	    		var addImageUrl=$("#addImageUrl option:checked").text();
+	    		$("#showimage").html("<image src='http://localhost:8080/external/logo_pic/"+addImageUrl+"'/>");
+	    	});
+	    },
+	    error:function(){
+	    	alert("报错");
+	    }
+	});
+}
+
+addImageUrl();
 $(function() {
     $("#file_upload").uploadify({
         height          : 25,
         swf             : '../js/uploadify.swf',
        //后端处理action
-        uploader        : '/dockerimg/uploadImage',
-        width           : 120,
+        uploader        : '/dockerimg/upload-image',
+        width           : 80,
         //fileTypeExts  : '*.doc; *.ppt;*.xls;',
         fileObjName     : 'fileAttach', //文件上传name
-        auto            : false, //文件选中后是否自动提交
-          multi    : false, //是否多选
+        auto            : true, //文件选中后是否自动提交
+          multi    : true, //是否多选
        //文件上传完毕后消息框是否自动消失，默认true
         removeCompleted : false,  
         //文件上传完毕后消息框消失延迟时间,默认3 仅removeCompleted=true生效
@@ -338,22 +508,20 @@ $(function() {
         //fileSizeLimit : 999, 
         //文件队列传输完毕 queueDate [uploadsSuccessful,uploadsErrored]
         onQueueComplete : function(queueData){
-                        alert('success:'+queueData.uploadsSuccessful+'fail:'+queueData.uploadsErrored)
+           // alert('success:'+queueData.uploadsSuccessful+'fail:'+queueData.uploadsErrored)
         },
          //单文件传输成功           
         onUploadSuccess:function(file, data, response){ 
-        	alert("chengogng");
-        	alert(data);
-            alert('singleSuccess,fileName:'+file.name);
+        	
         },
        //单文件传输失败
         onUploadError : function(file, errorCode, errorMsg, errorString) { 
-        	alert("传输失败");
+        	//alert("传输失败");
             //eg:The file mozjs.dll errorCode -200 errorCode -200 errorMsg 302 errorString HTTP Error (302)
             alert('The file ' + file.name + ' errorCode ' + errorCode+ ' errorCode ' + errorCode+ ' errorMsg ' + errorMsg+ ' errorString ' + errorString);
         },
         //按钮显示名称
-        buttonText    : "选择文件"                                                         
+        buttonText    : "选择图像"                                                         
     });
 });
 
