@@ -38,7 +38,7 @@ function createServiceJson() {
 		$ServiceJson.servicePort = servicePort;
 		$ServiceJson.nodePort = nodePort;
 
-		var $envs = $ServiceJson.find("div[name='envVariable']");
+		var $envs = $($ServiceJson).find("div[name='envVariable']");
 		var ens = [];
 		$ServiceJson.envVariables=ens;
 		for (var k = 0; k < $envs.length; k++) {

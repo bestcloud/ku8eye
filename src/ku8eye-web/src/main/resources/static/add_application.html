@@ -69,6 +69,7 @@
     </div>
 </div>	
 </div>
+<div id="test"/>
 <!-- /.row -->
 <script src="../js/project.js"></script>
 <script>
@@ -89,15 +90,22 @@
 	}
 	
 	function addApplication()
-	{
+	{	
 		if(checkInput())
 		{
 			var _name = $('#name').val();
 			var _version = $('#version').val();
 			var _k8sVersion = $('#k8s-version').val();
 			var _note = $('#note').val();
-			var _jsonStr = $proObj;
-			
+			var _services = [];
+			var _json = {};
+			_services.push(createServiceJson());
+			_json.projectName = _name;
+			_json.version = _version;
+			_json.k8sVersion = _k8sVersion;
+			_json.notes = _note;
+			_json.services = _services;
+		
 			$.ajax({
 				url: "/addApplication",
 				type: "POST",
@@ -107,7 +115,7 @@
 					version:_version,
 					k8sVersion:_k8sVersion,
 					note:_note,
-					jsonStr:JSON.stringify(_jsonStr)
+					jsonStr:JSON.stringify(_json)
 				},
 				success: function(response){
 					if(response['status'] > -1)

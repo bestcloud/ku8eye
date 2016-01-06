@@ -24,7 +24,7 @@ public class ProjectTest
 			Service s = new Service();
 			s.setDescribe("describe");
 			s.setName("servicename");
-			s.setReplica("12");
+			s.setReplica(12);
 			s.setTag("tag");
 			s.setVersion("0.1");
 
