@@ -1,6 +1,7 @@
 package org.ku8eye.bean.project;
 
 public class Images {
+	String id;
 	String name;
 	String version;
 	String registry;
@@ -10,6 +11,22 @@ public class Images {
 	String quotas_limits;
 	String quotas_cpu;
 	String quotas_memory;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getImagePullPolicy() {
+		return imagePullPolicy;
+	}
+
+	public void setImagePullPolicy(String imagePullPolicy) {
+		this.imagePullPolicy = imagePullPolicy;
+	}
 
 	public String getName() {
 		return name;

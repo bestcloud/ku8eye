@@ -9,19 +9,53 @@ public class Service {
 	private String tag;
 	private String replica;
 	private String version;
+
+	int containerPort;
+	int servicePort;
+	int nodePort;
+
 	private List<Images> image = new ArrayList<Images>();
-	private List<Port> ports = new ArrayList<Port>();
 
-	public void addPort(Port p) {
-		ports.add(p);
+	private List<EnvVariables> envVariables = new ArrayList<EnvVariables>();
+	
+	public void addEnvVariables(EnvVariables env)
+	{
+		envVariables.add(env);
+	}
+	
+	public List<EnvVariables> getEnvVariables() {
+		return envVariables;
 	}
 
-	public List<Port> getPorts() {
-		return ports;
+
+	public void setEnvVariables(List<EnvVariables> envVariables) {
+		this.envVariables = envVariables;
 	}
 
-	public void setPorts(List<Port> ports) {
-		this.ports = ports;
+
+	public int getContainerPort() {
+		return containerPort;
+	}
+
+	
+	public void setContainerPort(int containerPort) {
+		this.containerPort = containerPort;
+	}
+
+	public int getServicePort() {
+		return servicePort;
+	}
+
+	public void setServicePort(int servicePort) {
+		this.servicePort = servicePort;
+	}
+
+	public int getNodePort() {
+		return nodePort;
+	}
+
+	public void setNodePort(int nodePort) {
+		this.nodePort = nodePort;
 	}
 
 	public void addImage(Images i) {
