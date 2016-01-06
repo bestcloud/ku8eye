@@ -19,12 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * used for ui menu
- * 
- * @author wuzhih
- *
- */
 @Service
 public class UIService {
 	private static final String MENU_TYPE_ZONE = "1";
@@ -55,29 +49,28 @@ public class UIService {
 	 * @return
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<Menu> generateMenus(User curUser) 
-	{	
+	public List<Menu> generateMenus(User curUser) {
 		List<Menu> menus = new ArrayList<Menu>();
 		
 		//Dashboard
-		Menu dashboard = new Menu("dashboard", "Dashboard", "", MENU_TYPE_PROJECT_GROUP);
+		Menu dashboard = new Menu("dashboard", "Dashboard 集群监控", "", MENU_TYPE_PROJECT_GROUP);
 		menus.add(dashboard);
 		
-		Menu dashboard_hosts = new Menu("dashboard_host", "Hosts", "", MENU_TYPE_PROJECT_NODE);
+		Menu dashboard_hosts = new Menu("dashboard_host", "Hosts 主机", "", MENU_TYPE_PROJECT_NODE);
 		dashboard.getSubMenus().add(dashboard_hosts);
 		
-		Menu dashboard_services = new Menu("dashboard_services", "Services", "", MENU_TYPE_PROJECT_NODE);
+		Menu dashboard_services = new Menu("dashboard_services", "Services 服务", "", MENU_TYPE_PROJECT_NODE);
 		dashboard.getSubMenus().add(dashboard_services);
 		
 		//Docker Registry
-		Menu docker = new Menu("docker", "Docker", "", MENU_TYPE_PROJECT_GROUP);
+		Menu docker = new Menu("docker", "Docker 私库", "", MENU_TYPE_PROJECT_GROUP);
 		menus.add(docker);
 		
 		Menu docker_list = new Menu("docker_list", "List", "application_docker.html", MENU_TYPE_PROJECT_NODE);
 		docker.getSubMenus().add(docker_list);
 		
 		//Applications
-		Menu application = new Menu("application", "My Apps", "", MENU_TYPE_PROJECT_GROUP);
+		Menu application = new Menu("application", "My Apps 我的应用", "", MENU_TYPE_PROJECT_GROUP);
 		menus.add(application);
 
 		Menu application_list = new Menu("application_list", "List", "application_main.html", MENU_TYPE_PROJECT_NODE);
@@ -87,14 +80,14 @@ public class UIService {
 		application.getSubMenus().add(application_report);
 
 		//Public Services
-		Menu public_services = new Menu("public_services", "Public Services", "", MENU_TYPE_PROJECT_GROUP);
+		Menu public_services = new Menu("public_services", "Public Services 公共服务", "", MENU_TYPE_PROJECT_GROUP);
 		menus.add(public_services);
 		
 		//Resources
-		Menu resources = new Menu("resources", "Resources", "", MENU_TYPE_ZONE);
+		Menu resources = new Menu("resources", "Resources 资源管理", "", MENU_TYPE_ZONE);
 		menus.add(resources);
 		
-		Menu resource_part = new Menu("resource_part", "Resource Part", "", MENU_TYPE_CLUSTER_GROUP);
+		Menu resource_part = new Menu("resource_part", "Resource Part 资源分区", "", MENU_TYPE_CLUSTER_GROUP);
 		resources.getSubMenus().add(resource_part);
 		
 		Menu resource_list = new Menu("respartion_main", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
@@ -114,7 +107,7 @@ public class UIService {
 		host_pool.getSubMenus().add(host_pool_report);
 		
 		// Cluster Install
-		Menu cluster_install = new Menu("cluster_install", "Cluster", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
+		Menu cluster_install = new Menu("cluster_install", "Cluster 集群安装", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
 		resources.getSubMenus().add(cluster_install);
 
 		return menus;
