@@ -1,6 +1,7 @@
 # 一，ku8eye安装
 
 ### 安装部署的架构图如下图所示。
+![安装架构图](res/cluster_setup_arch.jpg)
 ###**注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。**###
 
 当前版本的 **ku8eye** 以docker镜像方式提供，下载地址为：
@@ -29,7 +30,7 @@ http://pan.baidu.com/s/1bopnMYr
 容器启动成功后，需等待15秒左右，等待mysql数据库与web应用启动完成。
 
 
-![安装架构图](res/cluster_setup_arch.jpg)
+
 
 
 # 二，运行ku8eye
