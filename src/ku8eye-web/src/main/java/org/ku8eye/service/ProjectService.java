@@ -42,21 +42,27 @@ public class ProjectService {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public int addApplication(int tenantId, String owner, String name, String version, String k8sVersion, String note, String yamlSpec) {
+	public int addApplication(int tenantId, String owner, String name, String version, String k8sVersion, String note, String json) {
 		Ku8Project ku8p = new Ku8Project();
 		ku8p.setTenantId(tenantId);
 		ku8p.setOwner(owner);
 		ku8p.setName(name);
+		ku8p.setIconUrl("blank");
 		ku8p.setVersion(version);
 		ku8p.setK8sVersion(k8sVersion);
+		ku8p.setAppType((byte) 0);
+		ku8p.setZoneId(1);
+		ku8p.setClusterId(1);
+		ku8p.setResPartionId(null);
 		ku8p.setNote(note);
-		ku8p.setJsonSpec(yamlSpec);
-//		ku8p.setYamlSpec(yamlSpec);
+		ku8p.setJsonSpec(json);
+		ku8p.setPrevJsonSpec(null);
 		ku8p.setLastUpdated(new Date());
 		
 		return projectDao.insert(ku8p);
 	}
 	
+	//TODO FIX
 	@Transactional(propagation = Propagation.REQUIRED)
 	public int updateApplication(int id, int tenantId, String owner, String name, String version, String k8sVersion, String note, String yamlSpec) {
 		Ku8Project ku8p = new Ku8Project();
