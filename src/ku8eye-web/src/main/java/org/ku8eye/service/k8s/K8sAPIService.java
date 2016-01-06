@@ -13,13 +13,20 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.DoneablePod;
+import io.fabric8.kubernetes.api.model.DoneableReplicationController;
 import io.fabric8.kubernetes.api.model.DoneableService;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.ReplicationControllerBuilder;
+import io.fabric8.kubernetes.api.model.ReplicationControllerList;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.ServicePort;
@@ -34,6 +41,7 @@ import io.fabric8.kubernetes.client.Watcher;
 import io.fabric8.kubernetes.client.dsl.ClientMixedOperation;
 import io.fabric8.kubernetes.client.dsl.ClientPodResource;
 import io.fabric8.kubernetes.client.dsl.ClientResource;
+import io.fabric8.kubernetes.client.dsl.ClientRollableScallableResource;
 import io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable;
 
 @Service
@@ -113,39 +121,80 @@ public class K8sAPIService {
 
 	}
 
-	public ReplicationController buildRC() {
-		// Pod newPod=new
-		// PodBuilder().withNewMetadata().withName("nginx-controller").addToLabels("server",
-		// "nginx").endMetadata()
-		// .withNewSpec().addToContainers(xxxx)
-		return null;
-
+	public ReplicationController buildRC(int clusterId, org.ku8eye.bean.project.Service s) {
+		
+		try
+		{
+			//Setup for Label and Selector
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", s.getName());
+			
+			ContainerPort cport = new ContainerPortBuilder()
+					.withContainerPort(s.getContainerPort())
+					.withProtocol("TCP").build();
+			
+			Container container = new ContainerBuilder()
+					.withName(s.getName())
+					.withImage("IMG/URL")
+					.withPorts(cport)
+					.withEnv(s.getEnvVariables())
+					.build();
+			
+			ReplicationController rc = new ReplicationControllerBuilder().withKind("ReplicationController")
+					.withNewMetadata()
+					.withName(s.getName()).addToLabels("name", s.getName())
+					.withNamespace("default")
+					.withLabels(map)
+					.endMetadata()
+					.withNewSpec()
+					.withReplicas(s.getReplica())
+					.withSelector(map)
+					.withNewTemplate()
+					.withNewMetadata()
+					.withLabels(map)
+					.endMetadata()
+					.withNewSpec()
+					.withContainers(container)
+					.endSpec()
+					.endTemplate()
+					.endSpec().build();
+			
+			ReplicationController response_f8RC = createRC(clusterId, "default", rc);
+			return response_f8RC;
+		}
+		catch (KubernetesClientException e)
+		{
+			LOGGER.error("Create RC failed, " + e);
+			return null;
+		}
 	}
 	
 	public io.fabric8.kubernetes.api.model.Service buildService(int clusterId, org.ku8eye.bean.project.Service s)
 	{
 		try
 		{
-		//Setup Port
-		ServicePort port = new ServicePortBuilder().withProtocol("TCP").withNewTargetPort(s.getContainerPort()).withNodePort(s.getNodePort()).withPort(s.getServicePort()).build();
+			//Setup Port
+			ServicePort port = new ServicePortBuilder().withProtocol("TCP").withNewTargetPort(s.getContainerPort()).withNodePort(s.getNodePort()).withPort(s.getServicePort()).build();
+			
+			//Setup for Label and Selector
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", s.getName());
+			
+			io.fabric8.kubernetes.api.model.Service f8Service = new ServiceBuilder().withKind("Service")
+					.withNewMetadata()
+					.withName(s.getName())
+					.withNamespace("default")
+					.withLabels(map)
+					.endMetadata()
+					.withNewSpec()
+					.withPorts(port)
+					.withType("NodePort")
+					.withSelector(map)
+					.endSpec().build();
+			
+			io.fabric8.kubernetes.api.model.Service response_f8Service = createService(clusterId, "default", f8Service);
+			return response_f8Service;
 		
-		//Setup for Label and Selector
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("name", s.getName());
-		
-		io.fabric8.kubernetes.api.model.Service f8Service = new ServiceBuilder().withKind("Service")
-				.withNewMetadata()
-				.withName(s.getName()).addToLabels("name", s.getName())
-				.withNamespace("default")
-				.withLabels(map)
-				.endMetadata()
-				.withNewSpec()
-				.withPorts(port)
-				.withType("NodePort")
-				.endSpec().build();
-		
-		io.fabric8.kubernetes.api.model.Service response_f8Service = createService(clusterId, "default", f8Service);
-		return response_f8Service;
 		}
 		catch (KubernetesClientException e)
 		{
@@ -154,8 +203,15 @@ public class K8sAPIService {
 		}
 	}
 
-	public void createRC(int clusterId, String namespace, ReplicationController theRC) {
-
+	private ReplicationController createRC(int clusterId, String namespace, ReplicationController theRC) {
+			ClientMixedOperation<ReplicationController, ReplicationControllerList, DoneableReplicationController, ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient = getClient(clusterId).inNamespace(namespace).replicationControllers();
+			return replicationControllerClient.create(theRC);
+	}
+	
+	public boolean deleteRC(int clusterId, String namespace, String rcName) {
+		ClientMixedOperation<ReplicationController, ReplicationControllerList, DoneableReplicationController, ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient = getClient(clusterId).inNamespace(namespace).replicationControllers();
+		ClientResource<io.fabric8.kubernetes.api.model.ReplicationController, DoneableReplicationController> clientResource = replicationControllerClient.withName(rcName);
+		return clientResource.delete();
 	}
 	
 	public ServiceList getServices(int clusterId, String namespace) {
