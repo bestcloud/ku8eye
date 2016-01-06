@@ -29,9 +29,12 @@ public class App extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		try {
 			Properties props = SystemUtil.getSpringAppProperties();
-			registry.addResourceHandler(Constants.EXTERNAL_URL_ROOT + "/**")
-					.addResourceLocations(props.getProperty("ku8.externalRes"));
-			super.addResourceHandlers(registry);
+			String extFile = props.getProperty("ku8.externalRes");
+			if (extFile != null) {
+				registry.addResourceHandler(Constants.EXTERNAL_URL_ROOT + "/**").addResourceLocations(extFile + "/");
+				System.out.println("mapping external resources " + extFile);
+				super.addResourceHandlers(registry);
+			}
 		} catch (IOException e) {
 			System.out.println(e);
 		}
