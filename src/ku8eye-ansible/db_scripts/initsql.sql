@@ -68,8 +68,6 @@ CREATE TABLE `ku8s_srv_endpoint` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `ku8eye`.`docker_image` (`ID`, `TITLE`, `IMAGE_NAME`, `VERSION`, `VERSION_TYPE`, `PUBLIC_IMAGE`, `SIZE`, `category`, `CLUSTER_ID`, `REGISTRY_ID`, `IMAGE_ICON_URL`, `STATUS`, `BUILD_FILE`, `AUTO_BUILD_COMMAND`, `AUTO_BUILD`, `NOTE`) VALUES ('1', 'MYSQL', 'MYSQL', '5.6', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
-
 -- ----------------------------
 -- Records of ku8s_srv_endpoint
 -- ----------------------------
@@ -274,30 +272,6 @@ INSERT INTO `docker_image` VALUES ('1', 'MySQL Server 5.6', 'mysqlserver', '5.6'
 INSERT INTO `docker_image` VALUES ('2', 'Java 8 ', 'jdk', '8.0', '1', '0', 307200, 'plantform', '1', '0', '/icons/images/java.png', '0', null, null, '0', null, '2015-12-01 11:14:15');
 INSERT INTO `docker_image` VALUES ('3', 'Redis 2', 'redis', '2.0', '1', '0', 451481, 'middleware', '1', '0', '/icons/images/redis.png', '0', null, null, '0', null, '2015-12-04 11:14:40');
 INSERT INTO `docker_image` VALUES ('4', 'Memcache 1.4', 'memcache', '1.4.25', '1', '0', 448518, 'middleware', '1', '0', '/icons/images/memcache.png', '0', null, null, '0', null, '2015-12-18 11:14:54');
-
-DROP TABLE IF EXISTS `docker_image`;
-CREATE TABLE `docker_image` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `TITLE` varchar(64) NOT NULL COMMENT 'image display title ',
-  `IMAGE_NAME` varchar(64) NOT NULL COMMENT 'image name ',
-  `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
-  `VERSION_TYPE` tinyint(4) DEFAULT '0',
-  `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
-  `SIZE` int(11)  DEFAULT 0,
-  `category` varchar(32) NOT NULL COMMENT 'image category ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong whitch cluster',
-  `REGISTRY_ID` int(11) NOT NULL,
-  `IMAGE_ICON_URL` varchar(128) DEFAULT NULL COMMENT 'image icon url ',
-  `STATUS` tinyint(4) DEFAULT '0',
-  `BUILD_FILE` text,
-  `AUTO_BUILD_COMMAND` varchar(512) DEFAULT NULL,
-  `AUTO_BUILD` tinyint(4) DEFAULT '0',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
-
 
 -- ----------------------------
 -- Table structure for `ku8_service_template`

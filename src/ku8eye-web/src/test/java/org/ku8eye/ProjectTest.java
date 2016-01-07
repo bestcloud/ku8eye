@@ -44,7 +44,7 @@ public class ProjectTest
 			p1.setServicePort("8080");
 
 			s.addImage(i);
-			s.addPort(p1);
+			
 
 			p.addService(s);
 
