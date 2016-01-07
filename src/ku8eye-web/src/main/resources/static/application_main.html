@@ -36,7 +36,7 @@
         			{ "data": "owner" },
         			{ "data": "version" },
         			{ "data": "k8sVersion" },
-					{ "defaultContent": "<button class='btn btn-primary btn-sm view'>View</button>&nbsp;<button class='btn btn-primary btn-sm update'>Update</button>"}
+					{ "defaultContent": "<button class='btn btn-primary btn-sm view'>View</button>&nbsp;<button class='btn btn-primary btn-sm update'>Update</button>&nbsp;<button class='btn btn-primary btn-sm deploy'>Deploy</button>"}
         		]
     });
 	
@@ -54,6 +54,48 @@
 		var data = table.row($(this).parents('tr')).data();
         $('.content').load('view_application.html');
 		sessionStorage.setItem("appID", data['id']);
+    } );
+	
+	$('#appTable tbody').on( 'click', 'button.deploy', function () {
+		var data = table.row($(this).parents('tr')).data();
+        
+		$.ajax({
+				url: "/deployApplication",
+				type: "POST",
+				dataType: "json",
+				data: {
+					id:data['id']
+				},
+				success: function(response){
+					if(response['status'] > -1)
+					{
+						var _name = data['name']
+						var _div = $('<div>');
+						_div.load('alert_success.html', function(){
+							$(this).find('#title').html(response['message']);
+							$(this).find('#message').html("Project <strong>" + _name + "</strong> deployed successfully.");
+							var child = $(this).children();
+							child.fadeTo(3000, 500).slideToggle(500, function(){
+								child.alert('close');
+							});
+							$('.content').append(child);
+						});
+					}
+					else
+					{
+						var _div = $('<div>');
+						_div.load('alert_error.html', function(){
+							$(this).find('#title').html("ERROR");
+							$(this).find('#message').html(response['message']);
+							var child = $(this).children();
+							child.fadeTo(3000, 500).slideToggle(500, function(){
+								child.alert('close');
+							});
+							$('.content').append(child);
+						});
+					}
+				}
+			});
     } );
 	
 	$('input', $('#appModal')).focusout(function() {
@@ -92,50 +134,5 @@
 			}
 		});
 		return ret;
-	}
-	
-	function addApplication()
-	{
-		if(checkInput())
-		{
-			var _name = $('#name').val();
-			var _version = $('#version').val();
-			var _k8sVersion = $('#k8s-version').val();
-			var _note = $('#note').val();
-			
-			$.ajax({
-				url: "/addApplication",
-				type: "POST",
-				dataType: "json",
-				data: {
-					name:_name,
-					version:_version,
-					k8sVersion:_k8sVersion,
-					note:_note
-				},
-				success: function(response){
-					if(response['status'] > -1)
-					{
-						var _div = $('<div>');
-						_div.load('alert.html', function(){
-							$(this).find('#title').html(response['message']);
-							$(this).find('#message').html("Project <strong>" + _name + "</strong> added successfully.");
-							var child = $(this).children();
-							child.fadeTo(3000, 500).slideToggle(500, function(){
-								child.alert('close');
-							});
-							$('.content').append(child);
-						});
-						table.ajax.reload();
-						$('#appModal').modal('toggle');
-					}
-					else
-					{
-						$('#resultDetails').html(response['message'])
-						$('#addResult').show();
-					}
-				}
-			});
-		}
 	}
 </script>

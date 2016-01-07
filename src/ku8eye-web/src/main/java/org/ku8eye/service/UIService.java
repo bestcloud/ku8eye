@@ -19,12 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * used for ui menu
- * 
- * @author wuzhih
- *
- */
 @Service
 public class UIService {
 	private static final String MENU_TYPE_ZONE = "1";
@@ -57,69 +51,65 @@ public class UIService {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Menu> generateMenus(User curUser) {
 		List<Menu> menus = new ArrayList<Menu>();
-		// projects menu
-		Menu appMenu = new Menu("projects", "My Applications", "",
-				MENU_TYPE_PROJECT_GROUP);
-
-		Menu dockerMenu = new Menu("project-docker", "Docker ",
-				"application_docker.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(dockerMenu);
-		// childMenu = new Menu("project-list", "List ", "project_main.html",
-		// MENU_TYPE_PROJECT_NODE);
-		Menu listAppMenu = new Menu("project-list", "List ",
-				"application_main.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(listAppMenu);
-		Menu appRepotMenu = new Menu("project-report", "Report ",
-				"application_report.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(appRepotMenu);
-
-		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
-		int zoneId = 1;
 		
+		//Dashboard
+		Menu dashboard = new Menu("dashboard", "Dashboard 集群监控", "", MENU_TYPE_PROJECT_GROUP);
+		menus.add(dashboard);
 		
-		Menu microServiceMenu = new Menu("microServiceMenu", "Micro Service", "",	MENU_TYPE_ZONE);
+		Menu dashboard_hosts = new Menu("dashboard_host", "Hosts 主机", "", MENU_TYPE_PROJECT_NODE);
+		dashboard.getSubMenus().add(dashboard_hosts);
 		
-		Menu microServiceListMenu = new Menu("microServiceListMenu", "List", "service.html",
-				MENU_TYPE_CLUSTER_NODE);
-		microServiceMenu.getSubMenus().add(microServiceListMenu);
+		Menu dashboard_services = new Menu("dashboard_services", "Services 服务", "", MENU_TYPE_PROJECT_NODE);
+		dashboard.getSubMenus().add(dashboard_services);
 		
-		// cluster menu
-		Menu k8sClusterMenu = new Menu("clsdef", "K8s Cluster", "",
-				MENU_TYPE_ZONE);
-		// 菜单1 第二级 submenu
-		Menu resourcePartionsMenu = new Menu("1_1", "Resource Partions", "",
-				MENU_TYPE_CLUSTER_GROUP);
-
-		// 菜单1 第三级 菜单即第二级的子菜单
-		Menu resourcePartionsListMenu = new Menu("respartion_main", "List ",
-				"respartion_main.html", MENU_TYPE_CLUSTER_NODE);
-		resourcePartionsMenu.getSubMenus().add(resourcePartionsListMenu);
-		Menu resourcePartionsReportMenu = new Menu("respartion_report",
-				"Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
-		resourcePartionsMenu.getSubMenus().add(resourcePartionsReportMenu);
-
-		// host pool sub menu
-		Menu hostPoolMenu = new Menu("hostp1", "Host Pool", "",
-				MENU_TYPE_HOST_GROUP);
-
-		Menu hostPoolListMenu = new Menu("host-list", "List ",
-				"host_main.html", MENU_TYPE_HOST_NODE);
-		hostPoolMenu.getSubMenus().add(hostPoolListMenu);
-
-		Menu hostPoolReportMenu = new Menu("host-report", "Report ",
-				"host_report.html", MENU_TYPE_HOST_NODE);
-		hostPoolMenu.getSubMenus().add(hostPoolReportMenu);
-		// cluster info menu
-		Menu clusterInfMenu = new Menu("cls_inf", "Cluster Inf",
-				"cluster_main.html", MENU_TYPE_PROJECT_NODE);
+		//Docker Registry
+		Menu docker = new Menu("docker", "Docker 私库", "", MENU_TYPE_PROJECT_GROUP);
+		menus.add(docker);
 		
+		Menu docker_list = new Menu("docker_list", "List", "application_docker.html", MENU_TYPE_PROJECT_NODE);
+		docker.getSubMenus().add(docker_list);
+		
+		//Applications
+		Menu application = new Menu("application", "My Apps 我的应用", "", MENU_TYPE_PROJECT_GROUP);
+		menus.add(application);
 
-		menus.add(appMenu);
-		menus.add(microServiceMenu);		
-		k8sClusterMenu.getSubMenus().add(hostPoolMenu);
-		k8sClusterMenu.getSubMenus().add(resourcePartionsMenu);
-		k8sClusterMenu.getSubMenus().add(clusterInfMenu);
-		menus.add(k8sClusterMenu);
+		Menu application_list = new Menu("application_list", "List", "application_main.html", MENU_TYPE_PROJECT_NODE);
+		application.getSubMenus().add(application_list);
+		
+		Menu application_report = new Menu("application_report", "Report", "application_report.html", MENU_TYPE_PROJECT_NODE);
+		application.getSubMenus().add(application_report);
+
+		//Public Services
+		Menu public_services = new Menu("public_services", "Public Services 公共服务", "", MENU_TYPE_PROJECT_GROUP);
+		menus.add(public_services);
+		
+		//Resources
+		Menu resources = new Menu("resources", "Resources 资源管理", "", MENU_TYPE_ZONE);
+		menus.add(resources);
+		
+		Menu resource_part = new Menu("resource_part", "Resource Part 资源分区", "", MENU_TYPE_CLUSTER_GROUP);
+		resources.getSubMenus().add(resource_part);
+		
+		Menu resource_list = new Menu("respartion_main", "List ", "respartion_main.html", MENU_TYPE_CLUSTER_NODE);
+		resource_part.getSubMenus().add(resource_list);
+		
+		Menu resource_report = new Menu("respartion_report", "Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
+		resource_part.getSubMenus().add(resource_report);
+
+		// Host Pool
+		Menu host_pool = new Menu("host_pool", "Host Pool 主机池", "", MENU_TYPE_HOST_GROUP);
+		resources.getSubMenus().add(host_pool);
+		
+		Menu host_pool_list = new Menu("host_pool_list", "List ", "host_main.html", MENU_TYPE_HOST_NODE);
+		host_pool.getSubMenus().add(host_pool_list);
+		
+		Menu host_pool_report = new Menu("host-report", "Report ", "host_report.html", MENU_TYPE_HOST_NODE);
+		host_pool.getSubMenus().add(host_pool_report);
+		
+		// Cluster Install
+		Menu cluster_install = new Menu("cluster_install", "Cluster 集群安装", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
+		resources.getSubMenus().add(cluster_install);
+
 		return menus;
 
 	}

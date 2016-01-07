@@ -1,5 +1,7 @@
 package org.ku8eye.bean.project;
 
+import io.fabric8.kubernetes.api.model.EnvVar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,59 +9,58 @@ public class Service {
 	private String name;
 	private String describe;
 	private String tag;
-	private String replica;
+	private int replica;
 	private String version;
-
-	int containerPort;
-	int servicePort;
-	int nodePort;
-
-	private List<Images> image = new ArrayList<Images>();
-
-	private List<EnvVariables> envVariables = new ArrayList<EnvVariables>();
+	private int containerPort;
+	private int servicePort;
+	private int nodePort;
+	private List<Images> images = new ArrayList<Images>();
+	private List<EnvVar> envVariables = new ArrayList<>();
 	
-	public void addEnvVariables(EnvVariables env)
+	public List<EnvVar> getEnvVariables()
 	{
-		envVariables.add(env);
-	}
-	
-	public List<EnvVariables> getEnvVariables() {
 		return envVariables;
 	}
 
-
-	public void setEnvVariables(List<EnvVariables> envVariables) {
+	public void setEnvVariables(List<EnvVar> envVariables)
+	{
 		this.envVariables = envVariables;
 	}
 
+	public void addEnvVariable(String name, String value)
+	{
+		EnvVar var = new EnvVar(name, value, null);
+		this.envVariables.add(var);
+	}
 
-	public int getContainerPort() {
+	public int getContainerPort()
+	{
 		return containerPort;
 	}
 
-	
-	public void setContainerPort(int containerPort) {
+	public void setContainerPort(int containerPort)
+	{
 		this.containerPort = containerPort;
 	}
 
-	public int getServicePort() {
+	public int getServicePort()
+	{
 		return servicePort;
 	}
 
-	public void setServicePort(int servicePort) {
+	public void setServicePort(int servicePort)
+	{
 		this.servicePort = servicePort;
 	}
 
-	public int getNodePort() {
+	public int getNodePort()
+	{
 		return nodePort;
 	}
 
-	public void setNodePort(int nodePort) {
+	public void setNodePort(int nodePort)
+	{
 		this.nodePort = nodePort;
-	}
-
-	public void addImage(Images i) {
-		image.add(i);
 	}
 
 	public String getName() {
@@ -86,11 +87,11 @@ public class Service {
 		this.tag = tag;
 	}
 
-	public String getReplica() {
+	public int getReplica() {
 		return replica;
 	}
 
-	public void setReplica(String replica) {
+	public void setReplica(int replica) {
 		this.replica = replica;
 	}
 
@@ -102,11 +103,17 @@ public class Service {
 		this.version = version;
 	}
 
-	public List<Images> getImage() {
-		return image;
+	public List<Images> getImages() {
+		return images;
 	}
 
-	public void setImage(List<Images> image) {
-		this.image = image;
+	public void setImages(List<Images> images) {
+		this.images = images;
 	}
+	
+	public void addImage(Images i) {
+		images.add(i);
+	}
+
 }
+
