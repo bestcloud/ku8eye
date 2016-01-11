@@ -58,7 +58,15 @@ public class ImageRegistry {
 	{
 		
 	}
-
+	
+	public List<DockerImage> unZipAndParseKu8ImagePackage(String absKu8ImagePackageFile,String ku8_ext_filesPath)
+	{
+		return null;
+		
+	}
+	
+	
+	
 	/**
 	 * 添加一个镜像到指定的docker registry里
 	 * @param registryURL
