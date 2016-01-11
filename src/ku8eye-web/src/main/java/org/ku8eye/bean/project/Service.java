@@ -9,28 +9,28 @@ public class Service {
 	private String name;
 	private String describe;
 	private String tag;
-	private String replica;
+	private int replica;
 	private String version;
 	private int containerPort;
 	private int servicePort;
 	private int nodePort;
-	private List<Images> image = new ArrayList<Images>();
-	private List<EnvVar> envVariable = new ArrayList<>();
+	private List<Images> images = new ArrayList<Images>();
+	private List<EnvVar> envVariables = new ArrayList<>();
 	
-	public List<EnvVar> getEnvVariable()
+	public List<EnvVar> getEnvVariables()
 	{
-		return envVariable;
+		return envVariables;
 	}
 
-	public void setEnvVariable(List<EnvVar> envVariable)
+	public void setEnvVariables(List<EnvVar> envVariables)
 	{
-		this.envVariable = envVariable;
+		this.envVariables = envVariables;
 	}
 
 	public void addEnvVariable(String name, String value)
 	{
 		EnvVar var = new EnvVar(name, value, null);
-		this.envVariable.add(var);
+		this.envVariables.add(var);
 	}
 
 	public int getContainerPort()
@@ -87,11 +87,11 @@ public class Service {
 		this.tag = tag;
 	}
 
-	public String getReplica() {
+	public int getReplica() {
 		return replica;
 	}
 
-	public void setReplica(String replica) {
+	public void setReplica(int replica) {
 		this.replica = replica;
 	}
 
@@ -103,16 +103,16 @@ public class Service {
 		this.version = version;
 	}
 
-	public List<Images> getImage() {
-		return image;
+	public List<Images> getImages() {
+		return images;
 	}
 
-	public void setImage(List<Images> image) {
-		this.image = image;
+	public void setImages(List<Images> images) {
+		this.images = images;
 	}
 	
 	public void addImage(Images i) {
-		image.add(i);
+		images.add(i);
 	}
 
 }

@@ -1,13 +1,13 @@
 package org.ku8eye.ctrl;
 
-import io.fabric8.kubernetes.api.model.IntOrString;
-import io.fabric8.kubernetes.api.model.IntOrStringBuilder;
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service.ApiVersion;
 import io.fabric8.kubernetes.api.model.PodBuilder;
-import io.fabric8.kubernetes.api.model.ServiceBuilder;
-import io.fabric8.kubernetes.api.model.ServicePort;
-import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.ReplicationControllerBuilder;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -32,7 +32,6 @@ import org.ku8eye.util.AjaxReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
@@ -167,20 +166,30 @@ public class ProjectController {
 				}
 			};
 			
-			k8sAPIservice.deleteService(1, "default", "servicename");
+			//TODO DELETE
+			k8sAPIservice.deleteService(1, "default", "sername");
+			k8sAPIservice.deleteRC(1, "default", "sername");
+			//END TODO
 			
-			//Parse JSON from app 
+			//Parse JSON from the application
 			Project p = Project.getFromJSON(json);
 			
 			boolean failed = false;
 			
 			for(Service s : p.getServices())
 			{
-				io.fabric8.kubernetes.api.model.Service f8serv =  k8sAPIservice.buildService(ku8p.getClusterId(), s);
+				ReplicationController f8rc = k8sAPIservice.buildRC(ku8p.getClusterId(), s);
+				
+				if(f8rc == null)
+				{
+					log.error("Create rc failed, " + s.getName());
+					failed = true;
+				}
+				
+				io.fabric8.kubernetes.api.model.Service f8serv = k8sAPIservice.buildService(ku8p.getClusterId(), s);
 				
 				if(f8serv == null)
 				{
-					
 					log.error("Create service failed, " + s.getName());
 					failed = true;
 				}
