@@ -38,6 +38,40 @@ public class ImageRegistry {
 	}
 
 	/**
+	 * Load 一个docker image到本地的docker engine里
+	 * @param registryURL
+	 * @param absImageFileName
+	 * @param dockerImageName
+	 * @param tagName
+	 */
+	public void loadDockerImage(String registryURL,String absImageFileName,String dockerImageName,String tagName)
+	{
+		
+	}
+	/**
+	 * push本地docker engine里的某个镜像到远端registryURL中
+	 * @param registryURL
+	 * @param dockerImageName
+	 * @param tagName
+	 */
+	public void pushDockerImage(String registryURL,String dockerImageName,String tagName)
+	{
+		
+	}
+
+	/**
+	 * 添加一个镜像到指定的docker registry里
+	 * @param registryURL
+	 * @param absImageFileName
+	 * @param dockerImageName
+	 * @param tagName
+	 */
+	public void addDockerImage(String registryURL,String absImageFileName,String dockerImageName,String tagName)
+	{
+		this.loadDockerImage(registryURL,absImageFileName,dockerImageName,tagName);
+		this.pushDockerImage(registryURL, dockerImageName, tagName);
+	}
+	/**
 	 * load and tag image
 	 * 
 	 * @throws FileNotFoundException
