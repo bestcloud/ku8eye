@@ -59,7 +59,7 @@ public interface DockerImageMapper {
     @Select({
         "select",
         "ID, TITLE, IMAGE_NAME, VERSION, VERSION_TYPE, PUBLIC_IMAGE, category, CLUSTER_ID, ",
-        "REGISTRY_ID, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, NOTE, LAST_UPDATED, ",
+        "REGISTRY_ID,IMAGE_URL, IMAGE_ICON_URL, STATUS, AUTO_BUILD_COMMAND, AUTO_BUILD, NOTE, LAST_UPDATED, ",
         "BUILD_FILE,SIZE",
         "from docker_image",
         "where ID = #{id,jdbcType=INTEGER}"
@@ -74,6 +74,7 @@ public interface DockerImageMapper {
         @Result(column="category", property="category", jdbcType=JdbcType.VARCHAR),
         @Result(column="CLUSTER_ID", property="clusterId", jdbcType=JdbcType.INTEGER),
         @Result(column="REGISTRY_ID", property="registryId", jdbcType=JdbcType.INTEGER),
+        @Result(column="IMAGE_URL", property="imageUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="IMAGE_ICON_URL", property="imageIconUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="STATUS", property="status", jdbcType=JdbcType.TINYINT),
         @Result(column="AUTO_BUILD_COMMAND", property="autoBuildCommand", jdbcType=JdbcType.VARCHAR),

@@ -1,0 +1,130 @@
+<style>
+.selectAll{
+	width: 60%;
+	height:auto;
+	border: 1px solid #F0F0F0; 
+	margin: 3% 20%;
+	background-color:#F9F9F2;
+}
+.select-list {
+	padding: 20px 50px;
+	height: 100px;
+}
+.select-list h3{
+	padding-bottom:10px;
+	border-bottom:1px solid;
+}
+.select-list span {
+	font-size: 17px;
+	margin: 10px 4px 10px 10%;
+}
+
+.select-list select {
+	width: 50%;
+	height: 30px;
+}
+
+.select-list button {
+	margin: 0% 20%;
+}
+.errorInfomation{
+	float:left;
+	color:#e83e42;
+}
+</style>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div class="selectAll">
+					<div class="select-list">
+						<h3 id="progressTitle">ku8镜像包导入向导</h3>
+					</div>
+					
+					<div class="select-list">
+						<span>镜像文件:</span>
+						<select id="imageKu8">
+							
+						</select>
+					</div>
+					 <div class="btns" style="width: 25%;float: right;margin: -80px 0% 0px 1%;">
+						<div id="pickerGz">选择文件</div>
+					</div>
+					<!--用来存放文件信息-->
+					<div id="thelist" class="uploader-list" style="margin-top:-20px;"></div>
+					
+					<div class="select-list">
+						<span id="import-error-infomation" class="errorInfomation"></span>
+					</div>
+					<div class="select-list">
+						<button class="btn btn-primary" id="importNext">下一步</button>
+					</div>
+				</div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="modal fade" id="myModalMask" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$("#import-error-infomation").hide();
+	 //显示遮罩层    
+	$.ajax({
+	    url:"/extresources/listuploadedGzs",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var pathurl="";
+	    	$.each(data,function(i,item){
+	    		pathurl+="<option value="+item+">"+i+"</option>"
+	    	});
+	    	$("#imageKu8").html(pathurl);
+	    }
+	});
+	
+	$("#importNext").click(function(){
+		$("#myModalMask").modal('show'); 
+		var _imageKu8=$("#imageKu8 option:checked").text();
+		$("#progressTitle").html("时间过长，请耐心等待！！！");
+		$("#importNext").attr({"disabled":"disabled"});
+		//设置遮罩层
+		$.ajax({
+		    url:"/dockerimg/parsegz",
+		    timeout:50*60*1000,
+		    type: "GET",
+		    data:{
+		    	clusterId:1,
+		    	imagePackageFile:_imageKu8
+		    },
+		    dataType:"text",
+		    success: function(data){
+		    	$("#myModalMask").modal("hide")
+		    	if(data=="SUCCESS:"){
+		    		setTimeout(hideM,300);
+		    	}else{
+		    		$("#import-error-infomation").show();
+		    		$("#import-error-infomation").html(data);
+		    		$("#importNext").attr({"disabled":false});
+		    	}
+		    	
+		    }
+		});
+
+	});
+	function hideM(){
+		$(".content").load("Ku8_docker_pkg_import_guide_2.html");
+	};
+	uploadgzfile();
+</script>

@@ -9,7 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import org.apache.log4j.Logger;
+
 public class FileUtil {
+	private static Logger log = Logger.getLogger(FileUtil.class);
 
 	public static String readFile(String Path) throws IOException {
 		BufferedReader reader = null;
@@ -44,13 +47,13 @@ public class FileUtil {
 		try {
 			File file = new File(fileFrom);
 			if (!file.exists()) {
-				System.out.println("warning:no logo");
+				log.warn("warning:no logo");
 				return;
 			}
 			inputStream = new FileInputStream(file);
 			File fileto = new File(path + File.separator + fileName);
 			if (fileto.exists()) {
-				System.out.println("logo icon exist");
+				log.warn("logo icon exist");
 				return;
 			}
 			new File(path).mkdirs();

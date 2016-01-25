@@ -1,8 +1,8 @@
 package org.ku8eye.service.image;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -11,10 +11,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.ku8eye.domain.DockerImage;
+import org.apache.log4j.Logger;
+import org.ku8eye.bean.Ku8PackageImportProcess;
 import org.ku8eye.service.image.util.CommonUtil;
 import org.ku8eye.service.image.util.DBOperator;
-import org.ku8eye.service.image.util.FileUtil;
 import org.ku8eye.util.SystemUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,11 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ImageTool {
 
+	private static Logger log = Logger.getLogger(ImageTool.class);
 	static final ObjectMapper om = new ObjectMapper();
 
 	public static void main(String[] args) throws Exception {
 		if (args.length < 1) {
-			System.out.println("usage example: -p /var/image/ku8-images\r\n");
+			log.info("usage example: -f /var/image/ku8-images/ku8-images.tar.gz\r\n");
 			return;
 		}
 
@@ -39,11 +40,8 @@ public class ImageTool {
 		Option opt = new Option("h", "help", false, "Print help");
 		opt.setRequired(false);
 		options.addOption(opt);
-		opt = new Option("p", "file", true, "json file");
+		opt = new Option("f", "file", true, "gz file");
 		opt.setRequired(true);
-		options.addOption(opt);
-		opt = new Option("r", "registyrid", true, "registyrid");
-		opt.setRequired(false);
 		options.addOption(opt);
 		opt = new Option("c", "clusterid", true, "clusterid");
 		opt.setRequired(false);
@@ -59,105 +57,61 @@ public class ImageTool {
 			return;
 		}
 
-		String filePath = commandLine.getOptionValue("p");// 最外层的文件夹家路径
-		String name = filePath
-				.substring(filePath.lastIndexOf(File.separator) + 1);// 最外层的文件夹名
-		String jsonFilePath = filePath + File.separator + name + ".json";// json文件路径（json文件名为其父文件名加后缀）
+		String filePath = commandLine.getOptionValue("f");// 解压后的文件夹名字
+		String clusterId = commandLine.getOptionValue("c");
+		clusterId = CommonUtil.isBlank(clusterId) ? "1" : clusterId;
 
-		int registyrId = Integer.parseInt(commandLine.getOptionValue("r"));
-		int clusterId = Integer.parseInt(commandLine.getOptionValue("c"));
-		File file = new File(jsonFilePath);
-		if (!file.exists()) {
-			System.out.println("json file don't exit!" + jsonFilePath);
+		String[] dbArray = DBOperator.getDBInfo(Integer.parseInt(clusterId));
+
+		if (dbArray[0].isEmpty()) {
+			String err = "err:no registry info in table ku8s_srv_endpoint,exit";
+			log.error(err);
 			return;
 		}
+		int registryId = Integer.parseInt(dbArray[0]);
+		String registryUrl = dbArray[1];
 
-		ImageShellArray imageList = om.readValue(file, ImageShellArray.class);
-		ImageShell[] imageShellArray = imageList.getImageShell();
-		for (int i = 0; i < imageShellArray.length; i++) {
-			ImageShell imageShell = imageShellArray[i];
-			String path = imageShell.getPath();
-			DockerImage dockerImage = imageShell.getImage();
-			dockerImage.setRegistryId(registyrId);
-			dockerImage.setClusterId(clusterId);
+		Properties props = SystemUtil.getSpringAppProperties();
+		String externalRes = props.getProperty("ku8.externalRes");
+		String prex = "file:";
+		externalRes = externalRes.substring(prex.length());
 
-			System.out.println("deal:'" + dockerImage.getImageName() + "'");
-			if (CommonUtil.isBlank(path)
-					|| CommonUtil.isBlank(dockerImage.getTitle())
-					|| CommonUtil.isBlank(dockerImage.getImageName())
-					|| CommonUtil.isBlank(dockerImage.getVersion())
-					|| CommonUtil.isBlankByte(dockerImage.getVersionType())
-					|| CommonUtil.isBlank(dockerImage.getCategory())
-					|| dockerImage.getClusterId() == null) {
-				System.out.println("deal fail:json file miss value");
-				continue;
-			}
-			ImageTool imageTool = new ImageTool();
+		List<DockerImageImportBean> dockerImageImportBeanList = ImageRegistry
+				.unZipAndParseKu8ImagePackage(filePath, externalRes,
+						registryId, registryUrl, Integer.parseInt(clusterId));
 
-			Properties props = SystemUtil.getSpringAppProperties();
-			String externalRes = props.getProperty("ku8.externalRes");
-			String prex = "file:";
-			if (!externalRes.startsWith(prex)) {
-				throw new java.lang.RuntimeException(
-						"invalid externalRes properties " + externalRes);
-			}
-			externalRes = externalRes.substring(prex.length());
-			String uploadedPicturePath = externalRes + File.separator
-					+ props.getProperty("ku8.uploadedPicturePath");
-			FileUtil.CopyFile(filePath + File.separator + imageShell.getPath()
-					+ File.separator + dockerImage.getImageIconUrl(),
-					uploadedPicturePath, dockerImage.getImageIconUrl());// 目的路径待定
-			String registryUrl = imageTool.getInfo(dockerImage);
-			if (!CommonUtil.isBlank(registryUrl)) {
-				imageShell.setRegistryUrl(registryUrl);
-			}
-
-			if (CommonUtil.isBlank(imageShell.getRegistryUrl())) {
-				System.out.println("can't find RegistryUrl,exit");
-				return;
-			}
-			if (imageTool.operateImage(filePath, imageShell)) {
-				imageTool.addDB(filePath, imageShell);
-			} else {
-				System.out.println("deal fail");
-			}
+		DBOperator.exitImage(dockerImageImportBeanList);
+		for (DockerImageImportBean dockerImageImportBean : dockerImageImportBeanList) {
+			dockerImageImportBean.setExecute("1");
 		}
-	}
+		if (dockerImageImportBeanList.size() > 0) {
+			Ku8PackageImportProcess ku8PackageImportProcess = new Ku8PackageImportProcess(
+					new ImageRegistry(), dockerImageImportBeanList);
+			ku8PackageImportProcess.start();
+			while (!ku8PackageImportProcess.isFinished()) {
+				Thread.sleep(1000);
+			}
 
-	/**
-	 * add image info to db
-	 * 
-	 * @param filePath
-	 * @param imageShell
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
-	 * @throws IOException
-	 */
-	private void addDB(String filePath, ImageShell imageShell)
-			throws ClassNotFoundException, SQLException, IOException {
-		System.out.println("deal DB data");
-		DBOperator.executeInsertImage(filePath, imageShell);
-	}
+			Collection<DockerImageImportBean> dockerImageImportBeanC = ku8PackageImportProcess
+					.getDockerImages();
+			log.info("deal report:");
+			for (DockerImageImportBean ockerImageImportBean : dockerImageImportBeanC) {
+				log.info("  " + ockerImageImportBean.getImage().getImageUrl()
+						+ File.separator
+						+ ockerImageImportBean.getImage().getImageName() + ":"
+						+ ockerImageImportBean.getImage().getVersion() + "--"
+						+ ockerImageImportBean.getProcessHint());
+			}
 
-	/**
-	 * push image to registry
-	 * 
-	 * @param filePath
-	 * @param imageShell
-	 * @return
-	 * @throws Exception
-	 */
-	private boolean operateImage(String filePath, ImageShell imageShell)
-			throws Exception {
-		System.out.println("deal registry");
-		ImageRegistry imagesRegistry = new ImageRegistry(filePath, imageShell);
-		imagesRegistry.load();
-		imagesRegistry.push();
-		return true;
-	}
+			if (ku8PackageImportProcess.isSuccess()) {
+				log.info("deal success!");
+			} else {
+				log.info("deal fail!");
+			}
+		} else {
+			log.error("json file erro, check your json file");
+		}
 
-	private String getInfo(DockerImage dockerImage)
-			throws ClassNotFoundException, SQLException, IOException {
-		return DBOperator.getInfo(dockerImage);
+		log.info("import images finish");
 	}
 }
