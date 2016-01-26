@@ -79,6 +79,8 @@ http://pan.baidu.com/s/1bopnMYr
 
 镜像包导入成功以后，就可以进行下面的操作了。
 
+如果想自己制作镜像批量导入压缩包，请参考![镜像批量导入压缩包制作](doc/ku8-images-file-make-guide.md)
+
 ## 3. 创建ku8微服务
 
 # 附录，容器内包括的软件
