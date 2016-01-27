@@ -91,11 +91,9 @@ public class UIService {
 		Menu application_list = new Menu("application_list", "我的应用", "application_main.html", MENU_TYPE_PROJECT_NODE);
 		Menu docker_list = new Menu("docker_list", "私库镜像", "application_docker.html", MENU_TYPE_PROJECT_NODE);
 		Menu public_services_list = new Menu("application_list", "公共服务", "service.html", MENU_TYPE_PROJECT_NODE);
-		Menu file_manage = new Menu("file_manage", "文件管理", "file_manage.html", MENU_TYPE_PROJECT_NODE);
 		application.getSubMenus().add(docker_list);
 		application.getSubMenus().add(application_list);		
 		application.getSubMenus().add(public_services_list);	
-		application.getSubMenus().add(file_manage);
 		
 		//Resources
 		Menu resources = new Menu("resources", "资源管理 ", "", MENU_TYPE_ZONE);
