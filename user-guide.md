@@ -34,7 +34,7 @@ http://pan.baidu.com/s/1bopnMYr
 
 
 # 二，运行ku8eye
-打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面。
+打开浏览器，地址栏输入宿主机IP和8080端口，即可进入ku8eye-web页面（默认用户名和密码为 guest/123456）。
 
 对Kubernetes集群进行操作了。
 ## 1. 一键安装k8s集群
