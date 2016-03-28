@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.ku8eye.service.deploy.Ku8InstallTool;
+import org.ku8eye.service.image.ImageTool;
 import org.ku8eye.util.SystemUtil;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -88,6 +89,14 @@ public class App extends WebMvcConfigurerAdapter {
 			System.arraycopy(args, index + 1, newArgs, 0, newArgs.length);
 			System.out.println(Arrays.toString(newArgs));
 			Ku8InstallTool.main(newArgs);
+			return;
+		}
+		index = findArg(args, "image");
+		if (index > 0) {
+			String[] newArgs = new String[args.length - index - 1];
+			System.arraycopy(args, index + 1, newArgs, 0, newArgs.length);
+			System.out.println(Arrays.toString(newArgs));
+			ImageTool.main(newArgs);
 			return;
 		}
 		SpringApplication app = new SpringApplication(App.class);
