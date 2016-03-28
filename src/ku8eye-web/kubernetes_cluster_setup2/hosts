@@ -1,0 +1,23 @@
+# machines list in group
+
+[docker-registry]
+192.168.18.133 docker0_ip=10.17.42.3/24 docker_registry_port=5000 docker_registry_root_dir=/var/lib/registry docker_registry_image_id=774242a00f13 docker_registry_image_tag=registry:2.2.0
+
+[etcd]
+192.168.18.133 etcd_binding_port=4001
+
+
+[kube-master]
+
+192.168.18.133 apiserver_insecure_port=8080 ca_crt_CN=ku8eye.org kube_node_sync_period=10s
+
+
+# for docker, different docker0's IP on different node
+# and kubelet, kube-proxy
+[kube-node]
+
+192.168.18.134 kubelet_hostname_override=192.168.18.134 docker0_ip=10.0.0.3/24
+
+
+#192.168.1.202 docker0_ip=172.17.2.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.203 install_quagga_router=true
+#......

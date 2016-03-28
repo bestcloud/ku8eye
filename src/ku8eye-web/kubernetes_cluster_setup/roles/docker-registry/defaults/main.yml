@@ -1,0 +1,7 @@
+---
+docker0_ip: 10.17.42.3/24
+docker_runtime_root_dir: /var/lib/docker
+
+docker_registry_root_dir: /var/lib/registry
+docker_registry_image_id: 774242a00f13
+docker_registry_image_tag: registry:2.2.0
