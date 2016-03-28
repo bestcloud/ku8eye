@@ -1,0 +1,300 @@
+<style>
+.fileManage{
+    margin-top: 10px;
+	border:1px solid;
+}
+	
+	.fileManage-alltitle{
+		margin-left: 22px;
+    margin-top: 14px;
+    float: left;
+    width: 100%;
+	}
+	.fileManage-alltitle span{
+		margin-top: 2px;
+    	float: left;
+    	overflow: hidden;
+   	 	width: 250px;
+	}
+	.fileManage-all{
+	    margin-top: 2px;
+		float: left;
+    	width: 100%;
+    	padding: 3px;
+	}
+	.fileManage-all span{
+	
+    	float: left;
+    	overflow: hidden;
+   	 	width: 250px;
+	}
+	.fileManage-all img{
+		float:left;
+	}
+	.fl{
+		vertical-align: middle;
+    	width: 25px;
+    	height: 25px;
+    	margin-right: 10px;
+    	margin-left: -2%;
+	}
+	.f2{
+		vertical-align: middle;
+    	width: 25px;
+    	height: 25px;
+    	margin-right: 10px;
+	}
+	.webuploader-pick{
+	    height: 32px;
+    	width: 75px;
+    	margin-left: 15px;
+    	position: relative;
+    	display: inline-block;
+    	cursor: pointer;
+    	background: #367fa9;
+    	padding: 7px 5px 2px 5px;
+   	 	color: #fff;
+    	text-align: center;
+    	border-radius: 3px;
+    	overflow: hidden;
+    	font-size: 14px;
+	}
+	.uploader-list{
+		margin: 40% 30%;
+   		width: 80%;
+   		font-size: 9px;
+	}
+</style>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div style="padding-bottom: 5px;margin-left:20px;">	
+					<img class="fl" id="return" src="../img/file/return.png"/>
+					<label>路径：</label>
+					<input id="path" type="text" value="/ku8_ext_files" style="height:28px;width:29%;" >
+					<a class="btn btn-primary" id="dele" data-toggle="modal" data-target="#myModal2">删除</a> 
+					<div class="btns" style="width:10%;float:right;margin-right: 43%;">
+						<div id="picker" style="height:40px;">上传文件</div>
+					</div>
+						
+				</div>
+				<div class="fileManage-alltitle">
+					<span>文件名称</span>
+					<span>更新日期</span>
+					<span>大小</span>
+				</div>
+				<div class="fileManage">
+				</div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<!--用来存放文件信息-->
+			<div id="thelist" class="uploader-list"></div>
+		</div>
+	</div>
+</div>
+<script>
+var _path=$("#path").val();	
+searchFile(_path);
+
+function searchFile(_path){
+	
+	$.ajax({
+	    url:"/extresources/listfiles",
+	    data:{
+	    	path:_path
+	    },
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    		if(data.err=="1"){
+	    			alert(data.msg);
+	    			var path=$("#path").val();
+	    			var path_old=path.split("/");
+	    			var path_new="";
+	    			for(var i=1;i<path_old.length-1;i++){
+	    				path_new+="/"+path_old[i];
+	    			}
+	    			if(path_new!=""){
+	    				$("#path").attr("value",path_new);
+		    			searchFile(path_new);
+	    			}
+	    		}else{
+	    			var pathString="";
+		        	var fileString="";
+			        $.each(data.result,function(i,item){
+			        	if(item.type=="path"){
+			        		pathString += [
+			        						'<div class="fileManage-all" c="file" name="'+item.name+'">',
+			        						'<img src="../img/file/file.png" alt=""/>',
+			        						'<span>'+item.name+'</span>',
+			        						'<span>'+item.date+'</span>',
+			        						'<span></span>',
+			        						'</div>'
+			 				            ].join('');
+			    		}else{
+			    			fileString += [
+			        						'<div class="fileManage-all" c="other" name="'+item.name+'">',
+			        						'<img src="../img/file/'+item.pic+'" alt=""/>',
+			        						'<span>'+item.name+'</span>',
+			        						'<span>'+item.date+'</span>',
+			        						'<span>'+item.size+'KB</span>',
+			        						'</div>'
+							            ].join('');
+			    		}
+			        }); 
+			        $(".fileManage").html(pathString+fileString);
+
+			        $(".fileManage").find(".fileManage-all[c=file]").dblclick(function(){
+			        	var path=$("#path").val();
+			        	var name=$(this).attr('name');
+			        	$("#path").attr("value",path+"/"+name);
+			        	searchFile(path+"/"+name);
+			        	
+			        });
+			        
+			        $(".fileManage").find(".fileManage-all").click(function(){
+			        	$(".fileManage").unbind();
+			        	$("#dele").unbind();
+			        	$(".fileManage-all").css({'background':''});
+			        	$(this).css({'background':'#eeeeee'});
+			        	var _pathOrFile="";
+			        	var path=$("#path").val();
+			        	var path_new=$(this).attr('name');
+			        	_pathOrFile=path+"/"+path_new;
+			        	$("#dele").click(function(){
+			        		$.ajax({
+				        	    url:"/extresources/deleteFileOrPath",
+				        	    data:{
+				        	    	pathOrFile:_pathOrFile
+				        	    },
+				        	    type: "GET",
+				        	    dataType:"json",
+				        	    success: function(data){
+				        	    	var _path=$("#path").val();	
+				        	    	searchFile(_path);
+				        	    },
+				        	    error:function(){
+				        	    	alert("删除失败");
+				        	    }
+				        	});
+			        		
+			        	});
+			        });
+			        
+	    		}
+	        	
+	    }
+	});
+}
+$("#return").click(function(){
+	var path=$("#path").val();
+	if(path.lastIndexOf("/")==0){
+		alert("已经到达跟目录，不允许查看其他目录");
+	}else{
+		var path_old=path.split("/");
+		var path_new="";
+		for(var i=1;i<path_old.length-1;i++){
+			path_new+="/"+path_old[i];
+		}
+		$("#path").attr("value",path_new);
+		searchFile(path_new);
+	}
+	
+	
+});
+function uploadimagesall(_path) {
+    var $ = jQuery,
+    $list = $('#thelist'),
+    state = 'pending',
+    uploader;
+uploader = WebUploader.create({
+	// 不压缩image
+    resize: true,
+
+    // swf文件路径
+    swf: '../js/Uploader.swf',
+
+    // 文件接收服务端。
+    //server: '/dockerimg/upload-image',
+    server: '/extresources/upload-file',
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: '#picker',
+    formData:{
+    	path:_path,
+    	name:"zzzzzzzzz"
+    },
+    duplicate:true,
+    sendAsBinary:true,
+    extensions: 'img',
+    auto:true
+});
+
+//uploader.options.formData.uid = $("#path").val();//全局参数
+//局部参数
+uploader.on('uploadBeforeSend', function(obj, data, headers) {
+	var path_update=$("#path").val();
+	data['path']=path_update;
+});
+
+//当有文件添加进来的时候
+uploader.on( 'fileQueued', function( file ) {
+    $list.append( '<div id="' + file.id + '" class="item">' +
+        '<h4 class="info">' + file.name + '</h4>' +
+        '<p class="state">等待上传...</p>' +
+    '</div>' );
+});
+
+//文件上传过程中创建进度条实时显示。
+uploader.on( 'uploadProgress', function( file, percentage ) {
+	$('#myModal').modal({backdrop: 'static', keyboard: false});
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress .progress-bar');
+
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<div class="progress progress-striped active">' +
+          '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+          '</div>' +
+        '</div>').appendTo( $li ).find('.progress-bar');
+    }
+
+    $li.find('p.state').text('上传中');
+
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+
+uploader.on( 'uploadSuccess', function( file ) {
+	$( '#'+file.id ).find('p.state').text('已上传');
+    var path_update=$("#path").val();
+    searchFile(path_update);
+});
+
+uploader.on( 'uploadError', function( file ) {
+    $( '#'+file.id ).find('p.state').text('上传出错');
+});
+uploader.on( 'uploadComplete', function( file ) {
+	$("#myModal").modal('hide'); 
+    $( '#'+file.id ).find('.progress').fadeOut();
+});
+
+}
+
+var path_update=$("#path").val();
+uploadimagesall(path_update);
+
+
+    
+</script>
