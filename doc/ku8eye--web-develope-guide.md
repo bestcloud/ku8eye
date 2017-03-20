@@ -1,4 +1,4 @@
-# ku8eye web工程编译运行
+﻿# ku8eye web工程编译运行
 
 工程采用了spring-boot框架来简化开发和部署，下载源码工程：
 https://github.com/bestcloud/ku8eye/tree/master/src/ku8eye-web
@@ -23,3 +23,6 @@ src\main目录下如下包结构：
 
 数据库初始化脚本文件（initsql.sql）在以下目录
  - src\ku8eye-ansible\db_scripts
+
+
+
