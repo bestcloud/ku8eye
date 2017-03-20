@@ -21,3 +21,4 @@ KUBE_ADMISSION_CONTROL="--admission_control=NamespaceAutoProvision,LimitRanger,R
 
 # Add your own!
 KUBE_API_ARGS="--service-node-port-range={{apiserver_service_node_port_range}} --client_ca_file=/var/run/kubernetes/ca.crt --tls-private-key-file=/var/run/kubernetes/server.key --tls-cert-file=/var/run/kubernetes/server.crt "
+

@@ -12,3 +12,5 @@ kube_node_sync_period: 10s
 # to generate ssh keys on master server
 ca_crt_CN: ecip.hp.com
 server_key_CN: 192.168.1.201
+
+

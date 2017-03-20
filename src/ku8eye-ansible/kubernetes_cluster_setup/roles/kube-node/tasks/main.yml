@@ -176,3 +176,5 @@
 - name: check kube-proxy service started ok
   command: systemctl status kube-proxy
 
+  
+
