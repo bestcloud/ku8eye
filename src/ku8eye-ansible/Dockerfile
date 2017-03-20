@@ -56,3 +56,5 @@ COPY ku8eye-web.jar /root/ku8eye-web.jar
 # supervisor config file
 COPY supervisord.conf /etc/supervisord.conf
 ENTRYPOINT /usr/bin/supervisord
+
+

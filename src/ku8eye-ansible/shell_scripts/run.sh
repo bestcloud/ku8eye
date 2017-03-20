@@ -13,4 +13,4 @@ sleep 1
 
 # start ku8eye-web app
 /root/shell_scripts/run_tomcat.sh
-echo "======`date +"[%Y-%m-%d %H:%M:%S]"` start ku8eye-web done. ======"
+echo "======`date +"[%Y-%m-%d %H:%M:%S]"` start ku8eye-web done. ======" 
