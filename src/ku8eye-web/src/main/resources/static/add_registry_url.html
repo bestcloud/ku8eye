@@ -1,0 +1,86 @@
+<style>
+	.registry_list span{
+		float:left;
+		width:20%;
+		padding:10px 40% 10px 10%;
+	}
+</style>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div style="padding-bottom: 15px;">
+					<h3 id="installtitle">设置镜像私库</h3>
+				</div>
+				<div style="padding-bottom: 15px;">	
+					<label>镜像库地址：</label>
+					<input id="registrypath" type="text" style="height:32px;width:29%;padding:2px 2px;" placeholder="https://127.0.0.1:5000" />
+				</div>
+				<div>
+				<button class="btn btn-primary" id="ok">确定</button>	
+				</div>
+				
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+
+<script type="text/javascript">
+var cluster_id=0;
+var registry_org="";
+
+	$("#ok").click(function(){
+		var registry_modify=$("#registrypath").val();
+		if(registry_org!=registry_modify){
+			$.ajax({
+				url : "/dockerimg/addRgistry",
+				type : "GET",
+				data : {
+					clusterId :cluster_id,
+					url:registry_modify
+				},
+				dataType : "json",
+				success : function(data) {
+					if(data.status==0){
+						$(".content").load("application_docker.html");
+					}else if(data.status==1){
+						alert(data.message);
+					}
+					
+				}
+			});
+		}else{
+			$(".content").load("application_docker.html");
+		}
+		
+	});
+
+
+$.ajax({
+	url : "/dockerimg/validateRgistry",
+	type : "GET",
+	data : {
+		clusterId :cluster_id
+	},
+	dataType : "json",
+	success : function(data) {
+		if(data.status==0 && data.data.length>0){
+			$("#registrypath").val(data.data[0]);
+			registry_org=data.data[0];
+		}else if(data.status==1){
+			alert(data.message);
+		}
+		
+	},
+	error:function(data){
+		alert(data);
+	}
+});
+
+
+</script>

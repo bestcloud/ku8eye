@@ -3,6 +3,18 @@ package org.ku8eye.domain;
 import java.util.Date;
 
 public class DockerImage {
+	
+	private int creat_user;
+	
+	
+	public int getCreat_user() {
+		return creat_user;
+	}
+
+	public void setCreat_user(int creat_user) {
+		this.creat_user = creat_user;
+	}
+
 	/**
 	 * 镜像的私库地址
 	 * */

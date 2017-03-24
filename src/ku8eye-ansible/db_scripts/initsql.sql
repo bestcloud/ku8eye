@@ -252,9 +252,9 @@ DROP TABLE IF EXISTS `docker_image`;
 CREATE TABLE `docker_image` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
   `TITLE` varchar(64) NOT NULL COMMENT 'image display title ',
-  `IMAGE_URL` varchar(1024) COMMENT 'image url ',
-  `IMAGE_NAME` varchar(64) NOT NULL COMMENT 'image name ',
-  `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
+  `IMAGE_URL` varchar(128) COMMENT 'image url ',
+  `IMAGE_NAME` varchar(512) NOT NULL COMMENT 'image name ',
+  `VERSION` varchar(512) NOT NULL COMMENT 'image version ',
   `VERSION_TYPE` tinyint(4) DEFAULT '0',
   `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
   `SIZE` int(11) DEFAULT '0',
@@ -267,7 +267,7 @@ CREATE TABLE `docker_image` (
   `AUTO_BUILD_COMMAND` varchar(512) DEFAULT NULL,
   `AUTO_BUILD` tinyint(4) DEFAULT '0',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  `LAST_UPDATED` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 

@@ -1,0 +1,187 @@
+<style>
+.selectAll{
+	width: 60%;
+	height: 100%; 
+	border: 1px solid #F0F0F0; 
+	margin: 3% 20%;
+}
+.select-list {
+	padding: 10px 50px;
+	height: 80px;
+}
+.select-list h3{
+	padding-bottom:10px;
+	border-bottom:1px solid;
+}
+.select-list span {
+	font-size: 14px;
+	margin: 0px 0px 0px 2%;
+}
+
+.select-list select {
+	width: 50%;
+	height: 30px;
+}
+
+.select-list button {
+	float:left;
+	margin: 0 2% 0 20%
+}
+
+  .processb{
+  	margin: -7% 2% 2% 43%;
+    width: 50%;
+    height: 25px;
+    border: solid 1px #ccc;
+   
+  }
+  .processbackground{
+     background-color: #90EE90;
+     width: 0px;
+     height: 23px;
+        
+  }
+  table{
+  	width:100%;
+  }
+  table tr td,th{
+  	border:1px solid;
+  	width:20%;
+  	text-align: center;
+  }
+</style>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<!-- /.box-header -->
+			<div class="box-body">
+				<div class="selectAll">
+					<div class="select-list">
+						<h4>请选择要添加的新镜像</h4>
+					</div>
+					<table id="newAddTable" class="table table-bordered table-hover"
+					style="font-size: 12px;">
+						<tr>
+							<th><input type="checkbox" name="checkall" class="allCheckedAdd"/></th>
+							<th>镜像名称</th>
+							<th>私库地址</th>
+							<th>版本</th>
+<!-- 							<th>大小</th> -->
+						</tr>
+					</table>
+					
+					<div class="select-list">
+						<h4>已有镜像，请选择是否覆盖更新</h4>
+					</div>
+					<table id="updateTable" class="table table-bordered table-hover"
+					style="font-size: 12px;">
+						<tr>
+							<th><input type="checkbox" name="checkall"  class="allCheckedUpdate"/></th>
+							<th>镜像名称</th>
+							<th>私库地址</th>
+							<th>版本</th>
+<!-- 							<th>大小</th> -->
+						</tr>
+					</table>
+					<div class="select-list">
+						<button class="btn btn-primary" data-toggle="modal"  id="excute">执行</button>
+						<button class="btn btn-primary" data-toggle="modal" id="cancel" >返回</button>
+					</div>
+				</div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row -->
+<script type="text/javascript">
+$("#cancel").click(function(){
+	$(".content").load("Ku8_docker_pkg_import_guide_1.html");
+});
+
+$(".allCheckedAdd").click(function(){
+	if($(".allCheckedAdd").prop("checked")){
+		$("input[name='childAdd']").prop("checked",true); 
+	}else{
+		$("input[name='childAdd']").prop("checked",false); 
+	}
+});
+$(".allCheckedUpdate").click(function(){
+	if($(".allCheckedUpdate").prop("checked")){
+		$("input[name='childUpdate']").prop("checked",true); 
+	}else{
+		$("input[name='childUpdate']").prop("checked",false); 
+	}
+});
+
+
+$("#excute").click(function(){
+	var _excuteInternalSeq="";
+	$(":checkbox:checked").closest("tr").find(":checkbox[name=childAdd]").each(function(i, eleDom) {
+     	_excuteInternalSeq += eleDom.value + ",";
+ 	 });
+	$(":checkbox:checked").closest("tr").find(":checkbox[name=childUpdate]").each(function(i, eleDom) {
+     	_excuteInternalSeq += eleDom.value + ",";
+ 	 });
+	if(_excuteInternalSeq==""){
+		alert("请勾选要要导入的镜像");
+	}else{
+		$.ajax({
+		    url:"/dockerimg/importimg",
+		    type: "GET",
+		    timeout:30*1000,
+		    data : {
+		    	excuteInternalSeq : _excuteInternalSeq
+			},
+		    dataType:"json",
+		    success: function(data){
+		    	if(data.status==0){
+			    	$(".content").load("Ku8_docker_pkg_import_guide_3.html");
+		    	}else if(data.status==1){
+		    		alert(data.message);
+		    	}
+		    },
+		});	
+	}
+});
+
+
+$.ajax({
+    url:"/dockerimg/getImageImportBeanList",
+    type: "GET",
+    timeout:30*1000,
+    dataType:"json",
+    success: function(data){
+    	var addString="";
+    	var updateString="";
+    	$.each(data.data,function(i,item){
+    		if(item.exist){
+    			updateString += [
+ 								'<tr>',
+ 								'<td><input type="checkbox" name="childUpdate" value="'+item.internalSeq+'" /></td>',
+ 								'<td>'+item.image.imageName+'</td>',
+ 								'<td>'+item.image.imageUrl+'</td>',
+ 								'<td>'+item.image.version+'</td>',
+//  								'<td>'+Math.round((item.image.size)/1024)+'M</td>',
+ 								'</tr>'
+ 				            ].join('');
+    		}else{
+    			addString += [
+								'<tr>',
+ 								'<td><input type="checkbox" name="childAdd" value="'+item.internalSeq+'" /></td>',
+								'<td>'+item.image.imageName+'</td>',
+								'<td>'+item.image.imageUrl+'</td>',
+								'<td>'+item.image.version+'</td>',
+// 								'<td>'+Math.round((item.image.size)/1024)+'M</td>',
+								'</tr>'
+				            ].join('');
+    		}
+    		
+    	});
+    	$("#newAddTable").append(addString);
+    	$("#updateTable").append(updateString);
+    }
+});
+</script>
