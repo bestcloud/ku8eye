@@ -5,3 +5,5 @@ docker_runtime_root_dir: /hadoop1/docker
 docker_registry_root_dir: /hadoop1/docker_registry
 docker_registry_image_id: 774242a00f13
 docker_registry_image_tag: registry:2.2.0
+
+

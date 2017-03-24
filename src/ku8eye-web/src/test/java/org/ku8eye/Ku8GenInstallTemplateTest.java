@@ -75,3 +75,6 @@ public class Ku8GenInstallTemplateTest {
 	}
 
 }
+
+
+

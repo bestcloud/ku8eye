@@ -1,4 +1,4 @@
-# ku8eye web 开发环境
+﻿# ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
 http://pan.baidu.com/s/1gdYk4CV
@@ -1041,3 +1041,5 @@ templates：需修改参数的配置文件，其中参数由defaults目录中的
 	NAME            LABELS                                 STATUS
 	192.168.1.202   kubernetes.io/hostname=192.168.1.202   Ready
 	192.168.1.203   kubernetes.io/hostname=192.168.1.203   Ready
+
+

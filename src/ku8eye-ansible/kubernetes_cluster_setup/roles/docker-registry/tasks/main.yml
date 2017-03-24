@@ -132,3 +132,6 @@
 - name: push pause image to private registry
   shell: docker push {{kubernetes_pause_image_tag}}
   when: push_pause_image and pause_image_id.rc != 0
+
+
+  

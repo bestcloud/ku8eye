@@ -6,3 +6,4 @@ install_quagga_router: ${install_quagga_router}
 # quagga router docker image info
 quagga_router_image_id: ${quagga_router_image_id}
 quagga_router_image_tag: ${quagga_router_image_tag}
+

@@ -91,3 +91,5 @@
   command: systemctl status kube-controller-manager
 - name: check kube-scheduler service started ok
   command: systemctl status kube-scheduler
+
+  

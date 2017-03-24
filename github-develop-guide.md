@@ -1,5 +1,4 @@
-![ImageLoadFailed](./res/ku8eye.png)
-
+﻿![ImageLoadFailed](./res/ku8eye.png)
 
 Eclipse中导入maven工程时候，如果公司是代理上网，则需要设置M2插件的代理，这个是在Ecliplse之外的设置，如果是win7系统，则通常在C:\Users\youaccount\\.m2 目录下是m2的repository，目录地下有repository目录.
 在.m2目录下建立settings.xml文档，里面设置代理，内容如下

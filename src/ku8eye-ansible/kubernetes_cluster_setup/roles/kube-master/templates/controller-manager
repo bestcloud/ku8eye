@@ -5,3 +5,4 @@
 
 # Add your own!
 KUBE_CONTROLLER_MANAGER_ARGS="--node-sync-period={{kube_node_sync_period}} --service_account_private_key_file=/var/run/kubernetes/server.key --root-ca-file=/var/run/kubernetes/ca.crt "
+
