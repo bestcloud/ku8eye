@@ -22,7 +22,7 @@ http://pan.baidu.com/s/1bopnMYr
 `# docker tag 6f46b1372b52 ku8eye-web`
 
 运行ku8eye：
-`docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files :/root/ku8eye/ku8_ext_files --p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web`
+`docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files:/ku8_ext_files --p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web`
 其中 3306 为mysql服务端口，8080 为tomcat服务端口，9001 为supervisor服务端口，均映射到宿主机上,-v表示本地的磁盘映射到容器内部路径上（前一部分为宿主机的本地路径，后面为容器内部路径）
 
 如需映射sshd的22端口，需添加一个 -p 参数，例如 `-p 2222:22`
