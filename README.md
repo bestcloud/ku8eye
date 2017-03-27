@@ -24,7 +24,7 @@ It has the following goals
  - 6. Continuous integration and delivery with Docker and kubernetes project. Provide a visual tool to manager project's continuous delivery pipeline,  allows you to auto buid new Docker images, push to private Docker registry, create a new kubernetes testing environment to run test cases and finally rolling update raleted Kubernetes services in product environment
  
 K8s eye是一个谷歌Kubernetes的Web一站式管理系统，它具有如下的目标：
- - 1.图形化一键安装部署多节点的Kubernetes集群。是安装部署谷歌Kubernetes集群的最快以及最佳方式，安装流程会参考当前系统环境，提供默认优化的集群安装参数，实现最佳部署。
+ - **图形化一键安装部署多节点的Kubernetes集群**：是安装部署谷歌Kubernetes集群的最快以及最佳方式，安装流程会参考当前系统环境，提供默认优化的集群安装参数，实现最佳部署。
  - 2.支持多角色多租户的Portal管理界面。通过一个集中化的Portal界面，运营团队可以很方便的调整集群配置以及管理集群资源，实现跨部门的角色及用户管理、多租户管理，通过自助服务可以很容易完成Kubernetes集群的运维管理工作。
  - 3.制定一个Kubernetes应用的程序发布包标准(ku8package)并提供一个向导工具，使得专门为Kubernetes设计的应用能够很容易从本地环境中发布到公有云和其他环境中，更进一步的，我们还提供了Kubernetes应用可视化的构建工具，实现Kubernetes Service、RC、Pod以及其他资源的可视化构建和管理功能
  - 4.可定制化的监控和告警系统。内建很多系统健康检查工具用来检测和发现异常并触发告警事件，不仅可以监控集群中的所有节点和组件（包括Docker与Kubernetes），还能够很容易的监控业务应用的性能，我们提供了一个强大的Dashboard，可以用来生成各种复杂的监控图表以展示历史信息，并且可以用来自定义相关监控指标的告警阀值。
