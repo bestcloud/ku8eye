@@ -1,4 +1,4 @@
-﻿# Kubernetes集群安装的功能设计及实现
+# Kubernetes集群安装的功能设计及实现
 
 标签（空格分隔）： install
 
@@ -67,6 +67,7 @@ List<Node> nodes;//安装的节点列表
 String logoURL;
 String name;
 String descNote;
+
 ```
 设计一个Java服务**Ku8ClusterDeployService**，用来执行具体的安装过程，它有以下的几个方法：
 
@@ -79,6 +80,9 @@ InstallProcess的定义如下：
    volatile boolean sucess;
    volatile PrintStream output;//当前安装输出流信息，页面展示效果
 ```
+
+
+
 
 
 

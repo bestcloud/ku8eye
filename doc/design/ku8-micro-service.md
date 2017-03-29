@@ -1,79 +1,84 @@
-# Ku8΢�����Լ�Ku8Ӧ��
+# Ku8微服务以及Ku8应用
 
-��ǩ���ո�ָ����� ku8΢���� Ku8Ӧ��
+标签（空格分隔）： ku8微服务 Ku8应用
 
 ---
 
-1. **ku8΢����(Micro Service)**
+1. **ku8微服务(Micro Service)**
 ----------------------------
 
-�ȼ���һ��kubernetes��Service�������˸����������ԣ�ÿһ��ku8΢�������ջ�ʵ����Ϊһ��kubernetes Service���Ӧ��RC��ku8΢���������Ƕ����ģ��˴�֮��û�й�ϵ��ku8΢�����Ϊ�����ģ��Լ�����ĳ��˽�е�Application�����֣�������΢���񣬿��Ա�˽�е�Application���ã��������������ã������Ǳ�������Application�ڣ���Ku8΢����ͨ��һ��������׶Ρ����ڽ�����¼���Ҫ�����ԣ�Ȼ����Է�����ĳ��ku8�����ϲ������������̾����ڶ�Ӧ�ķ����ϴ�����ص�kubernetes service��RC��������֮����������
+等价与一个kubernetes的Service，但多了副本数的属性，每一个ku8微服务最终会实例化为一个kubernetes Service与对应的RC。ku8微服务本质上是独立的，彼此之间没有关系。ku8微服务分为公共的，以及属于某个私有的Application的两种，公共的微服务，可以被私有的Application引用（仅仅是依赖引用，并不是被包含在Application内）。Ku8微服务通过一个“定义阶段”，在界面上录入必要的属性，然后可以发布到某个ku8分区上部署，这个部署过程就是在对应的分区上创建相关的kubernetes service与RC，并且与之关联起来。
 
-Ku8΢������صı�Ϊ���漸����
+Ku8微服务相关的表为下面几个：
 
-- Ku8Service����Ӧһ��΢����Ķ��壬��Ҫ������Ϣ�����jsonSpec�ΪJSON��ʽ�����ݣ�projectidΪNULLҲ�����ֵ��״˷�����΢�������ڲ��������Ҫ��־��
+- Ku8Service，对应一个微服务的定义，主要描述信息存放在jsonSpec里，为JSON格式的内容，projectid为NULL也是区分到底此服务是微服务还是内部服务的重要标志。
 
-Ku8΢�����״̬�����¼�����
+Ku8微服务的状态有以下几个：
 
- - ������
- - ������
- - ��������
- - �����쳣
+ - 待发布
+ - 发布中
+ - 正常运行
+ - 服务异常
 
 
-Ku8΢����������潨�����·�ʽչ�֣�
+Ku8微服务的主界面建议如下方式展现：
 ![ImageLoadFailed](../../res/micro-service-list.PNG)
  
- �����+���ţ�����Դ���һ��΢���񣬿��Դӡ�ģ�塱��ѡ�����ֱ�ӽ���΢����Ĺ������棺
+ 点击“+”号，则可以创建一个微服务，可以从“模板”中选择或者直接进入微服务的构建界面：
  ![ImageLoadFailed](../../res/micro-service-def.PNG)
  
- ΢����Ĵ�����ֱ����ku8_service������һ��ʵ����projectidΪNULL������Ķ�����Ϣ������jsonSpec�����С�΢���񴴽��Ժ󣬿��ԡ���������ĳ����Դ������Ku8ResPartion�������У������������̴������£�
+ 微服务的创建，直接在ku8_service里生成一个实例，projectid为NULL，具体的定义信息存在于jsonSpec属性中。微服务创建以后，可以“发布”到某个资源分区（Ku8ResPartion）上运行，发布过程流程大致如下：
  
--  �û�ѡ�����������Դ�������������·�����˵���������еķ�����ֻ����֮ǰ�����ϸ��£���������һ���棩  
--  ��ѯ�÷����ѷ��������з���״̬����KU8_MICRO_SERVICE_INIT_STATUS�ģ�������������ķ��������Ҳ������������������·�����������ʾ��΢���������Ѿ���xxxxռ�ò�����
--  �û���������ȱ������ݣ�����ku8_service�����Դ������Ϣ���޸�״̬ΪKU8_MICRO_SERVICE_PUBLISHIING_STATUS��Ȼ���ȵ��ú�̨k8s��API����ӿڣ���ָ���ķ����������ռ��ڣ��������k8s service��k8s RC����Ĵ�������²��������óɹ��Ժ󣬸���ku8_service��״̬ΪKU8_MICRO_SERVICE_RUNNING_STATUS�����Ұ�prevJsonSpec����������Ϊ��ǰ�����ݣ� �����������У������ʧ�ܲ��裬������ku8_service����״̬Ϊ KU8_MICRO_SERVICE_FAILED_STATUS������ku8_service��note�ֶμ�¼�������ԭ��
+-  用户选择待发布的资源分区（仅对于新服务来说，对于已有的服务，则只能再之前分区上更新，就跳过这一界面）  
+-  查询该分区已发布的所有服务（状态除了KU8_MICRO_SERVICE_INIT_STATUS的），如果有重名的服务名并且并不是自身（可能重新发布），则提示该微服务名称已经被xxxx占用并报错
+-  用户点击，首先保存数据，包括ku8_service里的资源分区信息、修改状态为KU8_MICRO_SERVICE_PUBLISHIING_STATUS，然后先调用后台k8s的API服务接口，在指定的分区的命名空间内，依次完成k8s service与k8s RC对象的创建或更新操作，调用成功以后，更新ku8_service的状态为KU8_MICRO_SERVICE_RUNNING_STATUS，并且把prevJsonSpec的内容设置为当前的内容， 如果这个过程中，如果有失败步骤，则设置ku8_service表的状态为 KU8_MICRO_SERVICE_FAILED_STATUS，并且ku8_service的note字段记录具体错误原因。
 
-2. **ku8΢����ģ��**
+2. **ku8微服务模板**
 ---------------
-΢����ģ����һ����������ʵ����ĳ��΢�������������ģ�ͣ�������һЩ�м������������΢����ģ�壬����MySQL��Redis��Zookeeper��Memcache��MongoDB��FastDFS�ȡ�����΢�����ʱ�򣬿���ֱ��ѡ��ĳ��΢����ģ�壬�޸ı�Ҫ�Ĳ�����Ȼ�󷢲���ĳ��������΢����ģ���Ӧ��ku8_service_template
+微服务模板是一个用来快速实例化某个微服务的样板数据模型，常见的一些中间件都可以做成微服务模板，比如MySQL，Redis，Zookeeper，Memcache，MongoDB，FastDFS等。创建微服务的时候，可以直接选择某个微服务模板，修改必要的参数，然后发布到某个分区。微服务模板对应表ku8_service_template
 
 
-3. **ku8Ӧ�ã�Application)**
+3. **ku8应用（Application)**
 ---------------
-Ku8Ӧ���ǰ���һ��˽�е�K8΢����ʵ����һ�����嵥Ԫ��һ��ku8Ӧ�ÿ��ܻ���������ĳЩ������Ku8΢������������������΢����ͬ�����õ�΢���������ȷ����Щ΢����������ͬһ�������ڴ��ڣ�������ȥ��������һ���µ�΢����
-     ��Ku8΢�������ƣ�һ��ku8Ӧ��Ҳ��һ��������ڵ㡱�������ǵ�Build�׶Σ�������׶��У��û�ͨ�����涨��һ������ku8΢����Ҳ��������ĳ��Ku8΢����ģ�壩����ɹ����Ժ�ѡ��ĳ��ku8����������ÿ��΢�����ڷ���֮ǰ����Ҫȷ���������õ�ku8΢�����ڴ˷����д��ڡ�
+Ku8应用是包括一组私有的K8微服务实例的一个整体单元，一个ku8应用可能会声明引用某些公共的Ku8微服务，与其自身包括的微服务不同，引用的微服务仅仅是确保这些微服务与它在同一个分区内存在，而不是去产生这样一个新的微服务。
+     与Ku8微服务类似，一个ku8应用也有一个“定义节点”，即我们的Build阶段，在这个阶段中，用户通过界面定义一个或多个ku8微服务（也可以引用某个Ku8微服务模板），完成构建以后，选择某个ku8分区，发布每个微服务，在发布之前，需要确保它所引用的ku8微服务在此分区中存在。
 
-һ��Ku8Ӧ�ð������µ�״̬��
+一个Ku8应用包括如下的状态：
 
- - ������
- - ������
- - ��������
- - ���ַ����쳣
- - ����ȫ���쳣
+ - 待发布
+ - 发布中
+ - 正常运行
+ - 部分服务异常
+ - 服务全部异常
 
-ku8Ӧ������Ӧ�ı������ţ�
+ku8应用所对应的表有两张：
    
-- Ku8Project����������Ӧ�ñ�������Ϣ����Ӧ�����ƣ��汾�ţ������ˣ�ʱ���
-- Ku8Service����Ku8Project��һ�Զ�Ĺ�ϵ����Ku8Project�е�ÿһ�����񣬶���Ӧһ����¼��projectidΪNULLҲ�����ֵ��״˷�����΢�������ڲ��������Ҫ��־��
+- Ku8Project，用来保存应用本身的信息，如应用名称，版本号，发布人，时间等
+- Ku8Service，与Ku8Project是一对多的关系，即Ku8Project中的每一个服务，都对应一条记录，projectid为NULL也是区分到底此服务是微服务还是内部服务的重要标志。
 
-����һ��ku8Ӧ�õĹ������£�
+构建一个ku8应用的过程如下：
 
-- �ȴ���һ��Ku8Project
-- Ȼ����������Ӷ���������������ľ���������Ϣ
-- ����������ʱ��Ϊÿ���������һ��Ku8Service��¼
+- 先创建一个Ku8Project
+- 然后界面上添加多个服务并且输入服务的具体详情信息
+- 最后点击保存的时候，为每个服务产生一条Ku8Service记录
 
-ku8Ӧ�õı༭��������Ҫע��һ�㣬���ĳ�������ڽ���ɾɾ���ˣ�������水ť��������ʱ����Ҫ�ж϶�Ӧ����Ku8Service��¼�е�Status���ԣ�����˷�����δ����״̬�������ֱ��ɾ����Ӧ��Ku8Service��¼��������Ҫ���FLAGΪ-1��Constants.DELETED_FLAG�����ں���ķ��������У�ɾ����Ӧ��k8s��Դ��Ϣ��service ��RC����
+ku8应用的编辑过程中需要注意一点，如果某个服务在界面删删除了，点击保存按钮保存服务的时候，需要判断对应的条Ku8Service记录中的Status属性，如果此服务是未发布状态，则可以直接删除对应的Ku8Service记录，否则需要标记FLAG为-1（Constants.DELETED_FLAG），在后面的发布过程中，删除对应的k8s资源信息（service 与RC）。
 
-ku8Ӧ�õķ������̴������£�
+ku8应用的发布过程大致如下：
 
-- �û�ѡ�����������Դ������������Ӧ����˵���������е�Ӧ�ã���ֻ����֮ǰ�����ϸ��£���������һ���棩  
--  ��ѯ�÷����ѷ��������з�������������ķ��������Ҳ������������������·�����������ʾ�з��������Ѿ���xxxxռ�ò�����
--  չʾ����������棬��ʾ�û���ǰ��Ҫִ�еĲ��������ݣ�����Ҫ��������� k8s service��k8s RC  ����Դ�����ǵ������Լ����µĸ����ԣ�����ԱȵĲ�����Ϣ����k8s API ��Դ��ѯ�Ľ��������ǰku8_service�����΢������Ϣ��k8s API ��Դ��ѯ�Ľ�����жԱȲ��г��������飬���紴������� k8s service �Լ�k8s
--  �û��������������ť�����ȱ������ݣ�����ku8_service�����Դ������Ϣ���޸�״̬ΪKU8_MICRO_SERVICE_PUBLISHIING_STATUS��Ȼ���ȵ��ú�̨k8s��API����ӿڣ���ָ���ķ����������ռ��ڣ��������k8s service��k8s RC����Ĵ�������²��������óɹ��Ժ󣬸���ku8_service��״̬ΪKU8_MICRO_SERVICE_RUNNING_STATUS�����Ұ�prevJsonSpec����������Ϊ��ǰ�����ݣ� �����������У������ʧ�ܲ��裬������ku8_service����״̬Ϊ KU8_MICRO_SERVICE_FAILED_STATUS������ku8_service��note�ֶμ�¼�������ԭ������в��ַ��񷢲�ʧ�ܣ�����Ku8Project��״̬ΪKU8_APP_PART_FAILED_STATUS����ȫ��ʧ������ΪKU8_APP_FAILED_STATUS��ȫ���ɹ�����ΪKU8_APP_RUNNING_STATUS�����ڷ���ʧ�ܵ��������չʾ�Ի�����ʾÿ�������״̬���Լ�ʧ��ԭ��
+- 用户选择待发布的资源分区（仅对于应用来说，对于已有的应用，则只能再之前分区上更新，就跳过这一界面）  
+-  查询该分区已发布的所有服务，如果有重名的服务名并且并不是自身（可能重新发布），则提示有服务名称已经被xxxx占用并报错
+-  展示发布详情界面，提示用户当前所要执行的操作的内容，比如要创建或更新 k8s service、k8s RC  等资源，考虑到发布以及更新的复杂性，这里对比的参照信息来自k8s API 资源查询的结果，即当前ku8_service表里的微服务信息与k8s API 资源查询的结果进行对比并列出动作详情，比如创建或更新 k8s service 以及k8s
+-  用户点击“发布”按钮，首先保存数据，包括ku8_service里的资源分区信息、修改状态为KU8_MICRO_SERVICE_PUBLISHIING_STATUS，然后先调用后台k8s的API服务接口，在指定的分区的命名空间内，依次完成k8s service与k8s RC对象的创建或更新操作，调用成功以后，更新ku8_service的状态为KU8_MICRO_SERVICE_RUNNING_STATUS，并且把prevJsonSpec的内容设置为当前的内容， 如果这个过程中，如果有失败步骤，则设置ku8_service表的状态为 KU8_MICRO_SERVICE_FAILED_STATUS，并且ku8_service的note字段记录具体错误原因。如果有部分服务发布失败，则标记Ku8Project的状态为KU8_APP_PART_FAILED_STATUS，，全部失败则标记为KU8_APP_FAILED_STATUS，全部成功则标记为KU8_APP_RUNNING_STATUS，对于发布失败的情况，则展示对话框，显示每个服务的状态，以及失败原因。
 
-�����ǲο��Ľ�ͼ��
+下面是参考的截图：
 
 ![ImageLoadFailed](../../res/app-deploy-1.png)
+
+
+
+
+
 
 
 

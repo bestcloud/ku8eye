@@ -106,4 +106,7 @@ spec:
 -  nodeId:所在的kubernetes Node节点
 -  name:kubernetes Pod 定义中的名字
 -  status:当前状态
+
+
+
   
