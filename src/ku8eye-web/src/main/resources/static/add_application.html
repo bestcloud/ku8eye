@@ -69,6 +69,7 @@
     </div>
 </div>	
 </div>
+<div id="test"/>
 <!-- /.row -->
 <script src="../js/project.js"></script>
 <script>
@@ -89,15 +90,22 @@
 	}
 	
 	function addApplication()
-	{
+	{	
 		if(checkInput())
 		{
 			var _name = $('#name').val();
 			var _version = $('#version').val();
 			var _k8sVersion = $('#k8s-version').val();
 			var _note = $('#note').val();
-			var _jsonStr = $proObj;
-			
+			var _services = [];
+			var _json = {};
+			_services.push(createServiceJson());
+			_json.projectName = _name;
+			_json.version = _version;
+			_json.k8sVersion = _k8sVersion;
+			_json.notes = _note;
+			_json.services = _services;
+		
 			$.ajax({
 				url: "/addApplication",
 				type: "POST",
@@ -107,22 +115,20 @@
 					version:_version,
 					k8sVersion:_k8sVersion,
 					note:_note,
-					jsonStr:JSON.stringify(_jsonStr)
+					jsonStr:JSON.stringify(_json)
 				},
 				success: function(response){
 					if(response['status'] > -1)
 					{
-						back();
-						var _appName = $("#appName").val()
 						var _div = $('<div>');
 						_div.load('alert_success.html', function(){
 							$(this).find('#title').html(response['message']);
-							$(this).find('#message').html("Project <strong>" + _name + "</strong> updated successfully.");
-							var child = $(this).children();
-							child.fadeTo(3000, 500).slideToggle(500, function(){
-								child.alert('close');
+							$(this).find('#message').html("Project <strong>" + _name + "</strong> added successfully.");
+							var content = $(this).children();
+							content.fadeTo(3000, 500).slideToggle(500, function(){
+								content.alert('close');
 							});
-							$('.content').append(child);
+							back(content);
 						});
 					}
 					else
@@ -131,11 +137,11 @@
 						_div.load('alert_error.html', function(){
 							$(this).find('#title').html("ERROR");
 							$(this).find('#message').html(response['message']);
-							var child = $(this).children();
-							child.fadeTo(3000, 500).slideToggle(500, function(){
-								child.alert('close');
+							var content = $(this).children();
+							content.fadeTo(3000, 500).slideToggle(500, function(){
+								content.alert('close');
 							});
-							$('.content').append(child);
+							$('.content').append(content);
 						});
 					}
 				}
@@ -143,8 +149,8 @@
 		}
 	}
 	
-	$('input', $('.form-group')).focusout(function() {
-		setFormTips(this);
+	$(document).on('focusout', 'input.form-control',function (e) {
+		setFormTips($(e.target));
 	});
 	
 	function setFormTips(field)
@@ -172,8 +178,13 @@
 		$($ob.attr("data-target")).toggle(1000);
 	}
 	
-	function back() {
-		$('.content').load('application_main.html');
+	function back(content) {
+		$('.content').load('application_main.html', function(){
+			if(content !== null)
+			{
+				$('.content').append(content);
+			}
+		});
 	}
 
 	function addService() {
@@ -182,8 +193,9 @@
 			var $service = $services.eq(0);
 			var $new_service = $service.clone();
 			var id = $services.length + 1;
+			console.log(id);
 			$new_service.children("div").children(".panel-heading").children("button").attr("data-target", "#service_panel_" + id);
-			$new_service.children("div").children(".panel-body").attr("id", "service_panel_" + id);
+			$new_service.children("div").children(".panel-body").attr("id", "service_panel_" + 1);
 			$service.after($new_service);
 		}
 

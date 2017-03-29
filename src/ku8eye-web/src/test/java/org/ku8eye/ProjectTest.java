@@ -2,7 +2,6 @@ package org.ku8eye;
 
 import org.junit.Test;
 import org.ku8eye.bean.project.Images;
-import org.ku8eye.bean.project.Port;
 import org.ku8eye.bean.project.Project;
 import org.ku8eye.bean.project.Service;
 import org.ku8eye.util.JSONUtil;
@@ -18,13 +17,13 @@ public class ProjectTest
 			p.setAuthor("author");
 			p.setNotes("note");
 			p.setK8sVersion("1");
-			p.setProjectName("project name");
+			p.setProjectName("projectname");
 			p.setVersion("1");
 
 			Service s = new Service();
 			s.setDescribe("describe");
-			s.setName("service name");
-			s.setReplica("12");
+			s.setName("servicename");
+			s.setReplica(12);
 			s.setTag("tag");
 			s.setVersion("0.1");
 
@@ -38,13 +37,13 @@ public class ProjectTest
 			i.setRegistry("d:/registry");
 			i.setVersion("0.1");
 
-			Port p1 = new Port();
-			p1.setContainerPort("8080");
-			p1.setNodePort("8080");
-			p1.setServicePort("8080");
+			s.setContainerPort(1100);
+			s.setNodePort(1200);
+			s.setServicePort(1300);
+			
+			s.addEnvVariable("var1name", "val1val");
 
 			s.addImage(i);
-			s.addPort(p1);
 
 			p.addService(s);
 

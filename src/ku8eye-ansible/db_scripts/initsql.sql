@@ -43,13 +43,11 @@ CREATE TABLE `host` (
 -- ----------------------------
 -- Records of host
 -- ----------------------------
-INSERT INTO `host` VALUES ('1', '1', 'mynode_1', '192.168.18.133', '111111', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
-INSERT INTO `host` VALUES ('2', '1', 'mynode_2', '192.168.18.134', '111111', 'wuhan', null, '2015-11-24 15:20:53', '8', '524288', '0', '0', '0');
-INSERT INTO `host` VALUES ('3', '1', 'mynode_3', '192.168.18.135', '111111', 'wuhan', null, '2015-11-24 15:20:18', '16', '1048576', '0', '0', '0');
-INSERT INTO `host` VALUES ('4', '1', 'mynode_1', '192.168.1.201', '123456', 'beijing', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
-INSERT INTO `host` VALUES ('5', '1', 'mynode_2', '192.168.1.202', '123456', 'beijing', null, '2015-11-24 15:20:53', '8', '524288', '0', '0', '0');
-INSERT INTO `host` VALUES ('6', '1', 'mynode_3', '192.168.1.203', '123456', 'beijing', null, '2015-11-24 15:20:18', '16', '1048576', '0', '0', '0');
-INSERT INTO `host` VALUES ('7', '1', 'mynode_3', '192.168.1.204', '123456', 'beijing', null, '2015-11-24 15:20:18', '16', '1048576', '0', '0', '0');
+INSERT INTO `host` VALUES ('1', '1', '10.255.242.203', '10.255.242.203', '123456', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
+INSERT INTO `host` VALUES ('2', '1', '10.255.242.204', '10.255.242.204', '123456', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
+INSERT INTO `host` VALUES ('3', '1', '10.255.242.205', '10.255.242.205', '123456', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
+INSERT INTO `host` VALUES ('4', '1', '10.255.242.206', '10.255.242.206', '123456', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
+INSERT INTO `host` VALUES ('5', '1', '10.255.242.207', '10.255.242.207', '123456', 'wuhan', null, '2015-11-24 15:20:04', '4', '524288', '0', '0', '0');
 
 -- ----------------------------
 -- Table structure for `ku8s_srv_endpoint`
@@ -64,16 +62,20 @@ CREATE TABLE `ku8s_srv_endpoint` (
   `SERVICE_URL` varchar(64) DEFAULT NULL COMMENT 'service url',
   `SERVICE_STATUS` tinyint(4) DEFAULT NULL COMMENT 'service status (ok ,bad)',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
+  `SSH_PORT` int(5) DEFAULT NULL,
+  `SSH_HOST` varchar(20) DEFAULT NULL,
+  `SSH_PASS` varchar(50) DEFAULT NULL,
+  `SSH_USER` varchar(50) DEFAULT NULL,
   `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO `ku8eye`.`docker_image` (`ID`, `TITLE`, `IMAGE_NAME`, `VERSION`, `VERSION_TYPE`, `PUBLIC_IMAGE`, `SIZE`, `category`, `CLUSTER_ID`, `REGISTRY_ID`, `IMAGE_ICON_URL`, `STATUS`, `BUILD_FILE`, `AUTO_BUILD_COMMAND`, `AUTO_BUILD`, `NOTE`) VALUES ('1', 'MYSQL', 'MYSQL', '5.6', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
 
 -- ----------------------------
 -- Records of ku8s_srv_endpoint
 -- ----------------------------
-
+INSERT INTO `ku8s_srv_endpoint` VALUES (1, 1, 1, 0, '10.255.242.203','http://10.255.242.203:1180', 1, NULL, NULL,NULL, NULL,NULL, NULL);
+INSERT INTO `ku8s_srv_endpoint` VALUES (2, 1, 1, 1, '10.255.242.207', 'http://10.255.242.207:1186', 1, NULL, NULL,NULL, NULL,NULL, NULL);
 -- ----------------------------
 -- Table structure for `ku8_cluster`
 -- ----------------------------
@@ -94,8 +96,8 @@ CREATE TABLE `ku8_cluster` (
 -- ----------------------------
 -- Records of ku8_cluster
 -- ----------------------------
+INSERT INTO `ku8_cluster` VALUES ('0', '1', '1', 'test cluster', 'test', '1.0', '1', null, '2015-11-19 14:13:46');
 INSERT INTO `ku8_cluster` VALUES ('1', '1', '1', 'test cluster', 'test', '1.0', '1', null, '2015-11-19 14:13:46');
-
 -- ----------------------------
 -- Table structure for `ku8_project`
 -- ----------------------------
@@ -246,58 +248,35 @@ INSERT INTO `zone` VALUES ('1', 'beijing', null, '2015-11-19 13:54:43');
 -- Table structure for docker_image
 -- ----------------------------
 DROP TABLE IF EXISTS `docker_image`;
+
 CREATE TABLE `docker_image` (
   `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
   `TITLE` varchar(64) NOT NULL COMMENT 'image display title ',
-  `IMAGE_NAME` varchar(64) NOT NULL COMMENT 'image name ',
-  `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
+  `IMAGE_URL` varchar(128) COMMENT 'image url ',
+  `IMAGE_NAME` varchar(512) NOT NULL COMMENT 'image name ',
+  `VERSION` varchar(512) NOT NULL COMMENT 'image version ',
   `VERSION_TYPE` tinyint(4) DEFAULT '0',
   `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
-  `SIZE` int(11)  DEFAULT 0,
+  `SIZE` int(11) DEFAULT '0',
   `category` varchar(32) NOT NULL COMMENT 'image category ',
   `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong whitch cluster',
   `REGISTRY_ID` int(11) NOT NULL,
-  `IMAGE_ICON_URL` varchar(128) DEFAULT NULL COMMENT 'image icon url ',
+  `IMAGE_ICON_URL` varchar(1024) DEFAULT NULL COMMENT 'image icon url ',
   `STATUS` tinyint(4) DEFAULT '0',
   `BUILD_FILE` text,
   `AUTO_BUILD_COMMAND` varchar(512) DEFAULT NULL,
   `AUTO_BUILD` tinyint(4) DEFAULT '0',
   `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
+  `LAST_UPDATED` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of docker_image
 -- ----------------------------
-INSERT INTO `docker_image` VALUES ('1', 'MySQL Server 5.6', 'mysqlserver', '5.6', '1', '0', 204800, 'database', '1', '0', '/icons/images/mysql.png', '0', null, null, '0', null, '2015-12-02 11:14:04');
-INSERT INTO `docker_image` VALUES ('2', 'Java 8 ', 'jdk', '8.0', '1', '0', 307200, 'plantform', '1', '0', '/icons/images/java.png', '0', null, null, '0', null, '2015-12-01 11:14:15');
-INSERT INTO `docker_image` VALUES ('3', 'Redis 2', 'redis', '2.0', '1', '0', 451481, 'middleware', '1', '0', '/icons/images/redis.png', '0', null, null, '0', null, '2015-12-04 11:14:40');
-INSERT INTO `docker_image` VALUES ('4', 'Memcache 1.4', 'memcache', '1.4.25', '1', '0', 448518, 'middleware', '1', '0', '/icons/images/memcache.png', '0', null, null, '0', null, '2015-12-18 11:14:54');
 
-DROP TABLE IF EXISTS `docker_image`;
-CREATE TABLE `docker_image` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
-  `TITLE` varchar(64) NOT NULL COMMENT 'image display title ',
-  `IMAGE_NAME` varchar(64) NOT NULL COMMENT 'image name ',
-  `VERSION` varchar(16) NOT NULL COMMENT 'image version ',
-  `VERSION_TYPE` tinyint(4) DEFAULT '0',
-  `PUBLIC_IMAGE` tinyint(4) DEFAULT '0',
-  `SIZE` int(11)  DEFAULT 0,
-  `category` varchar(32) NOT NULL COMMENT 'image category ',
-  `CLUSTER_ID` int(11) DEFAULT NULL COMMENT 'belong whitch cluster',
-  `REGISTRY_ID` int(11) NOT NULL,
-  `IMAGE_ICON_URL` varchar(128) DEFAULT NULL COMMENT 'image icon url ',
-  `STATUS` tinyint(4) DEFAULT '0',
-  `BUILD_FILE` text,
-  `AUTO_BUILD_COMMAND` varchar(512) DEFAULT NULL,
-  `AUTO_BUILD` tinyint(4) DEFAULT '0',
-  `NOTE` varchar(256) DEFAULT NULL COMMENT 'note for this record',
-  `LAST_UPDATED` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'last updated time',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
-
+INSERT INTO `docker_image` VALUES (48, 'Jre 8', '10.255.242.171:5000', 'jre', '8', 1, 0, 346660, 'middleware', 1, 21, 'logo_pic\\java.png', 0, 'FROM centos:locale \r\n\r\nENV JAVA_HOME /var/run/jre\r\nADD jre8 ${JAVA_HOME}\r\n', NULL, 0, 'auto imported', now());
+INSERT INTO `docker_image` VALUES (49, 'tomcat 6', '10.255.242.171:5000', 'tomcat', '6', 1, 0, 357577, 'middleware', 1, 21, 'logo_pic\\tomcat.png', 0, 'FROM centos:locale\r\n\r\nENV JAVA_HOME /var/run/jre\r\nADD jre8 ${JAVA_HOME}\r\n\r\nENV TOMCAT_HOME /var/run/tomcat\r\nADD apache-tomcat-6.0.39 ${TOMCAT_HOME}\r\n\r\n\r\n', NULL, 0, 'auto imported', now());
 
 -- ----------------------------
 -- Table structure for `ku8_service_template`

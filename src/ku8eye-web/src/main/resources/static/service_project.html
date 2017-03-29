@@ -102,7 +102,7 @@
 		</div>
 		</div>
 	</div>
-	<div class="panel panel-info">
+	<div class="panel panel-info" >
 		<div class="panel-heading">
 			Environment Variables
 		</div>
@@ -113,14 +113,18 @@
 		</div>
 		<div class="form-group" name="envVariable">
 			<div class="col-sm-3">
+			<div class="form-group" style="padding-left:15px;">
 				<input type="text" class="form-control" id="envName"
 					placeholder="Name">
 			</div>
+			</div>
 			<div class="col-sm-4">
+			<div class="form-group" style="padding-left:15px;">
 				<input type="text" class="form-control" id="envValue"
 					placeholder="Value">
 			</div>
-			<div class="btn-group">
+			</div>
+			<div class="btn-group" style="padding-left:15px;">
 				<button type="button" class="btn btn-primary" onclick="addEnvVariable(this)">+</button>
 				<button type="button" class="btn btn-primary" onclick="delEnvVariable(this)">-</button>
 			</div>
@@ -132,7 +136,8 @@
 </div>
 <script>
 
-	function addImages(obj) {
+
+function addImages(obj) {
 		var $image = $(obj).parent(".panel-heading")
 				.parent("div[name='image']");
 		var $new_image = $image.clone();

@@ -1,5 +1,7 @@
 package org.ku8eye.bean.project;
 
+import io.fabric8.kubernetes.api.model.EnvVar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,25 +9,58 @@ public class Service {
 	private String name;
 	private String describe;
 	private String tag;
-	private String replica;
+	private int replica;
 	private String version;
-	private List<Images> image = new ArrayList<Images>();
-	private List<Port> ports = new ArrayList<Port>();
-
-	public void addPort(Port p) {
-		ports.add(p);
+	private int containerPort;
+	private int servicePort;
+	private int nodePort;
+	private List<Images> images = new ArrayList<Images>();
+	private List<EnvVar> envVariables = new ArrayList<>();
+	
+	public List<EnvVar> getEnvVariables()
+	{
+		return envVariables;
 	}
 
-	public List<Port> getPorts() {
-		return ports;
+	public void setEnvVariables(List<EnvVar> envVariables)
+	{
+		this.envVariables = envVariables;
 	}
 
-	public void setPorts(List<Port> ports) {
-		this.ports = ports;
+	public void addEnvVariable(String name, String value)
+	{
+		EnvVar var = new EnvVar(name, value, null);
+		this.envVariables.add(var);
 	}
 
-	public void addImage(Images i) {
-		image.add(i);
+	public int getContainerPort()
+	{
+		return containerPort;
+	}
+
+	public void setContainerPort(int containerPort)
+	{
+		this.containerPort = containerPort;
+	}
+
+	public int getServicePort()
+	{
+		return servicePort;
+	}
+
+	public void setServicePort(int servicePort)
+	{
+		this.servicePort = servicePort;
+	}
+
+	public int getNodePort()
+	{
+		return nodePort;
+	}
+
+	public void setNodePort(int nodePort)
+	{
+		this.nodePort = nodePort;
 	}
 
 	public String getName() {
@@ -52,11 +87,11 @@ public class Service {
 		this.tag = tag;
 	}
 
-	public String getReplica() {
+	public int getReplica() {
 		return replica;
 	}
 
-	public void setReplica(String replica) {
+	public void setReplica(int replica) {
 		this.replica = replica;
 	}
 
@@ -68,11 +103,17 @@ public class Service {
 		this.version = version;
 	}
 
-	public List<Images> getImage() {
-		return image;
+	public List<Images> getImages() {
+		return images;
 	}
 
-	public void setImage(List<Images> image) {
-		this.image = image;
+	public void setImages(List<Images> images) {
+		this.images = images;
 	}
+	
+	public void addImage(Images i) {
+		images.add(i);
+	}
+
 }
+

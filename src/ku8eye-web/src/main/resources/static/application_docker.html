@@ -12,12 +12,34 @@
 		background-color:#E8F2FC;
 	}
 	
-	.installationMode .projectdocker span{
+/* 	.installationMode .projectdocker span{ */
+/* 		width:50%; */
+/* 		float:left; */
+/* 		color:#2296C9; */
+/* 		padding:8px 0px 0px 15px; */
+/* 	} */
+	.projectdockerSpanHead span{
+		width:100%;
+		float:left;
+		color:#2296C9;
+		padding:8px 0px 0px 15px;
+		overflow: hidden;
+	    height: 30px;
+	    text-overflow: ellipsis;
+    	white-space: nowrap;
+	}
+	
+	.projectdockerSpanBody span{
 		width:50%;
 		float:left;
 		color:#2296C9;
 		padding:8px 0px 0px 15px;
+		overflow: hidden;
+		height: 30px;
+	    text-overflow: ellipsis;
+    	white-space: nowrap;
 	}
+	
 	.docker-dialog{
 		width:100%;
 		height:100%;
@@ -34,14 +56,28 @@
 		text-align:right;
 		font-size:16px;
 		color:#3399FF;
+		width:25%;
 	}
 	.col-text1{
 		font-size:14px;
 		color:#66CCFF;
+		width:25%;
 	}
 	.images-control{
 		width:80%;
 	}	
+	.docker-list-image{
+	    float: right;
+    	height: 30px;
+    	width: 30px;
+    	margin-right: 3%;
+	}
+	.control-upload{
+		border:1px solid;
+		height: 30px;
+		width: 100px;
+		margin:-25px 0px 0px 20px;
+	}
 </style>
 
 <div class="row">
@@ -52,12 +88,34 @@
 				<div style="padding-bottom: 5px;margin-left:20px;">	
 					
 					<input id="dockerName" type="text" style="height:32px;width:29%;margin:0px 5px 0px 40px;padding:2px 2px;" />
-					<button id="selectDocker"  class="btn btn-primary" >查询</button>	
-					<a class="btn btn-primary " id="addDocker" data-toggle="modal" data-target="#myModal2">添加镜像</a> 
+					<button class="btn btn-primary" id="selectDocker"   >查询</button>	
+					<a class="btn btn-primary" id="addDocker" data-toggle="modal" data-target="#myModal2">添加镜像</a> 
+					<button class="btn btn-primary" id="Image_package_import">镜像批量导入</button>	
+					<button class="btn btn-primary" id="addImage_package_url">设置镜像私库</button>
+					<button class="btn btn-primary" id="file_manage">文件管理</button>
+					<image  src="../img/list.png" class="docker-list-image" id="docker-list-btn"/>
 				</div>
-				<ul id="example1" class="installationMode">
+				<div id="example1" class="installationMode">
 					
-				</ul>
+				</div>
+				
+				<table id="dockerTable" class="table table-bordered table-hover"
+					style="font-size: 12px;" width="100%">
+					<thead>
+						<tr>
+							<th>title</th>
+							<th>iamge_name</th>
+							<th>version</th>
+							<th>version_type</th>
+							<th>public_image</th>
+							<th>category</th>
+							<th>last_updated</th>
+						</tr>
+					</thead>
+				</table>
+				
+				
+				
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -76,7 +134,7 @@
 					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">详细信息</h4>
+				<h4 class="modal-title" id="detailinfomation">详细信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- Horizontal Form -->
@@ -86,20 +144,18 @@
 		              <table style="font-size: 12px;" class="docker-dialog">
 						<thead>
 						<tr>
-							<td class="col-text">名称:</td>
-							<td class="col-text1" id="docker-title"></td>
-							<td class="col-text">版本:</td>
-							<td class="col-text1" id="version"></td>
+							<td class="col-text">镜像名称:</td>
+							<td colspan="3" class="col-text1" id="imageName"></td>
 						</tr>
 						<tr>
+							<td class="col-text">版本(tag):</td>
+							<td class="col-text1" id="version"></td>
 							<td class="col-text">版本类型:</td>
 							<td class="col-text1" id="versionType"></td>
-							<td class="col-text">镜像类型:</td>
-							<td class="col-text1" id="publicImage"></td>
 						</tr>
 						<tr>
-							<td class="col-text">大小（M）:</td>
-							<td class="col-text1" id="size"></td>
+							<td class="col-text">镜像类型:</td>
+							<td class="col-text1" id="publicImage"></td>
 							<td class="col-text">状态:</td>
 							<td class="col-text1" id="status"></td>
 						</tr>
@@ -109,22 +165,21 @@
 							<td class="col-text">集群Id:</td>
 							<td class="col-text1" id="clusterId"></td>
 						</tr>	
-						
 						<tr>
-							<td class="col-text">构建文件:</td>
-							<td class="col-text1" id="buildFile"></td>
+							<td class="col-text">更新时间:</td>
+							<td class="col-text1" id="lastUpdated"></td>
 							<td class="col-text">类别:</td>
 							<td class="col-text1" id="category"></td>
 						</tr>
 						<tr>
-							<td class="col-text">自动创建:</td>
-							<td class="col-text1" id="autoBuild"></td>
-							<td class="col-text">更新时间:</td>
-							<td class="col-text1" id="lastUpdated"></td>
+<!-- 							<td class="col-text">自动创建:</td> -->
+<!-- 							<td class="col-text1" id=autoBuildCommand></td> -->
+							<td class="col-text" style="vertical-align: top">备注:</td>
+							<td colspan="3"  class="col-text1" id="note"></td>
 						</tr>
 						<tr>
-							<td class="col-text">备注:</td>
-							<td class="col-text1" id="note"></td>
+							<td class="col-text" style="vertical-align: top">构建文件:</td>
+							<td colspan="3" class="col-text1" id="buildFile"></td>
 						</tr>
 						</thead>
 						</table>
@@ -134,8 +189,9 @@
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="deleDocker">删<span style="padding-left: 12px" />除
+<!-- 				<button type="button" class="btn btn-primary" data-dismiss="modal" id="deleDocker">删<span style="padding-left: 12px" />除 -->
+<!-- 				</button> -->
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="modifyDocker">修<span style="padding-left: 12px" />改
 				</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
 				</button>
@@ -153,45 +209,57 @@
 					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">添加镜像</h4>
+				<h4 class="modal-title" id="addimageLabel">添加镜像</h4>
 			</div>
 			<div class="modal-body">
 				<!-- Horizontal Form -->
 		          <div class="box box-info" style="margin-bottom:0px;">
 		            <!-- form start -->
-		            <form class="form-horizontal">
+		            <form class="form-horizontal" id="addDockerData">
 		              <div class="box-body">
-		                <div class="form-group">
-		                  <label for="FilePath" class="col-sm-2 control-label">文件路径</label>
+		              
+		                <div class="form-group"  c="hideinfo">
+		                  <label for="addPathUrl" class="col-sm-2 control-label">文件路径</label>
 		                  <div class="col-sm-10">
-		                    <select id="addPathUrl" class="images-control">
+		                    <select id="addPathUrl" class="images-control" name="addPathUrl">
 		                    	
 		                    </select>
+		                   <div class="btns" style="width:20%;float:right;">
+							<div id="pickerImage">选择文件</div>
+							</div>
+		                  </div>
+		                  <div class="col-sm-10" style="text-align:center;">
+		                  	<p>支持文件格式：.tar,.tar.gz,.img</p>
 		                  </div>
 		                </div>
-		                
+		                <!--用来存放文件信息-->
+						<div id="thelist" class="uploader-list"></div>
+						
 		                <div class="form-group">
 		                  <label for="title" class="col-sm-2 control-label">标题</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="addtitle" >
+		                    <input type="text" class="images-control" id="addtitle" name="addtitle">
 		                  </div>
 		                </div>
-		                <div class="form-group">
-		                  <label for="title" class="col-sm-2 control-label">镜像名称</label>
+		                
+		                <div class="form-group" c="hideinfo">
+		                  <label for="adddockerName" class="col-sm-2 control-label">镜像名称</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="addimageName" >
+		                    <input type="text" class="images-control" id="adddockerName" name="adddockerName">
 		                  </div>
 		                </div>
-		                <div class="form-group">
-		                  <label for="version" class="col-sm-2 control-label">版本</label>
+		                
+		                
+		                <div class="form-group" c="hideinfo">
+		                  <label for="version" class="col-sm-2 control-label">版本(tag)</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="addversion"  >
+		                    <input type="text" class="images-control" id="addversion"  name="addversion">
 		                  </div>
 		                </div>
 		                <div class="form-group">
 		                  <label for="versionType" class="col-sm-2 control-label">版本类型</label>
 		                  <div class="col-sm-10">
-		                   	<select id="addversionType">
+		                   	<select id="addversionType" name="addversionType">
 		                   		<option value="0">开发版</option>
 		                   		<option value="1">生产版</option>
 		                   	</select>
@@ -200,7 +268,7 @@
 		                <div class="form-group">
 		                  <label for="publicImage" class="col-sm-2 control-label">镜像类型</label>
 		                  <div class="col-sm-10">
-		                    <select id="addpublicImage">
+		                    <select id="addpublicImage" name="addpublicImage">
 		                   		<option value="0">私有镜像</option>
 		                   		<option value="1">公共镜像</option>
 		                   	</select>
@@ -210,115 +278,198 @@
 		                <div class="form-group">
 		                  <label for="imageIconUrl" class="col-sm-2 control-label">选择图片</label>
 		                  <div class="col-sm-10">
-		                   <select id="addImageUrl" class="images-control">
-		                    	
-		                   </select>
+		                  		<input type="text" id="addImageUrlinput" class="imagenametitle" name="addImageUrl" style="display:none;"/>
+		                   		<span id="addImageUrlspan" class="imagenametitle"></span>
+		                   		<div id="uploader-demo" style="width:20%;float:right;">
+    			 					<div id="filePicker">选择图片</div>
+								</div>
+								<span class="uploader-imagesize">(尺寸范围 110*40)</span>
 		                  </div>
 		                </div>
+		                
 		                <div class="form-group">
-		                  <label for="image" class="col-sm-2 control-label"></label>
-		                  <div class="col-sm-10" id="showimage">
-		                  		
-		               
+		                  <div id="addImageUrlname" style="margin:0px 5%;border:1px solid;width:90%;height:100px;OVERFLOW-Y: scroll">
+		                   		
+		                  </div>
+		                </div>
+		                
+		                
+		                <div class="form-group">
+		                  <div class="col-sm-10" id="showimage">	
+		               			
 		                  </div>
 		                </div>
 		                <div class="form-group">
 		                  <label for="title" class="col-sm-2 control-label">类别</label>
 		                  <div class="col-sm-10">
-		                    <input type="text" class="images-control" id="addcategory" >
+		                  	<select id="addcategory" name="addcategory">
+		                  		<option value="middleware">中间件</option>
+		                  		<option value="database">数据库</option>
+		                  		<option value="other">其它</option>
+		                  	</select>
+		                   
 		                  </div>
 		                </div>
 		                
 		                <div class="form-group">
-		                  <label for="title" class="col-sm-2 control-label">文件内容</label>
+		                  <label for="title" class="col-sm-2 control-label">构建文件</label>
 		                  <div class="col-sm-10">
-		                  	<textarea rows="5" cols="50" id="addbuild_file" style="text-align:left;">
-		                  	</textarea>
+		                  	<textarea id="addbuild_file" rows="5" cols="50" name="addbuild_file"></textarea>
 		                  </div>
 		                </div>
 		                
-		                <div class="form-group">
-		                  <label for="title" class="col-sm-2 control-label">自动创建</label>
-		                  <div class="col-sm-10">
-		                  	<textarea rows="5" cols="50" id="addauto_build_command" style="text-align:left;">
-		                  	</textarea>
-		                  </div>
-		                </div>
-		                
-		                
-		                <div class="control-group">
-		                	<label for="category" class="col-sm-2 control-label">上传图片</label>
-		                  	<div class="col-sm-10">
-		                    	<input type="button" id="file_upload" name="fileAttach" type="file"/>
-		                  	</div>
-                			
-            			</div>
+<!-- 		                <div class="form-group"> -->
+<!-- 		                  <label for="title" class="col-sm-2 control-label">自动创建</label> -->
+<!-- 		                  <div class="col-sm-10"> -->
+<!-- 		                  	<textarea rows="5" cols="50" id="addauto_build_command" name="addauto_build_command"></textarea> -->
+<!-- 		                  </div> -->
+<!-- 		                </div> -->
+						</div>
 		              <!-- /.box-body -->
 		            </form>
 		          </div>
 		          <!-- /.box -->
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">关<span style="padding-left: 12px" />闭
+				<button type="button" class="btn btn-default" data-dismiss="modal" >关<span style="padding-left: 12px" />闭
 				</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="addDockerSave">保<span style="padding-left: 12px" />存
+				<button type="button" class="btn btn-primary" id="addDockerSave">保<span style="padding-left: 12px" />存
 				</button>
 			</div>
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="myModalMask" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+
+		</div>
+	</div>
+</div>
+
 <script>
 dockerImage();
+var status=1;
+var par={};
+_type();
+function _type(){
+	if(status==2){
+		$("#dockerTable").show();
+		$("#dockerTable_wrapper").show();
+		$("#example1").hide();
+		status=1;
+	}else{
+		$("#dockerTable").hide();
+		$("#dockerTable_wrapper").hide();
+		$("#example1").show();
+		status=2;
+	}
+}
+
 $("#selectDocker").click(function(){
 	dockerImage();
+	_type();
+});
+
+$("#docker-list-btn").click(function(){
+	_type();
 });
 
 function dockerImage(){
 	var ImageName=$("#dockerName").val();	
 	$.ajax({
-	    url:"/dockerimg/search?key="+ImageName,
+	    url:"/dockerimg/search",
+	    data:{
+	    	key:ImageName
+	    },
 	    type: "GET",
 	    dataType:"json",
 	    success: function(data){
-	    	var count=0;
-			var tableList="";
-	        $.each(data.data,function(i,item){
-	        	if(count==0){
-	        		tableList+="<li>";
-	        	}
-	        	count++;
-	        	tableList += [
-						'<div class="projectdocker">',
-						'<image src="http://localhost:8080/external/logo_pic/'+item.imageIconUrl+'" style="width:100%;height:40px;"/>',
-						'<div><span>'+item.title+'</span>',
-						item.versionType==1?'<span>生产版</span></div>':'<span>开发版</span></div>',
-						'<div>',
-						item.publicImage==1?'<span>公共镜像</span>':'<span>私有镜像</span>',
-						'<span>镜像大小：'+Math.round((item.size)/1024)+'M</span></div>',
-						'<a c="'+item.id+'" style="margin-bottom:10px;font-size:16px;float:right;padding:15px 15px 0px 0px;color:#2296C9;"  data-toggle="modal" data-target="#myModal">查看详情......</a> ',
-						'</div>',
-	            ].join('');
-	        	if(count==3){
-	        		tableList+="</li>";
-	        		count=0;
-	        	}
-	        }); 
-	        $("#example1").html(tableList);  
+	    	if(data.status==0){
+	    		var tableimages="",tablelist="";
+		        $.each(data.data,function(i,item){
+		        	var date = new Date(item.lastUpdated);   
+	        		var Y = date.getFullYear() + '-';
+	        		var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+					var D = (date.getDate() < 10 ? '0'+(date.getDate()) : date.getDate()) + ' ';
+					var h = (date.getHours() < 10 ? '0'+(date.getHours()) : date.getHours()) + ':';
+					var m = (date.getMinutes() < 10 ? '0'+(date.getMinutes()) : date.getMinutes()) + ':';
+					var s = (date.getSeconds() < 10 ? '0'+(date.getSeconds()) : date.getSeconds());		
+		        		
+		        	tableimages += [
+		  							'<div class="projectdocker">',
+		  							'<div style="background:#ffffff;width:100%; height:40px"><image style="margin-left:35%;" src="/external/'+item.imageIconUrl+'"/></div>',
+		  							'<div class="projectdockerSpanHead" ><span>'+item.title+'</span></div>',
+		  							'<div class="projectdockerSpanBody" >',
+		  							item.versionType==1?'<span>生产版</span>':'<span>开发版</span>',
+		  							item.publicImage==1?'<span>公共镜像</span>':'<span>私有镜像</span>',
+		  							'</div>',
+		  							'<a c="'+item.id+'" style="margin-bottom:10px;font-size:16px;float:right;padding:15px 15px 0px 0px;color:#2296C9;"  data-toggle="modal" data-target="#myModal">查看详情......</a> ',
+		  							'</div>',
+		  		            ].join('');
+		        	
+		        	tablelist+=[
+	  							'<tr>',
+	  							'<td>'+item.title+'</td>',
+	  							'<td>'+item.imageName+'</td>',
+	  							'<td>'+item.version+'</td>',
+	  							item.versionType==1?'<td>生产版</td>':'<td>开发版</td>',
+	  							item.publicImage==1?'<td>公共镜像</td>':'<td>私有镜像</td>',
+	  							'<td>'+item.category+'</td>',
+	  							'<td>'+Y+M+D+h+s+'</td>',
+	  							'</tr>'
+	  		            ].join('');
+		        }); 
+		    	
+		        $('#dockerTable').find('td').remove();
+		        $("#example1").html(tableimages); 
+		        $('#dockerTable').append(tablelist);
+	    	}else if(data.status==1){
+	    		alert(data.message);
+	    	}
+	    	
 	        $( '#example1' ).find('a').bind('click',function(){
 	        	var dockerId=$( this ).attr('c');
+	        	par.dockerid=dockerId;
 	        	$.ajax({
 	        	    url:"/dockerimg/"+dockerId,
 	        	    type: "GET",
 	        	    dataType:"json",
 	        	    success: function(data){
+	        	    	$("#addbuild_file").val(data.buildFile);
+// 	        	    	$("#addauto_build_command").val(data.autoBuildCommand);
+	        	    	$("#adddockerName").val(data.imageName);
+	        	    	$("#addversion").val(data.version);
+	        	 
 	        	    	$.each(data,function(a,b){
-	        	    		$("#docker-title").html(data.title);
+	        	    		$("#imageName").html(data.imageName);
+	        	    		$("#addtitle").val(data.title)
 	        	    		if(a!="title"){
 	        					$("#"+a).html(b);
 	        				}
-	        				a=="publicImage"&&b==0?$("#publicImage").html("私有镜像"):$("#publicImage").html("公共镜像");
-	        				a=="versionType"&&b==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
-	        				a=="size"?$("#size").html(Math.round(b/1024)+"M"):'';
+	        	    		if(a=="buildFile"){
+	        	    			var re="\r\n";///\r\n/; 
+	        	    			var a=b.split("\r\n");
+	        	    			var aStr=b;
+	        	    			for(var i=0;i<a.length;i++){
+	        	    			   aStr=aStr.replace(re,"<br/>");  
+	        	    			}
+	        	    			$("#buildFile").html(aStr);  
+	        	    			
+	        	    		}
+	        	    		
+	        	    		
+	        	    		data.publicImage==0?$("#publicImage").html("私有镜像"):$("#publicImage").html("公共镜像");
+	        	    		data.status==0?$("#status").html("可用"):$("#status").html("不可用");
+	        	    		$("#addpublicImage option[value='"+data.publicImage+"']").attr("selected",true);
+	        	    		
+	        	    		data.versionType==0?$("#versionType").html("开发版"):$("#versionType").html("生产版");
+	        	    		$("#addversionType option[value='"+data.versionType+"']").attr("selected",true);
+	        	    		$("#addcategory option[value='"+data.category+"']").attr("selected",true);
+	        	    		
+//		        				$("#size").html(Math.round(data.size/1024)+"M");
 	        				if(a=="lastUpdated"){
 	        					var date = new Date(b);   
 	        					var Y = date.getFullYear() + '-';
@@ -332,7 +483,7 @@ function dockerImage(){
 	        	    	});
 	        	    }
 	        	});
-	        	
+	        	$("#deleDocker").unbind();
 	        	$("#deleDocker").click(function(){
 	        		$.ajax({
 		        	    url:"/dockerimg/deletedocker/"+dockerId,
@@ -343,19 +494,45 @@ function dockerImage(){
 		        	    }
 		        	});
 	        	});
+	        	
+	        	$("#modifyDocker").click(function(){
+	        		$("#myModal").modal('hide');
+	        		addImage();
+	        		setTimeout(modifydocker, 500);
+	        		$("#addimageLabel").html("修改镜像");
+	        		$('[c="hideinfo"]').hide();
+	        		$("#addDockerSave").attr("modifybtn","modifyDockerSave");
+	        	});
 
 	        });
-	    },
-	    error:function(){
-	    	alert("报错！！！！！！");
 	    }
 	});
+}
 
+$("#addDocker").unbind();
+$("#addDocker").click(function(){
+	addImage();
+	$('[c="hideinfo"]').show();
+	$("#addDockerData").find('name').empty();
+	$("#addimageLabel").html("添加镜像");
+	
+	$('#addDockerData').find('[type="text"]').val("");
+	$('#addDockerData').find('textarea').val("");
+	
+	$("#modifyDockerSave").attr("id","addDockerSave");
+
+	$("#addDockerSave").attr("modifybtn","addDockerSave");
+});
+
+function modifydocker(){
+	$("#myModal2").modal('show');
 }
 $("#sumbit").click(function(){
 	$('#file_upload').uploadify('upload','*');
-	addImageUrl();
+	addImage();
 });
+
+
 
 $('form :input').blur(function(){
     var $parent = $(this).parent();
@@ -368,7 +545,7 @@ $('form :input').blur(function(){
            }
     }
     //验证imageName
-    if( $(this).is('#addimageName') ){
+    if( $(this).is('#adddockerName') ){
        if( this.value==""){
              var errorMsg = '不能为空！';
              $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
@@ -382,15 +559,6 @@ $('form :input').blur(function(){
              $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
        }
     }
-  
-  //验证category
-    if( $(this).is('#addcategory') ){
-       if(this.value==""){
-             var errorMsg = '不能为空！';
-             $parent.append('<span class="formtips onError" style="color:#FF0000">'+errorMsg+'</span>');
-       }
-    }
-  
     
 }).keyup(function(){
   $(this).triggerHandler("blur");
@@ -398,56 +566,104 @@ $('form :input').blur(function(){
     $(this).triggerHandler("blur");
 });
 
-
+$("#addDockerSave").unbind();
 $("#addDockerSave").click(function(){
-	var _addPathUrl=$("#addPathUrl option:checked").text();
-	var _size=$("#addPathUrl option:checked").val();
-	var _addtitle=$("#addtitle").val();
-	var _addversion=$("#addversion").val();
-	var _addversionType=$("#addversionType option:checked").val();
-	var _addpublicImage=$("#addpublicImage option:checked").val();
-	var _addImageUrl=$("#addImageUrl option:checked").text();
-	var _addImageName=$("#addimageName").val();
-	var _addcategory=$("#addcategory").val();
-	var _addbuild_file=$("#addbuild_file").val();
-	var _addauto_build_command=$("#addauto_build_command").val();
-
-	$("form :input.form-control").trigger('blur');
+	//$("#addDockerSave").attr("modifybtn","modifyDockerSave");
+	$("#addDockerSave").attr("modifybtn");
+	
+	$("form :input.images-control").trigger('blur');
     var numError = $('form .onError').length;
     if(numError){
         return false;
     }else{
-    	$.ajax({
-    	    url:"/dockerimg/create",
-    	    type: "GET",
-    	    data:{
-    	    	addPathUrl:_addPathUrl,
-    	    	addtitle:_addtitle,
-    	    	addversion:_addversion,
-    	    	addversionType:_addversionType,
-    	    	addpublicImage:_addpublicImage,
-    	    	addImageUrl:_addImageUrl,
-    	    	addImageName:_addImageName,
-    	    	size:_size,
-    	    	addcategory:_addcategory,
-    	    	addbuild_file:_addbuild_file,
-    	    	addauto_build_command:_addauto_build_command
-    	    },
-    	    dataType:"text",
-    	    success: function(data){
-    	    	if(data=="SUCCESS:"){
-    	    		dockerImage();
-    	    	}
-    	    },
-    	    error:function(){
-    	    	alert("报错");
-    	    }
-    	});
-    	
+    	if($("#addDockerSave").attr("modifybtn")=="modifyDockerSave"){
+    		$("#addDockerSave").attr("modifybtn","addDockerSave");
+    		$.ajax({
+        	    url:"/dockerimg/update?dockerid="+par.dockerid,
+        	    type: "GET",
+        	    data: $('#addDockerData').serialize(),
+        	    dataType:"json",
+        	    success: function(data){
+        	    	if (data.status == 0) {
+        	    		$("#myModal2").modal('hide'); 
+    					dockerImage();
+    				}else if(data.status == 1){
+        	    		$("#addDockerSave").attr("modifybtn","modifyDockerSave");
+        	    		alert(data.message);
+    				}
+        	    },
+    			error:function(data){
+    	    		$("#addDockerSave").attr("modifybtn","modifyDockerSave");
+    	    		alert(data);
+    			}
+        	});
+    	}else{
+    		$.ajax({
+        	    url:"/dockerimg/create",
+        	    type: "GET",
+        	    data: $('#addDockerData').serialize(),
+        	    dataType:"json",
+        	    success: function(data){
+        	    	if (data.status==0) {
+    					/*dockerImage();
+    					imagesList();
+    					_type();*/
+    					$("#myModal2").modal('hide'); 
+    					setTimeout(dockerInstall, 500);
+
+    				}else if (data.status==2&&data.message == "EXIST"){
+    					show_confirm();
+    				}else if (data.status==1){
+    					alert(data.message);
+    				}
+        	    },
+    			error:function(data){
+    				alert(data);
+    			}
+        	});
+    	}
     }	
 });
 
-function addImageUrl(){
+function show_confirm()
+{
+var r=confirm("镜像已经存在，是否覆盖更新");
+if (r==true)
+  {
+  $.ajax({
+		url : "/dockerimg/importimg",
+		type : "GET",
+		data : {
+			excuteInternalSeq : "all"
+		},
+		dataType : "json",
+		success : function(data) {
+			if (data.status == 0) {
+				$("#myModal2").modal('hide'); 
+				setTimeout(dockerInstall, 500);
+			}else if(data.status == 1){
+				alert(data.message);
+			}
+		}
+	});
+  }
+else
+  {
+	
+  }
+}
+
+function dockerInstall(){
+	$(".content").load("Ku8_docker_pkg_import_guide_3.html");
+//		$(".content").load("NewFile.html");
+}
+$("#addImage_package_url").click(function(){
+	$(".content").load("add_registry_url.html");
+});
+$("#file_manage").click(function(){
+	$(".content").load("file_manage.html");
+});
+function addImage(){
 	$.ajax({
 	    url:"/extresources/listuploadedimages",
 	    type: "GET",
@@ -455,12 +671,9 @@ function addImageUrl(){
 	    success: function(data){
 	    	var pathurl="";
 	    	$.each(data,function(i,item){
-	    		pathurl+="<option value="+item+">"+i+"</option>"
+	    		pathurl+="<option value="+i+','+item+">"+i+"</option>"
 	    	});
 	    	$("#addPathUrl").html(pathurl);
-	    },
-	    error:function(){
-	    	alert("报错");
 	    }
 	});
 	$.ajax({
@@ -471,58 +684,171 @@ function addImageUrl(){
 	    	var imageurl="";
 	    	$.each(data,function(i,item){
 	    		var _imageName=item.split("/");
-	    		imageurl+="<option>"+_imageName[3]+"</option>";
+	    		if(i==0){
+	    			imageurl+="<image class='images' c='"+_imageName[3]+"'  style='border:1px solid red;width:10%;height:30px;margin:8px 0px;' src='/external/logo_pic/"+_imageName[3]+"'/>";
+	    			$("#addImageUrlspan").html(_imageName[3]);
+	    			$("#addImageUrlinput").val(_imageName[3]);
+	    		}else{
+	    			imageurl+="<image class='images' c='"+_imageName[3]+"'  style='width:10%;height:30px;margin:8px 0px;' src='/external/logo_pic/"+_imageName[3]+"'/>";	
+	    		}
+	    		
 	    		//imageurl+="<option><image src='../img/success.png'/>werwer</option>";
 	    	});
-	    	$("#addImageUrl").html(imageurl);
-	    	var addImageUrl=$("#addImageUrl option:checked").text();
-    		$("#showimage").html("<image src='http://localhost:8080/external/logo_pic/"+addImageUrl+"'/>");
-	    	$("#addImageUrl").change(function(){
-	    		var addImageUrl=$("#addImageUrl option:checked").text();
-	    		$("#showimage").html("<image src='http://localhost:8080/external/logo_pic/"+addImageUrl+"'/>");
-	    	});
-	    },
-	    error:function(){
-	    	alert("报错");
+	    	$("#addImageUrlname").html(imageurl);
+	    	
+	    	$( '#addImageUrlname' ).find( '.images' ).click(function() {
+	    		$('.images').css({'border':''});
+	    		$(this).css({'border':'1px solid red'});
+	    		$("#addImageUrlspan").html($( this ).attr('c'));
+	    		$("#addImageUrlinput").val($( this ).attr('c'));
+	    	});	    	
 	    }
 	});
 }
-
-addImageUrl();
-$(function() {
-    $("#file_upload").uploadify({
-        height          : 25,
-        swf             : '../js/uploadify.swf',
-       //后端处理action
-        uploader        : '/dockerimg/upload-image',
-        width           : 80,
-        //fileTypeExts  : '*.doc; *.ppt;*.xls;',
-        fileObjName     : 'fileAttach', //文件上传name
-        auto            : true, //文件选中后是否自动提交
-          multi    : true, //是否多选
-       //文件上传完毕后消息框是否自动消失，默认true
-        removeCompleted : false,  
-        //文件上传完毕后消息框消失延迟时间,默认3 仅removeCompleted=true生效
-        //removeTimeout   : 3,
-        //文件上传大小限制           
-        //fileSizeLimit : 999, 
-        //文件队列传输完毕 queueDate [uploadsSuccessful,uploadsErrored]
-        onQueueComplete : function(queueData){
-           // alert('success:'+queueData.uploadsSuccessful+'fail:'+queueData.uploadsErrored)
-        },
-         //单文件传输成功           
-        onUploadSuccess:function(file, data, response){ 
-        	
-        },
-       //单文件传输失败
-        onUploadError : function(file, errorCode, errorMsg, errorString) { 
-        	//alert("传输失败");
-            //eg:The file mozjs.dll errorCode -200 errorCode -200 errorMsg 302 errorString HTTP Error (302)
-            alert('The file ' + file.name + ' errorCode ' + errorCode+ ' errorCode ' + errorCode+ ' errorMsg ' + errorMsg+ ' errorString ' + errorString);
-        },
-        //按钮显示名称
-        buttonText    : "选择图像"                                                         
-    });
+$("#Image_package_import").click(function(){
+	$(".content").load("Ku8_docker_pkg_import_guide_1.html");
+	//$(".content").load("NewFile.html");
 });
+
+function uploadimages() {
+    var $ = jQuery,
+    $list = $('#thelist'),
+    state = 'pending',
+    uploader;
+uploader = WebUploader.create({
+    auto:true,
+	// 不压缩image
+    resize: true,
+
+    // swf文件路径
+    swf: '../js/Uploader.swf',
+
+    // 文件接收服务端。
+    server: '/dockerimg/upload-image',
+
+    // 选择文件的按钮。可选。
+    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+    pick: '#pickerImage',
+    sendAsBinary:true,
+    accept: {
+        extensions: 'img,tar,tar.gz'
+    }
+});
+
+// 当有文件添加进来的时候
+uploader.on( 'fileQueued', function( file ) {
+//	$('#myModalMask').modal({backdrop: 'static', keyboard: false});
+    $list.append( '<div id="' + file.id + '" class="item">' +
+        '<h4 class="info">' + file.name + '</h4>' +
+        '<p class="state">等待上传...</p>' +
+    '</div>' );
+});
+
+// 文件上传过程中创建进度条实时显示。
+uploader.on( 'uploadProgress', function( file, percentage ) {
+    var $li = $( '#'+file.id ),
+        $percent = $li.find('.progress .progress-bar');
+
+    // 避免重复创建
+    if ( !$percent.length ) {
+        $percent = $('<div class="progress progress-striped active">' +
+          '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+          '</div>' +
+        '</div>').appendTo( $li ).find('.progress-bar');
+    }
+
+    $li.find('p.state').text('上传中');
+
+    $percent.css( 'width', percentage * 100 + '%' );
+});
+
+uploader.on( 'uploadSuccess', function( file ) {
+    $( '#'+file.id ).find('p.state').text('已上传');
+    $.ajax({
+	    url:"/extresources/listuploadedimages",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var pathurl="";
+	    	$.each(data,function(i,item){
+	    		pathurl+="<option value="+i+','+item+">"+i+"</option>"
+	    	});
+	    	$("#addPathUrl").html(pathurl);
+	    }
+	});
+});
+
+uploader.on( 'uploadError', function( file ) {
+    $( '#'+file.id ).find('p.state').text('上传出错');
+});
+
+uploader.on( 'uploadComplete', function( file ) {
+//	$("#myModalMask").modal('hide'); 
+    $( '#'+file.id ).find('.progress').fadeOut();
+});
+
+}
+uploadimages();
+
+function uploadpic() {
+	var $ = jQuery,
+    $list = $('#fileList'),
+    // 优化retina, 在retina下这个值是2
+    ratio = window.devicePixelRatio || 1,
+
+    // 缩略图大小
+    thumbnailWidth = 100 * ratio,
+    thumbnailHeight = 100 * ratio,
+
+    // Web Uploader实例
+    uploader;
+// 初始化Web Uploader
+uploader = WebUploader.create({
+    auto: true,
+    swf: '../js/Uploader.swf',
+    server: '/dockerimg/upload-picture',
+    pick: '#filePicker',
+    // 只允许选择文件，可选。
+    accept: {
+        title: 'Images',
+        extensions: 'gif,jpg,jpeg,bmp,png',
+        mimeTypes: 'image/*'
+    }
+
+});
+
+uploader.on( 'uploadSuccess', function( file ) {
+    $.ajax({
+	    url:"/extresources/listlogosurl",
+	    type: "GET",
+	    dataType:"json",
+	    success: function(data){
+	    	var imageurl="";
+	    	$.each(data,function(i,item){
+	    		var _imageName=item.split("/");
+	    		if(i==0){
+	    			imageurl+="<image class='images' c='"+_imageName[3]+"'  style='border:1px solid red;width:10%;height:30px;margin:8px 0px;' src='/external/logo_pic/"+_imageName[3]+"'/>";
+	    			$("#addImageUrlspan").html(_imageName[3]);
+	    			$("#addImageUrlinput").val(_imageName[3]);
+	    		}else{
+	    			imageurl+="<image class='images' c='"+_imageName[3]+"'  style='width:10%;height:30px;margin:8px 0px;' src='/external/logo_pic/"+_imageName[3]+"'/>";	
+	    		}
+	    		
+	    		//imageurl+="<option><image src='../img/success.png'/>werwer</option>";
+	    	});
+	    	$("#addImageUrlname").html(imageurl);
+	    	
+	    	$( '#addImageUrlname' ).find( '.images' ).click(function() {
+	    		$('.images').css({'border':''});
+	    		$(this).css({'border':'1px solid red'});
+	    		$("#addImageUrlspan").html($( this ).attr('c'));
+	    		$("#addImageUrlinput").val($( this ).attr('c'));
+	    	});	    	
+	    }
+	});
+});
+}
+
+uploadpic();
 
 </script>

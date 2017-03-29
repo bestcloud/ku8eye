@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Ku8eye</title>
+  <title>Ku8 Manager</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.5 -->
@@ -22,7 +22,8 @@
   
   <!-- DataTables -->
   <link rel="stylesheet" href="../plugins/datatables/dataTables.bootstrap.css">
-
+ <!-- Uploadify -->
+<link rel="stylesheet" href="../css/webuploader.css">
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -40,7 +41,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>K</b>u8</span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Ku8</b> eye</span>
+      <span class="logo-lg"><b>Ku8</b> Manager</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top" role="navigation">
@@ -203,16 +204,7 @@
           <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
         </div>
       </div>
-      <!-- search form -->
-      <form action="#" method="get" class="sidebar-form">
-        <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-        </div>
-      </form>
+   
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
@@ -243,7 +235,7 @@
   <!-- /.content-wrapper -->
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 2.3.2
+     
     </div>
 	<div class="copyright"></div>
   </footer>
@@ -444,7 +436,9 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
+<!-- echarts -->
 
+<script src="../plugins/eCharts/echarts-all.js"></script>
 <!-- jQuery 2.1.4 -->
 <script src="../plugins/jQuery/jQuery-2.1.4.min.js"></script>
 <!-- Bootstrap 3.3.5 -->
@@ -458,17 +452,18 @@
 <script src="../plugins/slimScroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
 <script src="../plugins/fastclick/fastclick.js"></script>
+<!-- Uploadify -->
+<script src="../js/jquery.uploadify-3.1.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../js/app.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../js/demo.js"></script>
-<script src="../js/main.js"></script>
-<script src="../js/jquery.uploadify-3.1.js"></script>
 <script src="../js/jquery.uploadify-3.1.min.js"></script>
-<script src="../js/uploadify.css"></script>
+<script src="../js/main.js"></script>
+<script src="../js/webuploader.min.js"></script>
 <!-- page script -->
 <script type="text/javascript">
-	$(".copyright").html('<strong>Copyright &copy; ' + new Date().getFullYear() +'</strong> Hewlett-Packard Enterprise. All rights reserved.');
+	$(".copyright").html('<strong>Copyright &copy; ' + new Date().getFullYear() +'</strong> Hewlett-Packard Enterprise CMS. All rights reserved.');
 	
 	function setTitle(link){
 		if($(link).attr("data") !== '')

@@ -1,11 +1,14 @@
 package org.ku8eye.service;
 
+import io.fabric8.kubernetes.api.model.ServiceList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.ku8eye.bean.ui.Menu;
 import org.ku8eye.domain.Host;
 import org.ku8eye.domain.Ku8Project;
@@ -14,19 +17,16 @@ import org.ku8eye.domain.User;
 import org.ku8eye.mapping.HostMapper;
 import org.ku8eye.mapping.Ku8ProjectMapper;
 import org.ku8eye.mapping.Ku8ResPartionMapper;
+import org.ku8eye.service.k8s.K8sAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * used for ui menu
- * 
- * @author wuzhih
- *
- */
 @Service
 public class UIService {
+	private Logger log = Logger.getLogger(this.toString());
+	
 	private static final String MENU_TYPE_ZONE = "1";
 
 	private static final String MENU_TYPE_CLUSTER_GROUP = "2";
@@ -47,6 +47,9 @@ public class UIService {
 
 	@Autowired
 	private Ku8ResPartionMapper Ku8ResPartionDao;
+	
+	@Autowired
+	private K8sAPIService k8sAPIService;
 
 	/**
 	 * fetch current user's menu
@@ -57,69 +60,53 @@ public class UIService {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Menu> generateMenus(User curUser) {
 		List<Menu> menus = new ArrayList<Menu>();
-		// projects menu
-		Menu appMenu = new Menu("projects", "My Applications", "",
-				MENU_TYPE_PROJECT_GROUP);
-
-		Menu dockerMenu = new Menu("project-docker", "Docker ",
-				"application_docker.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(dockerMenu);
-		// childMenu = new Menu("project-list", "List ", "project_main.html",
-		// MENU_TYPE_PROJECT_NODE);
-		Menu listAppMenu = new Menu("project-list", "List ",
-				"application_main.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(listAppMenu);
-		Menu appRepotMenu = new Menu("project-report", "Report ",
-				"application_report.html", MENU_TYPE_PROJECT_NODE);
-		appMenu.getSubMenus().add(appRepotMenu);
-
-		Map<Integer, List<Host>> allHosts = getAllHosts(curUser);
-		int zoneId = 1;
 		
+		//Dashboard
+		Menu dashboard = new Menu("dashboard", "集群监控 ", "", MENU_TYPE_HOST_GROUP);
+		Menu dashboard_hosts = new Menu("dashboard_host", "主机视图", "host_usage.html", MENU_TYPE_HOST_NODE);
+		dashboard.getSubMenus().add(dashboard_hosts);
+
+		Menu dashboard_services = new Menu("dashboard_services", "服务视图", "", MENU_TYPE_HOST_NODE);
+		dashboard.getSubMenus().add(dashboard_services);
+		try {
+			Menu childMenu;
+			ServiceList services = k8sAPIService.getServices(0, "default");
+			List<io.fabric8.kubernetes.api.model.Service> serviceItems = services.getItems();
+			if(serviceItems != null){
+				int order = 1;
+				for(io.fabric8.kubernetes.api.model.Service serviceItem : serviceItems){
+					if(serviceItem.getMetadata() != null && !"kubernetes".equals(serviceItem.getMetadata().getName())){
+						childMenu = new Menu("2-" + order, serviceItem.getMetadata().getName(), "single_service_usage.html", MENU_TYPE_CLUSTER_NODE);
+						order++;
+						dashboard_services.getSubMenus().add(childMenu);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("get service menu error: " + e.getMessage());
+		}
 		
-		Menu microServiceMenu = new Menu("microServiceMenu", "Micro Service", "",	MENU_TYPE_ZONE);
+		//Applications
+		Menu application = new Menu("application", "应用管理", "application_main.html", MENU_TYPE_PROJECT_GROUP);
+		Menu application_list = new Menu("application_list", "我的应用", "application_main.html", MENU_TYPE_PROJECT_NODE);
+		Menu docker_list = new Menu("docker_list", "私库镜像", "application_docker.html", MENU_TYPE_PROJECT_NODE);
+		Menu public_services_list = new Menu("application_list", "公共服务", "service.html", MENU_TYPE_PROJECT_NODE);
+		application.getSubMenus().add(docker_list);
+		application.getSubMenus().add(application_list);		
+		application.getSubMenus().add(public_services_list);	
 		
-		Menu microServiceListMenu = new Menu("microServiceListMenu", "List", "service.html",
-				MENU_TYPE_CLUSTER_NODE);
-		microServiceMenu.getSubMenus().add(microServiceListMenu);
+		//Resources
+		Menu resources = new Menu("resources", "资源管理 ", "", MENU_TYPE_ZONE);
+		Menu resource_part = new Menu("resource_part", "资源分区", "respartion_main.html", MENU_TYPE_CLUSTER_GROUP);
+		Menu host_pool = new Menu("host_pool", "主机池", "host_main.html", MENU_TYPE_HOST_GROUP);
+		Menu cluster_install = new Menu("cluster_install", "集群安装", "cluster_main.html", MENU_TYPE_PROJECT_GROUP);
+		resources.getSubMenus().add(host_pool);
+		resources.getSubMenus().add(resource_part);
+		resources.getSubMenus().add(cluster_install);
 		
-		// cluster menu
-		Menu k8sClusterMenu = new Menu("clsdef", "K8s Cluster", "",
-				MENU_TYPE_ZONE);
-		// 菜单1 第二级 submenu
-		Menu resourcePartionsMenu = new Menu("1_1", "Resource Partions", "",
-				MENU_TYPE_CLUSTER_GROUP);
-
-		// 菜单1 第三级 菜单即第二级的子菜单
-		Menu resourcePartionsListMenu = new Menu("respartion_main", "List ",
-				"respartion_main.html", MENU_TYPE_CLUSTER_NODE);
-		resourcePartionsMenu.getSubMenus().add(resourcePartionsListMenu);
-		Menu resourcePartionsReportMenu = new Menu("respartion_report",
-				"Report ", "respartion_report.html", MENU_TYPE_CLUSTER_NODE);
-		resourcePartionsMenu.getSubMenus().add(resourcePartionsReportMenu);
-
-		// host pool sub menu
-		Menu hostPoolMenu = new Menu("hostp1", "Host Pool", "",
-				MENU_TYPE_HOST_GROUP);
-
-		Menu hostPoolListMenu = new Menu("host-list", "List ",
-				"host_main.html", MENU_TYPE_HOST_NODE);
-		hostPoolMenu.getSubMenus().add(hostPoolListMenu);
-
-		Menu hostPoolReportMenu = new Menu("host-report", "Report ",
-				"host_report.html", MENU_TYPE_HOST_NODE);
-		hostPoolMenu.getSubMenus().add(hostPoolReportMenu);
-		// cluster info menu
-		Menu clusterInfMenu = new Menu("cls_inf", "Cluster Inf",
-				"cluster_main.html", MENU_TYPE_PROJECT_NODE);
-		
-
-		menus.add(appMenu);
-		menus.add(microServiceMenu);		
-		k8sClusterMenu.getSubMenus().add(hostPoolMenu);
-		k8sClusterMenu.getSubMenus().add(resourcePartionsMenu);
-		k8sClusterMenu.getSubMenus().add(clusterInfMenu);
-		menus.add(k8sClusterMenu);
+		menus.add(application);
+		menus.add(resources);
+		menus.add(dashboard);
 		return menus;
 
 	}
