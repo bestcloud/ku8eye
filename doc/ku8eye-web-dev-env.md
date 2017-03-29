@@ -1,10 +1,10 @@
-﻿# ku8eye web 开发环境
+# ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
 http://pan.baidu.com/s/1gdYk4CV
 
 ### 安装部署的架构图如下图所示。
-###**注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。**###
+### **注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。** ###
 
 ![安装架构图](../res/cluster_setup_arch.jpg)
 
