@@ -1,6 +1,5 @@
 # 一，ku8eye安装
 
-
 #### 安装部署的架构图如下图所示。
 ![安装架构图](res/cluster_setup_arch.jpg)
 ### **注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。如需向私库中导入镜像，服务器需要与私库所在主机网络连通，并需要在服务器主机上配置docker启动参数，如：other_args='--insecure-registry xxx.xxx.xxx.xxx:xxxx'** ####

@@ -1,5 +1,5 @@
 ---
-
+ 
 # on every node:
 # 1.  install docker
 # 2.  change docker0's IP address

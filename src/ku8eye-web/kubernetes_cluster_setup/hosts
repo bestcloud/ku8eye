@@ -2,7 +2,7 @@
 
 [docker-registry]
 192.168.18.133 docker0_ip=10.17.42.3/24 docker_registry_port=5000 docker_registry_root_dir=/var/lib/registry docker_registry_image_id=774242a00f13 docker_registry_image_tag=registry:2.2.0
-
+ 
 [etcd]
 192.168.18.133 etcd_binding_port=4001
 

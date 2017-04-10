@@ -60,7 +60,7 @@ http://pan.baidu.com/s/1gdYk4CV
 
 ![安装架构图](../res/ku8eye-web_setup_page01.png)
 
-
+ 
 
 # ---- 容器内包含的软件 ----
 ## 1. Ansible安装环境，以及安装Kubernetes所需的全部软件

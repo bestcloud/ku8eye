@@ -107,6 +107,6 @@ spec:
 -  name:kubernetes Pod 定义中的名字
 -  status:当前状态
 
-
+ 
 
   

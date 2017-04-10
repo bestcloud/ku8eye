@@ -14,3 +14,4 @@
 [kube-node]
 192.168.100.53 ansible_ssh_user=root ansible_ssh_pass=12345678 docker0_ip=172.17.1.1/24 docker_runtime_root_dir=/hadoop1/docker kubelet_hostname_override=192.168.1.202 install_quagga_router=true
 
+ 

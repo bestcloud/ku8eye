@@ -6,9 +6,9 @@ http://pan.baidu.com/s/1gdYk4CV
 
 更新历史：
 
-- 2016-12-24 更新 ku8eye-web 0.5版，实现网页一键安装Kubernetes集群。
-- 2016-12-15 更新 ku8eye-web 0.4版，实现java命令行一键安装Kubernetes集群。
-- 2016-12-10 更新 ku8eye-web 0.3版，增加openssh server，便于习惯ssh的用户登录到容器。容器的IP地址用 `docker inspect <containerid> | grep IPAddress` 命令查询出来，再用ssh <ip>登录。用户名密码均为root。
+- 2017-03-24 更新 ku8eye-web 0.5版，实现网页一键安装Kubernetes集群。
+- 2017-03-15 更新 ku8eye-web 0.4版，实现java命令行一键安装Kubernetes集群。
+- 2017-03-10 更新 ku8eye-web 0.3版，增加openssh server，便于习惯ssh的用户登录到容器。容器的IP地址用 `docker inspect <containerid> | grep IPAddress` 命令查询出来，再用ssh <ip>登录。用户名密码均为root。
 或在启动容器时将sshd使用的22端口映射到物理机的某个端口号上。
 - 2016-12-27 更新 ku8eye-web 0.2版，以docker镜像形式提供，下载地址为：
 
