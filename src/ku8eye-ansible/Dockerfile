@@ -1,6 +1,6 @@
 FROM centos:latest
 MAINTAINER ku8eye.bestcloud@github
-
+ 
 # set timezone
 ENV TZ Asia/Shanghai
 

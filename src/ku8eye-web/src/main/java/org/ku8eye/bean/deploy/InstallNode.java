@@ -64,9 +64,6 @@ public class InstallNode implements Cloneable {
 		return nodeRoleParams;
 	}
 
-
-	
-
 	public String getRootPassword() {
 		return rootPassword;
 	}

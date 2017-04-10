@@ -6,3 +6,4 @@ install_quagga_router: true
 # quagga router docker image info
 quagga_router_image_id: f96cfe685533
 quagga_router_image_tag: index.alauda.cn/georce/router
+ 

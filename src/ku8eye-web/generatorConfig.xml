@@ -4,7 +4,7 @@
 	<classPathEntry
 		location="C:\Users\wuzhih\.m2\repository\mysql\mysql-connector-java\5.1.37\mysql-connector-java-5.1.37.jar" />
 		
-
+ 
 	<context id="context1" targetRuntime="MyBatis3Simple">
 		<commentGenerator>
 			<property name="suppressAllComments" value="false" />

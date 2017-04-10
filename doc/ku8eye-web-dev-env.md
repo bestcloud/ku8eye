@@ -1,10 +1,10 @@
-﻿# ku8eye web 开发环境
+# ku8eye web 开发环境
 
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
 http://pan.baidu.com/s/1gdYk4CV
 
 ### 安装部署的架构图如下图所示。
-###**注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。**###
+### **注：运行ku8eye-web开发环境的服务器应在待安装Kubernetes集群的服务器范围之外，并能够与待安装服务器网络连通。** ###
 
 ![安装架构图](../res/cluster_setup_arch.jpg)
 
@@ -13,9 +13,11 @@ http://pan.baidu.com/s/1gdYk4CV
 用gunzip解压缩后，得到文件ku8eye-web.tar
 
 导入docker镜像：
+
 `# docker load -i ku8eye-web.tar`
 
 给该镜像打上tag：
+
 `# docker tag 6f46b1372b52 ku8eye-web`
 
 运行开发环境：
@@ -58,7 +60,7 @@ http://pan.baidu.com/s/1gdYk4CV
 
 ![安装架构图](../res/ku8eye-web_setup_page01.png)
 
-
+ 
 
 # ---- 容器内包含的软件 ----
 ## 1. Ansible安装环境，以及安装Kubernetes所需的全部软件
@@ -178,7 +180,7 @@ http://pan.baidu.com/s/1gdYk4CV
 
 **主要步骤：**
 ### 1. 安装ansible，参考 [centos-ansible镜像的Dockerfile](https://hub.docker.com/r/ansible/centos7-ansible/~/dockerfile/)
-**注：`设置环境变量 ANSIBLE_HOST_KEY_CHECKING=false` 表示ansible在ssh登录其他机器时，不执行基于known_hosts文件的 key checking 操作，这样能够跳过首次ssh连接需要输入yes的操作。**
+> **注：`设置环境变量 ANSIBLE_HOST_KEY_CHECKING=false` 表示ansible在ssh登录其他机器时，不执行基于known_hosts文件的 key checking 操作，这样能够跳过首次ssh连接需要输入yes的操作。**
 ### 2. 为ansible安装 sshpass，并执行 `ssh-keygen` 生成密钥
 ### 3. 新增MariaDB.repo yum源配置，执行yum安装MariaDB-Server
 MariaDB.repo配置如下：（`根据MariaDB的更新，需要手工修改baseurl地址`）
@@ -288,8 +290,8 @@ Docker：推荐 v1.9.0 及以上版本
 `$ docker run -tid --name ku8eye-web -p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web`
 `$ docker exec -ti ku8eye-web bash`
 
-> **注：**不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
-> **$ docker exec -ti ku8eye-web ansible-playbook -i /root/kubernetes_cluster_setup/hosts /root/kubernetes_cluster_setup/pre-setup/ping.yml**
+> 注：不进入容器，在安装服务器直接使用 docker exec 也可以完成ansible-playbook脚本的执行，注意配置文件需要使用全路径：
+> $ docker exec -ti ku8eye-web ansible-playbook -i /root/kubernetes_cluster_setup/hosts /root/kubernetes_cluster_setup/pre-setup/ping.yml
 
 
 ### 3.2 修改 ansible 的 hosts 配置文件
@@ -449,7 +451,7 @@ Docker：推荐 v1.9.0 及以上版本
 其中参数 {{docker_registry_server_ip}} {{docker_registry_server_name}} 在 `group_vars/all.yml` 文件中进行配置。
 
 ## 4. Kubernetes集群安装
-<font color=red size=5>注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见 [4.6 修改配置文件的内容](#4.6 修改配置文件的内容) 一节的说明）</font>
+<font color=red size=5> 注：在 ku8eye-web 镜像中已创建好全部目录和文件，仅需修改配置文件的内容（详见 [4.6 修改配置文件的内容](#4.6 修改配置文件的内容) 一节的说明）</font>
 ### 4.1 创建Role
 #### 在安装服务器的/root/kubernetes_cluster_setup目录下为不同的分组创建role（角色），包括：
 * docker-registry

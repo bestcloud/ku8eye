@@ -12,3 +12,4 @@ kube_node_sync_period: 10s
 # to generate ssh keys on master server
 ca_crt_CN: ku8eye.org
 server_key_CN: 192.168.18.133
+ 

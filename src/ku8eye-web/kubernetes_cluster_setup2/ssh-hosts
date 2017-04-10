@@ -2,3 +2,4 @@
 [all]
 192.168.18.133 ansible_ssh_user=root ansible_ssh_pass=1111111
 192.168.18.134 ansible_ssh_user=root ansible_ssh_pass=1111111
+ 

@@ -8,3 +8,4 @@
     - name: disable firewalld service
       command: systemctl disable firewalld
       ignore_errors: True
+ 
