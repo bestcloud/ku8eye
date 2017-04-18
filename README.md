@@ -4,7 +4,7 @@
 当前版本的 **ku8eye web开发环境** 以docker镜像方式提供，下载地址为：
 http://pan.baidu.com/s/1gdYk4CV
 
-更新历史：  
+更新历史：   
 
 - 2017-04-15 更新 ku8eye-web 0.5版，实现网页一键安装Kubernetes集群。
 - 2017-04-05 更新 ku8eye-web 0.4版，实现java命令行一键安装Kubernetes集群。
