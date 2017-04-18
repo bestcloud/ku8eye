@@ -9,7 +9,7 @@
 
 等价与一个kubernetes的Service，但多了副本数的属性，每一个ku8微服务最终会实例化为一个kubernetes Service与对应的RC。ku8微服务本质上是独立的，彼此之间没有关系。ku8微服务分为公共的，以及属于某个私有的Application的两种，公共的微服务，可以被私有的Application引用（仅仅是依赖引用，并不是被包含在Application内）。Ku8微服务通过一个“定义阶段”，在界面上录入必要的属性，然后可以发布到某个ku8分区上部署，这个部署过程就是在对应的分区上创建相关的kubernetes service与RC，并且与之关联起来。
 
-Ku8微服务相关的表为下面几个：
+Ku8微服务相关的表为下面几个： 
 
 - Ku8Service，对应一个微服务的定义，主要描述信息存放在jsonSpec里，为JSON格式的内容，projectid为NULL也是区分到底此服务是微服务还是内部服务的重要标志。
 
