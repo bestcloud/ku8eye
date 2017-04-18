@@ -13,6 +13,6 @@
 
 - hosts: kube-node
   roles:
-    - kube-node
+    - kube-node 
 
- 
+

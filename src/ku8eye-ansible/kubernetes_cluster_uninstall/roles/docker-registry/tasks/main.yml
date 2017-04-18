@@ -8,7 +8,7 @@
 
 # check if docker exists
 - stat: path=/usr/bin/docker
-  register: docker_file
+  register: docker_file 
 
 
 # stop and disable docker service

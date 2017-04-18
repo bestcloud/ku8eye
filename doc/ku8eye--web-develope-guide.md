@@ -9,7 +9,7 @@ eclipse中调测的时候，运行Run As——>Java Application即可启动Web�
 ## 工程目录说明
 #### src\main目录为主要源码<br>
 #### src\test目录为测试源码，主要为单元测试<br>
-#### src\main目录下如下包结构：
+#### src\main目录下如下包结构： 
 
  - **org.ku8eye.domain**目录为存放域对象，这些域对象对应mysql数据库里的一个表
  - **org.ku8eye.bean**为常规Java Bean对象，用于数据传递或转换等目的

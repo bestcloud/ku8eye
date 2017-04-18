@@ -23,7 +23,7 @@ public void setTime(String time) {
 	this.time = time;
 }
 @Override
-public String toString() {
+public String toString() { 
 	return "ImgProtectedHeader [formatLength=" + formatLength + ", formatTail=" + formatTail + ", time=" + time + "]";
 }
 
