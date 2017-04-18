@@ -9,7 +9,7 @@ http://pan.baidu.com/s/1gdYk4CV
 ![安装架构图](../res/cluster_setup_arch.jpg)
 
 
-文件名为：ku8eye-web.tar.gz
+文件名为：ku8eye-web.tar.gz 
 用gunzip解压缩后，得到文件ku8eye-web.tar
 
 导入docker镜像：

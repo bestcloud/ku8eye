@@ -8,7 +8,7 @@
 # stop and disable etcd service
 - name: stop and disable etcd service
   service: name=etcd enabled=no state=stopped
-  ignore_errors: True
+  ignore_errors: True 
 
 # delete etcd.service
 - file: path=/usr/lib/systemd/system/etcd.service state=absent
