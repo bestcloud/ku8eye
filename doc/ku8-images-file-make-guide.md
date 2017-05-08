@@ -14,7 +14,7 @@ json文件格式如下，这里只列举一个jre8例子
 3.如2步骤添加其他文件夹和相关文件。  
 4.创建json配置文件，配置文件的名字必须为文件夹名加‘.json’组成（如ku8-images.json）  
 json文件格式如下，这里只列举一个jre8例子  
-
+  
 {
 "imageShell":[{
 "path":"jre8" , 
