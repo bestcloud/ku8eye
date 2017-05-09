@@ -22,7 +22,7 @@ Eclipse中导入maven工程时候，如果公司是代理上网，则需要设�
   </proxies>  
 </settings>  
 ```
-
+ 
 如果是独立的maven，则配置文件应该是在maven的安装目录的conf目录下的setting.xml文件
 ```xml
 <pluginGroups>
