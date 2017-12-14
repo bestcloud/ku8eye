@@ -74,8 +74,8 @@ CREATE TABLE `ku8s_srv_endpoint` (
 -- ----------------------------
 -- Records of ku8s_srv_endpoint
 -- ----------------------------
-INSERT INTO `ku8s_srv_endpoint` VALUES (1, 1, 1, 0, '10.255.242.203','http://10.255.242.203:1180', 1, NULL, NULL,NULL, NULL,NULL, NULL);
-INSERT INTO `ku8s_srv_endpoint` VALUES (2, 1, 1, 1, '10.255.242.207', 'http://10.255.242.207:1186', 1, NULL, NULL,NULL, NULL,NULL, NULL);
+INSERT INTO `ku8s_srv_endpoint` VALUES (1, 1, 1, 0, 1,'http://10.255.242.203:1180', 1, NULL, NULL,NULL, NULL,NULL, NULL);
+INSERT INTO `ku8s_srv_endpoint` VALUES (2, 1, 1, 1, 5, 'http://10.255.242.207:1186', 1, NULL, NULL,NULL, NULL,NULL, NULL);
 -- ----------------------------
 -- Table structure for `ku8_cluster`
 -- ----------------------------
