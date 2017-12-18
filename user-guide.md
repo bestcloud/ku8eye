@@ -34,7 +34,7 @@ docker tag 6f46b1372b52 ku8eye-web
 
 运行ku8eye：
 ```xml
-docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files:/ku8_ext_files --p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web
+docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files:/ku8_ext_files -p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web
 ```
 
     /root/ku8eye/ku8eye-web.tar
