@@ -17,9 +17,9 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.DoneablePod;
+//import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.DoneableReplicationController;
-import io.fabric8.kubernetes.api.model.DoneableService;
+//import io.fabric8.kubernetes.api.model.DoneableService;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeList;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -36,13 +36,18 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.Watch;
-import io.fabric8.kubernetes.client.Watcher;
-import io.fabric8.kubernetes.client.dsl.ClientMixedOperation;
-import io.fabric8.kubernetes.client.dsl.ClientPodResource;
-import io.fabric8.kubernetes.client.dsl.ClientResource;
-import io.fabric8.kubernetes.client.dsl.ClientRollableScallableResource;
-import io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable;
+//import io.fabric8.kubernetes.client.Watch;
+//import io.fabric8.kubernetes.client.Watcher;
+
+//import io.fabric8.kubernetes.client.dsl.ClientMixedOperation;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+//import io.fabric8.kubernetes.client.dsl.ClientPodResource;
+//import io.fabric8.kubernetes.client.dsl.ClientResource;
+import io.fabric8.kubernetes.client.dsl.Resource;
+//import io.fabric8.kubernetes.client.dsl.ClientRollableScallableResource;
+import io.fabric8.kubernetes.client.dsl.RollableScalableResource;
+
+//import io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable;
 
 @Service
 public class K8sAPIService {
@@ -203,61 +208,171 @@ public class K8sAPIService {
 		}
 	}
 
-	private ReplicationController createRC(int clusterId, String namespace, ReplicationController theRC) {
-			ClientMixedOperation<ReplicationController, ReplicationControllerList, DoneableReplicationController, ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient = getClient(clusterId).inNamespace(namespace).replicationControllers();
+	/*private ReplicationController createRC(int clusterId, String namespace, ReplicationController theRC) {
+			ClientMixedOperation<
+				ReplicationController, 
+					ReplicationControllerList, 
+						DoneableReplicationController, 
+							ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient 
+								= getClient(clusterId).inNamespace(namespace).replicationControllers();
 			return replicationControllerClient.create(theRC);
+	}*/
+	private ReplicationController createRC(int clusterId, String namespace, ReplicationController theRC) {
+		MixedOperation<
+			ReplicationController, 
+				ReplicationControllerList, 
+					DoneableReplicationController, 
+						RollableScalableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient 
+							= getClient(clusterId).replicationControllers();
+		return replicationControllerClient.inNamespace(namespace).create(theRC);
 	}
 	
+	/*public boolean deleteRC(int clusterId, String namespace, String rcName) {
+		ClientMixedOperation<
+			ReplicationController, 
+				ReplicationControllerList, 
+					DoneableReplicationController, 
+						ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient 
+							= getClient(clusterId).inNamespace(namespace).replicationControllers();
+		ClientResource<
+			io.fabric8.kubernetes.api.model.ReplicationController, 
+				DoneableReplicationController> clientResource 
+					= replicationControllerClient.withName(rcName);
+		return clientResource.delete();
+	}*/
 	public boolean deleteRC(int clusterId, String namespace, String rcName) {
-		ClientMixedOperation<ReplicationController, ReplicationControllerList, DoneableReplicationController, ClientRollableScallableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient = getClient(clusterId).inNamespace(namespace).replicationControllers();
-		ClientResource<io.fabric8.kubernetes.api.model.ReplicationController, DoneableReplicationController> clientResource = replicationControllerClient.withName(rcName);
+		MixedOperation<
+			ReplicationController, 
+				ReplicationControllerList, 
+					DoneableReplicationController, 
+						RollableScalableResource<ReplicationController, DoneableReplicationController>> replicationControllerClient 
+							= getClient(clusterId).replicationControllers();
+		Resource<
+			io.fabric8.kubernetes.api.model.ReplicationController, 
+				DoneableReplicationController> clientResource 
+					= replicationControllerClient.inNamespace(namespace).withName(rcName);
 		return clientResource.delete();
 	}
 	
-	public ServiceList getServices(int clusterId, String namespace) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient = getClient(clusterId).inNamespace(namespace).services();
+	/*public ServiceList getServices(int clusterId, String namespace) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient 
+							= getClient(clusterId).inNamespace(namespace).services();
 		return servicesClient.list();
+	}*/
+	public ServiceList getServices(int clusterId, String namespace) {
+		return getClient(clusterId).services().inNamespace(namespace).list();
 	}
 	
+	/*public ServiceList getServicesByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient 
+							= getClient(clusterId).inNamespace(namespace).services();
+		FilterWatchListDeletable<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					Boolean, 
+						Watch, 
+							Watcher<io.fabric8.kubernetes.api.model.Service>> filterWatchListDeletable 
+								= servicesClient.withLabels(labels);
+		return filterWatchListDeletable.list();
+	}*/
 	public ServiceList getServicesByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient = getClient(clusterId).inNamespace(namespace).services();
-		FilterWatchListDeletable<io.fabric8.kubernetes.api.model.Service, ServiceList, Boolean, Watch, Watcher<io.fabric8.kubernetes.api.model.Service>> filterWatchListDeletable = servicesClient.withLabels(labels);
-		return filterWatchListDeletable.list();
+		return getClient(clusterId).services().inNamespace(namespace).withLabels(labels).list();
 	}
 	
-	private io.fabric8.kubernetes.api.model.Service createService(int clusterId, String namespace, io.fabric8.kubernetes.api.model.Service service) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient = getClient(clusterId).inNamespace(namespace).services();
+	/*private io.fabric8.kubernetes.api.model.Service createService(int clusterId, String namespace, io.fabric8.kubernetes.api.model.Service service) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient 
+							= getClient(clusterId).inNamespace(namespace).services();
 		return servicesClient.create(service);
+	}*/
+	public io.fabric8.kubernetes.api.model.Service createService(int clusterId, String namespace, io.fabric8.kubernetes.api.model.Service service) {
+		return getClient(clusterId).services().inNamespace(namespace).create(service);
 	}
 	
-	public boolean deleteService(int clusterId, String namespace, String serviceName) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient = getClient(clusterId).inNamespace(namespace).services();
-		ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService> clientResource = servicesClient.withName(serviceName);
+	/*public boolean deleteService(int clusterId, String namespace, String serviceName) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> servicesClient 
+							= getClient(clusterId).inNamespace(namespace).services();
+		ClientResource<
+			io.fabric8.kubernetes.api.model.Service, 
+				DoneableService> clientResource 
+					= servicesClient.withName(serviceName);
 		return clientResource.delete();
+	}*/
+	public boolean deleteService(int clusterId, String namespace, String serviceName) {
+		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName).cascading(false).delete();
 	}
 	
-	public io.fabric8.kubernetes.api.model.Service updateService(int clusterId, String namespace, String serviceName, io.fabric8.kubernetes.api.model.Service service) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> serviceClient = getClient(clusterId).inNamespace(namespace).services();
-		ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService> clientResource = serviceClient.withName(serviceName);
+	/*public io.fabric8.kubernetes.api.model.Service updateService(int clusterId, String namespace, String serviceName, 
+			io.fabric8.kubernetes.api.model.Service service) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> serviceClient 
+							= getClient(clusterId).inNamespace(namespace).services();
+		ClientResource<
+			io.fabric8.kubernetes.api.model.Service, 
+				DoneableService> clientResource 
+					= serviceClient.withName(serviceName);
 		return clientResource.update(service);
+	}*/
+	public io.fabric8.kubernetes.api.model.Service updateService(int clusterId, String namespace, String serviceName, 
+			io.fabric8.kubernetes.api.model.Service service) {
+		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName).createOrReplace(service);
 	}
 	
-	public io.fabric8.kubernetes.api.model.Service putService(int clusterId, String namespace, String serviceName, io.fabric8.kubernetes.api.model.Service service) {
-		ClientMixedOperation<io.fabric8.kubernetes.api.model.Service, ServiceList, DoneableService, ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> serviceClient = getClient(clusterId).inNamespace(namespace).services();
-		ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService> clientResource = serviceClient.withName(serviceName);
+	/*public io.fabric8.kubernetes.api.model.Service putService(int clusterId, String namespace, String serviceName, 
+			io.fabric8.kubernetes.api.model.Service service) {
+		ClientMixedOperation<
+			io.fabric8.kubernetes.api.model.Service, 
+				ServiceList, 
+					DoneableService, 
+						ClientResource<io.fabric8.kubernetes.api.model.Service, DoneableService>> serviceClient 
+							= getClient(clusterId).inNamespace(namespace).services();
+		ClientResource<
+			io.fabric8.kubernetes.api.model.Service, 
+				DoneableService> clientResource 
+					= serviceClient.withName(serviceName);
 		return clientResource.replace(service);
+	}*/
+	public io.fabric8.kubernetes.api.model.Service putService(int clusterId, String namespace, String serviceName, 
+			io.fabric8.kubernetes.api.model.Service service) {
+		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName).replace(service);
 	}
 	
-	public PodList getPodsByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
-		ClientMixedOperation<Pod, PodList, DoneablePod, ClientPodResource<Pod,DoneablePod>> podsClient = getClient(clusterId).inNamespace(namespace).pods();
-		FilterWatchListDeletable<Pod, PodList, Boolean, Watch, Watcher<Pod>> filterWatchListDeletable = podsClient.withLabels(labels);
+	/*public PodList getPodsByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
+		ClientMixedOperation<
+			Pod, PodList, DoneablePod, 
+				ClientPodResource<Pod,DoneablePod>> podsClient 
+					= getClient(clusterId).inNamespace(namespace).pods();
+		FilterWatchListDeletable<Pod, PodList, Boolean, Watch, Watcher<Pod>> filterWatchListDeletable 
+			= podsClient.withLabels(labels);
 		return filterWatchListDeletable.list();
+	}*/
+	public PodList getPodsByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
+		return getClient(clusterId).pods().inNamespace(namespace).withLabels(labels).list();
 	}
 
 	public static void main(String[] args) {
 		K8sAPIService service = new K8sAPIService() {
 			public KubernetesClient getClient(int clusterId) {
-				Config config = new ConfigBuilder().withMasterUrl("http://10.255.242.203:1180/").withHttpProxy("http://10.1.128.200:9000").build();
+				//Config config = new ConfigBuilder().withMasterUrl("http://10.255.242.203:1180/").withHttpProxy("http://10.1.128.200:9000").build();
+				Config config = new ConfigBuilder().withMasterUrl("http://127.0.0.1:8888/").build();
 				return new DefaultKubernetesClient(config);
 			}
 		};
