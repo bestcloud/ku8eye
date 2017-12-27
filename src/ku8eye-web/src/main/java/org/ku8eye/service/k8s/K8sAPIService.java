@@ -367,6 +367,10 @@ public class K8sAPIService {
 	public PodList getPodsByLabelsSelector(int clusterId, String namespace, Map<String, String> labels) {
 		return getClient(clusterId).pods().inNamespace(namespace).withLabels(labels).list();
 	}
+	
+	public io.fabric8.kubernetes.api.model.Service getServicesByName(int clusterId, String namespace, String serviceName) {
+		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName).get();
+	}
 
 	public static void main(String[] args) {
 		K8sAPIService service = new K8sAPIService() {
