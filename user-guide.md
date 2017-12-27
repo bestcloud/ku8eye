@@ -2,11 +2,11 @@
 
 #### 安装部署的架构图如下图所示。
 ![安装架构图](res/cluster_setup_arch.jpg)
-### **注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。如需向私库中导入镜像，服务器需要与私库所在主机网络连通，并需要在服务器主机上配置docker启动参数，如：other_args='--insecure-registry xxx.xxx.xxx.xxx:xxxx'** ####
+### **注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。如需向私库中导入镜像，服务器需要与私库所在主机网络连通，并需要在服务器主机上配置docker启动参数，如：other_args='--insecure-registry xxx.xxx.xxx.xxx:xxxx'** ####  
 
 ### 安装部署的架构图如下图所示。
 ![安装架构图](res/cluster_setup_arch.jpg)
-###**注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。如需向私库中导入镜像，服务器需要与私库所在主机网络连通，并需要在服务器主机上配置docker启动参数，如：other_args='--insecure-registry xxx.xxx.xxx.xxx:xxxx'**###
+###**注：运行ku8eye的服务器属于控制服务器，应在排除在目标Kubernetes集群的服务器范围之外，并能够与待安装的服务器之间网络连通。如需向私库中导入镜像，服务器需要与私库所在主机网络连通，并需要在服务器主机上配置docker启动参数，如：other_args='--insecure-registry xxx.xxx.xxx.xxx:xxxx'**###  
 
 
 当前版本的 **ku8eye** 以docker镜像方式提供，下载地址为：
@@ -32,9 +32,10 @@ docker load -i ku8eye-web.tar
 docker tag 6f46b1372b52 ku8eye-web
 ```
 
-运行ku8eye：
+
+运行ku8eye： 
 ```xml
-docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files:/ku8_ext_files --p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web
+docker run -tid --name ku8eye-web -v /var/run/docker.sock:/var/run/docker.sock -v /root/ku8eye/ku8_ext_files:/ku8_ext_files -p 3306:3306 -p 8080:8080 -p 9001:9001 ku8eye-web
 ```
 
     /root/ku8eye/ku8eye-web.tar

@@ -5,11 +5,11 @@
 ---
 
 ## 1. 为什么会有Ku8 Project
-
+ 
 我们知道J2EE平台有WAR包以及EAR包标准规范，使得任何软件开发商所开发的符合J2EE规范的二进制部署包能够在很方便的发布到其他厂商的J2EE容器中运行。即使Docker平台上，也有标准的镜像格式来打包程序，但kubernetes作为一个新兴的分布式软件架构和运行平台，目前还没有一个标准的**程序打包规范**，部署过程目前都是命令行的冗长操作，这种低层次的的手工重复操作，工作量大，容易出错，不利于kubernetes上的程序开发和部署迁移，所以，我们在ku8eye项目中提出**ku8-project**的概念，并制定一个标准的kubernetes程序部署包标准，并配合一系列的工具来使得**ku8-project**的创建、开发、部署等任务变得简单方便。
      
 
-## 2. Ku8 Project详解
+## 2. Ku8 Project详解 
 一个**Ku8 Project**是一个符合kubernetes架构并运行在kubernetes环境中的kubernetes项目，它用一个YAML格式的文件来描述工程（snakeYAML是Java里YAML参考的解析器）。参考示例如下：
 ```yaml
 project:mykub8-project1
