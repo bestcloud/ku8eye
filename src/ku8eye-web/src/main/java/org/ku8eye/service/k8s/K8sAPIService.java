@@ -368,6 +368,10 @@ public class K8sAPIService {
 		return getClient(clusterId).pods().inNamespace(namespace).withLabels(labels).list();
 	}
 	
+
+	public io.fabric8.kubernetes.api.model.Service getServicesByName(int clusterId, String namespace, String serviceName) {
+		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName).get();
+  
 	public io.fabric8.kubernetes.api.model.Service addLabelsService(int clusterId, String namespace, String serviceName, Map<String, String> labels) {
 		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName)
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
