@@ -372,6 +372,14 @@ public class K8sAPIService {
 		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName)
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
 	}
+	
+	public ExecWatch execPod(int clusterId, String namespace, String podName, ExecListener listener) {
+		return getClient(clusterId).pods().inNamespace(namespace).withName(podName)
+				.redirectingInput()
+                .redirectingOutput()
+                .usingListener(listener)
+                .exec();
+	}
 
 	public static void main(String[] args) {
 		K8sAPIService service = new K8sAPIService() {
