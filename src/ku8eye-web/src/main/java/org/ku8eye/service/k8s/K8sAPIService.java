@@ -372,6 +372,11 @@ public class K8sAPIService {
 		return getClient(clusterId).services().inNamespace(namespace).withName(serviceName)
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
 	}
+	
+	public boolean deletePod(int clusterId, String namespace, String podName) {
+		return getClient(clusterId).pods().inNamespace(namespace).withName(podName)
+				.cascading(false).delete();
+	}
 
 	public static void main(String[] args) {
 		K8sAPIService service = new K8sAPIService() {
