@@ -377,7 +377,11 @@ public class K8sAPIService {
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
 	}
 	
-	public String getPodLogByName(int clusterId, String namespace, String podName, String containerName) {
+	public boolean deletePod(int clusterId, String namespace, String podName) {
+		return getClient(clusterId).pods().inNamespace(namespace).withName(podName)
+				.cascading(false).delete();
+
+  public String getPodLogByName(int clusterId, String namespace, String podName, String containerName) {
 		return getClient(clusterId).pods().inNamespace(namespace).withName(podName)
 				.inContainer(containerName).tailingLines(80).withPrettyOutput().getLog();
 
