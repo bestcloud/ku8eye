@@ -377,7 +377,19 @@ public class K8sAPIService {
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
 	}
 	
-	public List<Node> getAllNodes(int clusterId) {
+	public io.fabric8.kubernetes.api.model.Service replaceLabelsService(int clusterId, String namespace, String serviceName, Map<String, String> labels) {
+		return getClient(clusterId)
+			.services()
+			.inNamespace(namespace)
+			.withName(serviceName)
+			.cascading(false)
+			.edit()
+			.editMetadata()
+			.withLabels(labels)
+			.endMetadata()
+			.done();
+
+    public List<Node> getAllNodes(int clusterId) {
 		return getClient(clusterId).nodes().list().getItems();
 	}
 
