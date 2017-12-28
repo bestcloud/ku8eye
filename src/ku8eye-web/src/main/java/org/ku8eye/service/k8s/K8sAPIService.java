@@ -377,7 +377,11 @@ public class K8sAPIService {
 				.cascading(false).edit().editMetadata().addToLabels(labels).endMetadata().done();
 	}
 	
-	public io.fabric8.kubernetes.api.model.Service replaceLabelsService(int clusterId, String namespace, String serviceName, Map<String, String> labels) {
+	public String getPodLogByName(int clusterId, String namespace, String podName, String containerName) {
+		return getClient(clusterId).pods().inNamespace(namespace).withName(podName)
+				.inContainer(containerName).tailingLines(80).withPrettyOutput().getLog();
+
+  public io.fabric8.kubernetes.api.model.Service replaceLabelsService(int clusterId, String namespace, String serviceName, Map<String, String> labels) {
 		return getClient(clusterId)
 			.services()
 			.inNamespace(namespace)
